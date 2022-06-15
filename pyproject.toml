@@ -30,6 +30,7 @@ dev = [
 ]
 
 [tool.pdm.scripts]
+format = "black ."
 
 [build-system]
 requires = ["pdm-pep517>=0.12.0"]
