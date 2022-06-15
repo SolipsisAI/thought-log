@@ -18,6 +18,7 @@ version = {use_scm = true}
 package-dir = "src"
 
 [project.scripts]
+"thlog" = "thought_log.cli:cli"
 "thought-log" = "thought_log.cli:cli"
 
 [project.optional-dependencies]

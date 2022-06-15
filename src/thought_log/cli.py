@@ -7,6 +7,6 @@ def cli():
 
 
 @cli.command()
-@click.option("--message", "-m")
-def add(message):
-    print(f"Input: {message}")
+@click.argument("text")
+def add(text):
+    print(f"Input: {text}")
