@@ -1,19 +1,28 @@
 from typing import Dict, List, Union
 
-from transformers import PreTrainedModel, pipeline
+from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.utils import ID2LABEL_FILEPATH, LABEL2ID_FILEPATH, read_json
 
 
 class Classifier:
     def __init__(
-        self, model: Union[str, PreTrainedModel], id2label_file=None, label2id_file=None
+        self,
+        model: Union[str, PreTrainedModel],
+        tokenizer: Union[str, PreTrainedTokenizer],
+        id2label_file=None,
+        label2id_file=None,
     ) -> None:
         if not id2label_file:
             id2label_file = ID2LABEL_FILEPATH
         if not label2id_file:
             label2id_file = LABEL2ID_FILEPATH
-        self.pipe = pipeline("text-classification", model=model, return_all_scores=True)
+        self.pipe = pipeline(
+            "text-classification",
+            model=model,
+            tokenizer=tokenizer,
+            return_all_scores=True,
+        )
         self.pipe.model.config.id2label = read_json(id2label_file, as_type=int)
         self.pipe.model.config.label2id = read_json(label2id_file)
 
