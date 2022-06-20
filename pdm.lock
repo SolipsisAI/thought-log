@@ -190,6 +190,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "tdqm"
+version = "0.0.1"
+summary = "Alias for typos of tqdm"
+dependencies = [
+    "tqdm",
+]
+
+[[package]]
 name = "tokenizers"
 version = "0.12.1"
 summary = "Fast and Customizable Tokenizers"
@@ -249,7 +257,7 @@ summary = "HTTP library with thread-safe connection pooling, file post, and more
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:d4df016c9fef66103e15ce63e12fe33c94aaec9296825c379f883c612810de6d"
+content_hash = "sha256:d55ddcd51aacc93cafc8c22f98a14b216ad9201b0c2741406343540816c0b1b8"
 
 [metadata.files]
 "appdirs 1.4.4" = [
@@ -498,6 +506,10 @@ content_hash = "sha256:d4df016c9fef66103e15ce63e12fe33c94aaec9296825c379f883c612
 "requests 2.28.0" = [
     {file = "requests-2.28.0-py3-none-any.whl", hash = "sha256:bc7861137fbce630f17b03d3ad02ad0bf978c844f3536d0edda6499dafce2b6f"},
     {file = "requests-2.28.0.tar.gz", hash = "sha256:d568723a7ebd25875d8d1eaf5dfa068cd2fc8194b2e483d7b1f7c81918dbec6b"},
+]
+"tdqm 0.0.1" = [
+    {file = "tdqm-0.0.1-py2-none-any.whl", hash = "sha256:85680e5b7d78470cd80f87f348180f3fc924afe799f472e0f2e71bc82927e0c1"},
+    {file = "tdqm-0.0.1.tar.gz", hash = "sha256:f050004a76b1d22f70b78209b48781353c82440215b6ba7d22b1f499b05a0101"},
 ]
 "tokenizers 0.12.1" = [
     {file = "tokenizers-0.12.1-cp310-cp310-macosx_10_11_x86_64.whl", hash = "sha256:d737df0f8f26e093a82bfb106b6cfb510a0e9302d35834568e5b20b73ddc5a9c"},
