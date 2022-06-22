@@ -90,6 +90,7 @@ def models_data_path():
 def download_models():
     create_app_dirs()
     model_urls = read_json(MODEL_URLS_FILEPATH)
+    config_data = {}
 
     for name, url in model_urls.items():
         # Download the model
@@ -102,6 +103,12 @@ def download_models():
             downloaded_model.extractall(model_data_path)
 
         print(f"Extracted to {model_data_path}")
+
+        # Set as model path in config
+        extracted = list(filter(lambda x: x.is_dir(), model_data_path.glob("*")))
+        config_data[f"{name}_path"] = str(extracted[0])
+
+    update_config(config_data)
 
 
 def download(url, dest_path):
