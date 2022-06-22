@@ -28,6 +28,11 @@ def read_json(filename: str, as_type=None) -> Dict:
         return data
 
 
+def read_config():
+    config_data = read_json(config_path().joinpath("config.json"))
+    return config_data
+
+
 def preprocess_text(text, classifier=None):
     """Prepend context label if classifier specified"""
     prefix = ""
@@ -95,7 +100,7 @@ def download_models():
     for name, url in model_urls.items():
         # Download the model
         dest_path = cache_path().joinpath(Path(url).name)
-        
+
         if not dest_path.exists():
             download(url, dest_path=dest_path)
 
@@ -110,8 +115,7 @@ def download_models():
             print(f"{dest_path} already downloaded")
 
         # Set as model path in config
-        extracted = list(
-            filter(lambda x: x.is_dir(), model_data_path.glob("*")))
+        extracted = list(filter(lambda x: x.is_dir(), model_data_path.glob("*")))
 
         config_data[f"{name}_path"] = str(extracted[0])
 
