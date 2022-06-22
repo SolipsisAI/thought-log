@@ -1,0 +1,4 @@
+MODELS = {
+    "core": "https://solipsisai.us-east-1.linodeobjects.com/models/ERICA-update.tar.gz",
+    "classifier": "https://solipsisai.us-east-1.linodeobjects.com/models/distilroberta-finetuned.tar.gz",
+}

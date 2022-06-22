@@ -9,13 +9,12 @@ import requests
 from appdirs import user_data_dir, user_cache_dir, user_config_dir
 from tqdm.auto import tqdm
 
+from thought_log.res import urls
+
 APP_NAME = "ThoughtLog"
 APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
-ID2LABEL_FILEPATH = DATA_DIR.joinpath("id2label.json")
-LABEL2ID_FILEPATH = DATA_DIR.joinpath("label2id.json")
-MODEL_URLS_FILEPATH = DATA_DIR.joinpath("model_urls.json")
 
 
 def read_json(filename: str, as_type=None) -> Dict:
@@ -94,7 +93,7 @@ def models_data_path():
 
 def download_models():
     create_app_dirs()
-    model_urls = read_json(MODEL_URLS_FILEPATH)
+    model_urls = urls.MODELS
     config_data = {}
 
     for name, url in model_urls.items():
