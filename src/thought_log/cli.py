@@ -15,6 +15,13 @@ def add(text):
 
 
 @cli.command()
+def setup():
+    from thought_log.utils import download_models
+
+    download_models()
+
+
+@cli.command()
 @click.option("--model_name", "-m")
 @click.option("--tokenizer_name", "-t")
 @click.option("--config_name", "-c")
