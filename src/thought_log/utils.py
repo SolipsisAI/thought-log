@@ -61,14 +61,17 @@ def models_data_path():
 def download_models():
     get_or_create_app_data_dirs()
     model_urls = read_json(MODEL_URLS_FILEPATH)
-    for _, url in model_urls.items():
+    for name, url in model_urls.items():
         # Download the model
         dest_path = models_data_path().joinpath(Path(url).name)
         download(url, dest_path=dest_path)
+
         # Extract the model files
-        model_data_path = models_data_path()
-        downloaded_model = tarfile.open(dest_path)
-        downloaded_model.extractall(model_data_path)
+        model_data_path = models_data_path().joinpath(name)
+        with tarfile.open(dest_path) as downloaded_model:
+            downloaded_model.extractall(model_data_path)
+
+        print(f"Extracted to {model_data_path}")
 
 
 def download(url, dest_path):
