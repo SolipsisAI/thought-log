@@ -66,7 +66,7 @@ def update_config(data: Dict) -> Dict:
         config_data = data
 
     with open(config_filepath, "w+") as fp:
-        json.dump(config_data, fp)
+        json.dump(config_data, fp, indent=4)
 
     return config_data
 
@@ -95,7 +95,9 @@ def download_models():
     for name, url in model_urls.items():
         # Download the model
         dest_path = cache_path().joinpath(Path(url).name)
-        download(url, dest_path=dest_path)
+        
+        if not dest_path.exists():
+            download(url, dest_path=dest_path)
 
         # Extract the model files
         model_data_path = models_data_path().joinpath(name)
