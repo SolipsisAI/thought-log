@@ -101,13 +101,18 @@ def download_models():
 
         # Extract the model files
         model_data_path = models_data_path().joinpath(name)
-        with tarfile.open(dest_path) as downloaded_model:
-            downloaded_model.extractall(model_data_path)
 
-        print(f"Extracted to {model_data_path}")
+        if not model_data_path.exists():
+            with tarfile.open(dest_path) as downloaded_model:
+                downloaded_model.extractall(model_data_path)
+            print(f"Extracted to {model_data_path}")
+        else:
+            print(f"{dest_path} already downloaded")
 
         # Set as model path in config
-        extracted = list(filter(lambda x: x.is_dir(), model_data_path.glob("*")))
+        extracted = list(
+            filter(lambda x: x.is_dir(), model_data_path.glob("*")))
+
         config_data[f"{name}_path"] = str(extracted[0])
 
     update_config(config_data)
