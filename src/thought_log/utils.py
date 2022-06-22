@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict
 
 import requests
-from appdirs import user_data_dir
+from appdirs import user_data_dir, user_cache_dir, user_config_dir
 from tqdm.auto import tqdm
 
 APP_NAME = "ThoughtLog"
@@ -44,10 +44,24 @@ def postprocess_text(text):
 
 
 def get_or_create_app_data_dirs():
-    if not models_data_path().exists():
-        # Create user data directory
-        models_data_path().mkdir(parents=True)
-    return app_data_path(), models_data_path()
+    paths = [
+        config_path(),
+        cache_path(),
+        app_data_path(),
+        models_data_path(),
+    ]
+    for path in paths:
+        if not path.exists():
+            # Create user data directory
+            path.mkdir(parents=True)
+
+
+def config_path():
+    return Path(user_config_dir(APP_NAME, APP_AUTHOR))
+
+
+def cache_path():
+    return Path(user_cache_dir(APP_NAME, APP_AUTHOR))
 
 
 def app_data_path():
