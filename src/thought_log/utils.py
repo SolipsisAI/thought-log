@@ -1,11 +1,21 @@
 import json
 import re
+import shutil
+import tarfile
 from pathlib import Path
+from typing import Dict
 
+import requests
+from appdirs import user_data_dir
+from tqdm.auto import tqdm
+
+APP_NAME = "ThoughtLog"
+APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
 ID2LABEL_FILEPATH = DATA_DIR.joinpath("id2label.json")
 LABEL2ID_FILEPATH = DATA_DIR.joinpath("label2id.json")
+MODEL_URLS_FILEPATH = DATA_DIR.joinpath("model_urls.json")
 
 
 def read_json(filename: str, as_type=None) -> Dict:
@@ -31,3 +41,39 @@ def postprocess_text(text):
     """Clean response text"""
     text = re.sub(r"^\w+\s", "", text)
     return re.sub(r"_comma_", ",", text)
+
+
+def get_or_create_app_data_dirs():
+    if not models_data_path().exists():
+        # Create user data directory
+        models_data_path().mkdir(parents=True)
+    return app_data_path(), models_data_path()
+
+
+def app_data_path():
+    return Path(user_data_dir(APP_NAME, APP_AUTHOR))
+
+
+def models_data_path():
+    return app_data_path().joinpath("models")
+
+
+def download_models():
+    get_or_create_app_data_dirs()
+    model_urls = read_json(MODEL_URLS_FILEPATH)
+    for _, url in model_urls.items():
+        # Download the model
+        dest_path = models_data_path().joinpath(Path(url).name)
+        download(url, dest_path=dest_path)
+        # Extract the model files
+        model_data_path = models_data_path()
+        downloaded_model = tarfile.open(dest_path)
+        downloaded_model.extractall(model_data_path)
+
+
+def download(url, dest_path):
+    with requests.get(url, stream=True) as r:
+        total_length = int(r.headers.get("Content-Length"))
+        with tqdm.wrapattr(r.raw, "read", total=total_length, desc="") as f:
+            with open(dest_path, "wb") as output:
+                shutil.copyfileobj(f, output)

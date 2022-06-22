@@ -34,6 +34,7 @@ dev = [
     "isort>=5.10.1",
     "pytest>=7.1.2",
     "twine>=4.0.1",
+    "ipython>=8.4.0",
 ]
 
 [tool.pdm.scripts]
