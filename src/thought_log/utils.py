@@ -43,7 +43,7 @@ def postprocess_text(text):
     return re.sub(r"_comma_", ",", text)
 
 
-def get_or_create_app_data_dirs():
+def create_app_dirs():
     paths = [
         config_path(),
         cache_path(),
@@ -54,6 +54,21 @@ def get_or_create_app_data_dirs():
         if not path.exists():
             # Create user data directory
             path.mkdir(parents=True)
+
+
+def update_config(data: Dict) -> Dict:
+    config_filepath = config_path().joinpath("config.json")
+
+    if config_filepath.exists():
+        config_data = read_json(config_filepath)
+        config_data.update(data)
+    else:
+        config_data = data
+
+    with open(config_filepath, "w+") as fp:
+        json.dump(config_data, fp)
+
+    return config_data
 
 
 def config_path():
@@ -73,11 +88,12 @@ def models_data_path():
 
 
 def download_models():
-    get_or_create_app_data_dirs()
+    create_app_dirs()
     model_urls = read_json(MODEL_URLS_FILEPATH)
+
     for name, url in model_urls.items():
         # Download the model
-        dest_path = models_data_path().joinpath(Path(url).name)
+        dest_path = cache_path().joinpath(Path(url).name)
         download(url, dest_path=dest_path)
 
         # Extract the model files
