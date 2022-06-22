@@ -1,6 +1,6 @@
 [project]
 name = "thought-log"
-version = "0.1.0b2"
+version = "0.1.0b3"
 description = "Test thing"
 authors = [
     {name = "Bitjockey", email = "bitjockey@jackpoint.network"},
