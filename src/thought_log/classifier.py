@@ -10,11 +10,13 @@ class Classifier:
         self,
         model: Union[str, PreTrainedModel],
         tokenizer: Union[str, PreTrainedTokenizer],
+        device: str,
     ) -> None:
         self.pipe = pipeline(
             "text-classification",
             model=model,
             tokenizer=tokenizer,
+            device=0 if device == "cuda" else -1,
         )
         # TODO: Move these to the model files
         self.pipe.model.config.id2label = labels.ID2LABEL
