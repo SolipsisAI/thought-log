@@ -16,7 +16,6 @@ from thought_log.utils import postprocess_text, preprocess_text, read_config
 def chat(model, tokenizer, device, classifier=None, max_length: int = 1000):
     """Use model.generate to interact"""
     model.config.pad_token_id = tokenizer.pad_token_id
-
     model.to(device)
 
     step = 0
@@ -31,7 +30,7 @@ def chat(model, tokenizer, device, classifier=None, max_length: int = 1000):
         new_user_input_ids = tokenizer.encode(
             preprocess_text(text, classifier=classifier) + tokenizer.eos_token,
             return_tensors="pt",
-        )
+        ).to(device)
 
         # append the new user input tokens to the chat history
         bot_input_ids = (
@@ -104,13 +103,14 @@ def interact(
         tokenizer_name = model_name
 
     config = AutoConfig.from_pretrained(config_name)
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, device=device)
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         from_tf=False,
         config=config,
     )
-    classifier = Classifier(classifier_name, tokenizer=classifier_name)
+
+    classifier = Classifier(classifier_name, tokenizer=classifier_name, device=device)
 
     chat_fn = chat_pipeline if pipeline else chat
 
