@@ -2,6 +2,7 @@ import json
 import re
 import shutil
 import tarfile
+from datetime import datetime
 from pathlib import Path
 from typing import Dict
 
@@ -127,3 +128,21 @@ def download(url, dest_path):
         with tqdm.wrapattr(r.raw, "read", total=total_length, desc="") as f:
             with open(dest_path, "wb") as output:
                 shutil.copyfileobj(f, output)
+
+
+def zkid(datetime_obj=None, include_seconds=True):
+    """Alias for zettelkasten_id"""
+    return zettelkasten_id(datetime_obj=datetime_obj, include_seconds=include_seconds)
+
+
+def zettelkasten_id(datetime_obj=None, include_seconds=True):
+    """Generate an extended zettelksaten id"""
+    # "2014-02-26 9:39am"
+
+    if not datetime_obj:
+        datetime_obj = datetime.now()
+
+    fmt = "%Y%m%d%H%M"
+    fmt = fmt + "%S" if include_seconds else fmt
+
+    return datetime_obj.strftime(fmt)

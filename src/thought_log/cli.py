@@ -11,8 +11,8 @@ def cli():
 
 @cli.command()
 @click.option("--text", "-t")
-@click.option("--filename", "-f")
-def add(text, filename):
+@click.option("--import_filename", "-i")
+def add(text, import_filename):
     """Add a new entry to the log"""
     from thought_log.utils import DATA_DIR, ROOT_DIR
 
