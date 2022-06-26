@@ -15,28 +15,26 @@ class Classifier:
             "text-classification",
             model=model,
             tokenizer=tokenizer,
-            return_all_scores=True,
         )
+        # TODO: Move these to the model files
         self.pipe.model.config.id2label = labels.ID2LABEL
         self.pipe.model.config.label2id = labels.LABEL2ID
+        # This is deprecated, but the recommended param top_k=1 is not working
+        self.pipe.model.config.return_all_scores = True
 
     def classify(
         self, text, k: int = 1, include_score=False
     ) -> Union[List[Dict], List[str]]:
         results = self.pipe(text)
-        result = results[0] if results else None
 
-        if not result:
+        if not results:
             return
 
-        result.sort(key=lambda item: item.get("score"), reverse=True)
-
-        # Return all the results
-        if k < 1:
-            return result
+        if k is None:
+            return results
 
         # Sort by score, in descending order
-        result.sort(key=lambda item: item.get("score"), reverse=True)
+        results.sort(key=lambda item: item.get("score"), reverse=True)
 
         # Return the top k results
-        return [r if include_score else r["label"] for r in result[:k]]
+        return [r if include_score else r["label"] for r in results[:k]]

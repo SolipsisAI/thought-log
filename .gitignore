@@ -161,3 +161,6 @@ cython_debug/
 *.whl
 *.db
 .lagos_queue/
+
+# pyenv
+.python-version
