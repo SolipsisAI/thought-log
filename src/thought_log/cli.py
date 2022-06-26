@@ -9,13 +9,15 @@ def cli():
 @cli.command()
 @click.argument("text")
 def add(text):
+    """Add a new entry to the log"""
     from thought_log.utils import DATA_DIR, ROOT_DIR
 
     print(f"Input: {text}|{ROOT_DIR} {DATA_DIR}")
 
 
 @cli.command()
-def setup():
+def download():
+    """Download models"""
     from thought_log.utils import download_models
 
     download_models()
@@ -31,6 +33,7 @@ def setup():
 def interact(
     model_name, tokenizer_name, config_name, classifier_name, pipeline, max_length
 ):
+    """Use the chatbot interactively"""
     from thought_log.interact import interact
 
     interact(
