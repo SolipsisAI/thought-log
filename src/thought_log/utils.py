@@ -130,11 +130,6 @@ def download(url, dest_path):
                 shutil.copyfileobj(f, output)
 
 
-def zkid(datetime_obj=None, include_seconds=True):
-    """Alias for zettelkasten_id"""
-    return zettelkasten_id(datetime_obj=datetime_obj, include_seconds=include_seconds)
-
-
 def zettelkasten_id(datetime_obj=None, include_seconds=True):
     """Generate an extended zettelksaten id"""
     # "2014-02-26 9:39am"
