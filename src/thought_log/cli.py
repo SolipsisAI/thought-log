@@ -14,13 +14,12 @@ def cli():
 @click.option("--import_filename", "-i")
 def add(text, import_filename):
     """Add a new entry to the log"""
-    from thought_log.entry_handler import write_entry, classify_entry
+    from thought_log.entry_handler import write_entry
 
     if not any([text, import_filename]):
         raise ValueError("Please supply text or a path to a filename")
 
-    metadata = {"tags": classify_entry(text)}
-    write_entry(text, metadata)
+    write_entry(text)
 
 
 @cli.command()
