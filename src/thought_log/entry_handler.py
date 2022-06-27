@@ -50,4 +50,6 @@ def import_dayone_csv(filename: str):
         text = row.pop("text")
         metadata = dict([(snakecase(k), v) for k, v in row.items()])
 
-        write_entry(text, datetime_obj=to_datetime(datetime_string[:-1]), metadata=metadata)
+        write_entry(
+            text, datetime_obj=to_datetime(datetime_string[:-1]), metadata=metadata
+        )
