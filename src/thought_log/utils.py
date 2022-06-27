@@ -177,6 +177,11 @@ def hline():
     return "-" * window_size().columns
 
 
-def display_text(text, padding: int = 5):
+def display_text(text):
+    paragraphs = list(map(wrap_text, text.splitlines()))
+    return "\n".join(paragraphs)
+
+
+def wrap_text(text, padding: int = 5):
     lines = textwrap.wrap(text, width=window_size().columns - padding)
     return "\n".join(lines)
