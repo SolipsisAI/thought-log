@@ -10,6 +10,13 @@ def cli():
 
 
 @cli.command()
+def show():
+    from thought_log.entry_handler import load_entries
+
+    click.echo_via_pager(load_entries())
+
+
+@cli.command()
 @click.option("--text", "-t")
 @click.option("--import_filename", "-i")
 def add(text, import_filename):

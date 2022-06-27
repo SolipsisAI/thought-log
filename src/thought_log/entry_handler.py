@@ -5,7 +5,19 @@ import frontmatter
 from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR
-from thought_log.utils import read_csv, zettelkasten_id, snakecase, to_datetime
+from thought_log.utils import (
+    read_csv,
+    zettelkasten_id,
+    snakecase,
+    to_datetime,
+    list_entries,
+)
+
+
+def load_entries():
+    return list(
+        map(lambda e: load_entry(e).content + "\n-------\n", list_entries(STORAGE_DIR))
+    )
 
 
 def load_entry(zkid: Union[str, int]):
