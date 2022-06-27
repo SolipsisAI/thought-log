@@ -161,3 +161,7 @@ def to_datetime(string, fmt):
         return datetime.strptime(string, ZKID_DATE_FMT)
     else:
         return datetime.strptime(string, fmt)
+
+
+def list_entries(entries_dir):
+    return sorted([int(f.stem) for f in Path(entries_dir).glob("*.txt")])

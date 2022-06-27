@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Union
 
 import frontmatter
 from tqdm.auto import tqdm
@@ -8,7 +8,7 @@ from thought_log.config import STORAGE_DIR
 from thought_log.utils import read_csv, zettelkasten_id, snakecase, to_datetime
 
 
-def load_entry(zkid: str):
+def load_entry(zkid: Union[str, int]):
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
     with open(entry_filepath) as f:
@@ -31,7 +31,7 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
         post.content = text
 
         # Set metadata
-        metadata["id"] = zkid
+        metadata["id"] = int(zkid)
         metadata["timestamp"] = datetime_obj.isoformat()
 
         # Update metadata
@@ -51,5 +51,7 @@ def import_dayone_csv(filename: str):
         metadata = dict([(snakecase(k), v) for k, v in row.items()])
 
         write_entry(
-            text, datetime_obj=to_datetime(datetime_string[:-1]), metadata=metadata
+            text,
+            datetime_obj=to_datetime(datetime_string[:-1], fmt="isoformat"),
+            metadata=metadata,
         )
