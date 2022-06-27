@@ -16,7 +16,7 @@ from thought_log.utils import (
 )
 
 
-def show_entries(reverse: bool, num_entries: int):
+def show_entries(reverse: bool, num_entries: int, show_id: bool):
     entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
     for zkid in entry_ids:
@@ -29,6 +29,7 @@ def show_entries(reverse: bool, num_entries: int):
 
         # Format display
         display = f"[{datetime_str}]\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
+        display = f"ID: {zkid}\n{display}" if show_id else display
         yield display
 
 

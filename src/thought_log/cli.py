@@ -10,18 +10,21 @@ def cli():
 
 
 @cli.command()
-@click.option("--oldest/--no-oldest", "-o", help="Oldest first")
+@click.option("--oldest/--no_oldest", "-o", help="Oldest first")
 @click.option(
     "--num_entries",
     "-n",
     default=5,
     help="Number of entries to show, Set to -1 to show all",
 )
-def show(oldest, num_entries):
+@click.option("--show_id/--no_show_id", "-i")
+def show(oldest, num_entries, show_id):
     """Show entries"""
     from thought_log.entry_handler import show_entries
 
-    click.echo_via_pager(show_entries(reverse=not oldest, num_entries=num_entries))
+    click.echo_via_pager(
+        show_entries(reverse=not oldest, num_entries=num_entries, show_id=show_id)
+    )
 
 
 @cli.command()
