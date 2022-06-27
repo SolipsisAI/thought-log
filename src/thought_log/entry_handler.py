@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Union
 
 import frontmatter
@@ -41,6 +42,12 @@ def load_entry(zkid: Union[str, int]):
         return entry
 
 
+def add_entry(filename: str):
+    with open(filename, "r") as f:
+        entry = frontmatter.load(f)
+        write_entry(entry.content, metadata={"imported_from": "file", **entry.metadata})
+
+
 def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
     if not datetime_obj:
         datetime_obj = datetime.now()
@@ -74,6 +81,7 @@ def import_dayone_csv(filename: str):
         datetime_string = row.pop("date")
         text = row.pop("text")
         metadata = dict([(snakecase(k), v) for k, v in row.items()])
+        metadata["imported_from"] = "dayone"
 
         write_entry(
             text,

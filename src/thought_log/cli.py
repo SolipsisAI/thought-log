@@ -3,6 +3,8 @@ from pathlib import Path
 
 import click
 
+from thought_log.entry_handler import add_entry
+
 
 @click.group()
 def cli():
@@ -29,7 +31,7 @@ def show(oldest, num_entries, show_id):
 
 @cli.command()
 @click.option("--text", "-t")
-@click.option("--filename", "-f")
+@click.option("--filename", "-f", type=click.Path(exists=True))
 def add(text, filename):
     """Add a new entry to the log"""
     from thought_log.entry_handler import write_entry
@@ -38,7 +40,14 @@ def add(text, filename):
         print("Please supply text (--text/-t) or a path to a filename (--filename/-f)")
         exit(1)
 
-    write_entry(text)
+    if all([text, filename]):
+        print("Please either specify a file to import from or add text")
+        exit(1)
+     
+    if text:
+        write_entry(text)
+    elif filename:
+        add_entry(filename)    
 
 
 @cli.command()
