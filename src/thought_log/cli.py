@@ -29,13 +29,14 @@ def show(oldest, num_entries, show_id):
 
 @cli.command()
 @click.option("--text", "-t")
-@click.option("--import_filename", "-i")
-def add(text, import_filename):
+@click.option("--filename", "-f")
+def add(text, filename):
     """Add a new entry to the log"""
     from thought_log.entry_handler import write_entry
 
-    if not any([text, import_filename]):
-        raise ValueError("Please supply text or a path to a filename")
+    if not any([text, filename]):
+        print("Please supply text (--text/-t) or a path to a filename (--filename/-f)")
+        exit(1)
 
     write_entry(text)
 
