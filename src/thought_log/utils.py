@@ -38,8 +38,17 @@ def read_json(filename: str, as_type=None) -> Dict:
         return data
 
 
-def read_config():
-    config_data = read_json(config_path().joinpath("config.json"))
+def load_config():
+    config_filepath = config_path().joinpath("config.json")
+
+    if not config_path().exists():
+        config_path().mkdir(parents=True)
+
+    if not config_filepath.exists():
+        update_config({})
+
+    config_data = read_json(config_filepath)
+
     return config_data
 
 

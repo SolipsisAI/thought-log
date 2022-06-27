@@ -64,9 +64,9 @@ def import_csv(import_filename):
 @click.option("--overwrite/--no-overwrite", default=False)
 def configure(storage_dir, overwrite):
     """Configure settings"""
-    from thought_log.utils import update_config, read_config
+    from thought_log.utils import update_config, load_config
 
-    config = read_config()
+    config = load_config()
 
     if not storage_dir:
         storage_dir = click.prompt("Where do you want files to be stored? ")
