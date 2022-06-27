@@ -165,10 +165,11 @@ def to_datetime(string, fmt):
         return datetime.strptime(string, fmt)
 
 
-def list_entries(entries_dir, reverse=False):
-    return sorted(
+def list_entries(entries_dir, reverse=False, num_entries=-1):
+    entry_ids = sorted(
         [int(f.stem) for f in Path(entries_dir).glob("*.txt")], reverse=reverse
     )
+    return entry_ids if num_entries < 0 else entry_ids[:num_entries]
 
 
 def window_size():

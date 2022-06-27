@@ -16,8 +16,8 @@ from thought_log.utils import (
 )
 
 
-def show_entries(reverse):
-    entry_ids = list_entries(STORAGE_DIR, reverse=reverse)
+def show_entries(reverse: bool, num_entries: int):
+    entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
     for zkid in entry_ids:
         entry = load_entry(zkid)
