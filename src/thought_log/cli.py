@@ -23,6 +23,15 @@ def add(text, import_filename):
 
 
 @cli.command()
+@click.option("--import_filename", "-i")
+def import_csv(import_filename):
+    """Import a DayOne-exported CSV"""
+    from thought_log.entry_handler import import_dayone_csv
+
+    import_dayone_csv(import_filename)
+
+
+@cli.command()
 @click.option("--storage_dir", "-d", default=os.getenv("TL_STORAGE_DIR", None))
 @click.option("--overwrite/--no_overwrite", default=False)
 def configure(storage_dir, overwrite):

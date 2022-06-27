@@ -363,6 +363,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "pytz"
+version = "2022.1"
+summary = "World timezone definitions, modern and historical"
+
+[[package]]
 name = "pywin32-ctypes"
 version = "0.2.0"
 summary = "UNKNOWN"
@@ -565,7 +570,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:4c1e9aeb38cb7143f86e1577f27c5aa9512348b8dadf90df23fc626a0c7f958f"
+content_hash = "sha256:26719176a8d4ae95db5785eec527dc89b256391658f0549a9d3e2828fe67caf5"
 
 [metadata.files]
 "appdirs 1.4.4" = [
@@ -871,6 +876,10 @@ content_hash = "sha256:4c1e9aeb38cb7143f86e1577f27c5aa9512348b8dadf90df23fc626a0
 "python-frontmatter 1.0.0" = [
     {file = "python_frontmatter-1.0.0-py3-none-any.whl", hash = "sha256:766ae75f1b301ffc5fe3494339147e0fd80bc3deff3d7590a93991978b579b08"},
     {file = "python-frontmatter-1.0.0.tar.gz", hash = "sha256:e98152e977225ddafea6f01f40b4b0f1de175766322004c826ca99842d19a7cd"},
+]
+"pytz 2022.1" = [
+    {file = "pytz-2022.1-py2.py3-none-any.whl", hash = "sha256:e68985985296d9a66a881eb3193b0906246245294a881e7c8afe623866ac6a5c"},
+    {file = "pytz-2022.1.tar.gz", hash = "sha256:1e760e2fe6a8163bc0b3d9a19c4f84342afa0a2affebfaa84b01b978a02ecaa7"},
 ]
 "pywin32-ctypes 0.2.0" = [
     {file = "pywin32_ctypes-0.2.0-py2.py3-none-any.whl", hash = "sha256:9dc2d991b3479cc2df15930958b674a48a227d5361d413827a4cfd0b5876fc98"},

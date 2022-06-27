@@ -1,10 +1,11 @@
+import csv
 import json
 import re
 import shutil
 import tarfile
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 import requests
 from appdirs import user_data_dir, user_cache_dir, user_config_dir
@@ -16,6 +17,12 @@ APP_NAME = "ThoughtLog"
 APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
+
+
+def read_csv(filename: str) -> List[Dict]:
+    with open(filename) as f:
+        csv_data = csv.DictReader(f)
+        return list(csv_data)
 
 
 def read_json(filename: str, as_type=None) -> Dict:
@@ -132,8 +139,6 @@ def download(url, dest_path):
 
 def zettelkasten_id(datetime_obj=None, include_seconds=True):
     """Generate an extended zettelksaten id"""
-    # "2014-02-26 9:39am"
-
     if not datetime_obj:
         datetime_obj = datetime.now()
 
@@ -141,3 +146,15 @@ def zettelkasten_id(datetime_obj=None, include_seconds=True):
     fmt = fmt + "%S" if include_seconds else fmt
 
     return datetime_obj.strftime(fmt)
+
+
+def snakecase(string):
+    # From https://www.geeksforgeeks.org/python-program-to-convert-camel-case-string-to-snake-case/
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", string)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+
+def to_datetime(string, fmt="isoformat"):
+    if fmt == "isoformat":
+        return datetime.fromisoformat(string)
+    return datetime.strptime(string, fmt)
