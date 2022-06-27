@@ -43,11 +43,11 @@ def add(text, filename):
     if all([text, filename]):
         print("Please either specify a file to import from or add text")
         exit(1)
-     
+
     if text:
         write_entry(text)
     elif filename:
-        add_entry(filename)    
+        add_entry(filename)
 
 
 @cli.command()
