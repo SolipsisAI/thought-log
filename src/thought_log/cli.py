@@ -10,12 +10,12 @@ def cli():
 
 
 @cli.command()
-@click.option("--reverse/--no-reverse", "-r", help="Show in reverse order")
-def show(reverse):
+@click.option("--oldest/--no-oldest", "-o", help="Oldest first")
+def show(oldest):
     """Show entries"""
     from thought_log.entry_handler import show_entries
 
-    click.echo_via_pager(show_entries(reverse))
+    click.echo_via_pager(show_entries(not oldest))
 
 
 @cli.command()
