@@ -13,7 +13,7 @@ def load_entry(zkid: Union[str, int]):
 
     with open(entry_filepath) as f:
         entry = frontmatter.load(f)
-        return entry, entry_filepath
+        return entry
 
 
 def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
