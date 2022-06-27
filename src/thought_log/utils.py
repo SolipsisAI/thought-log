@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import re
 import shutil
 import tarfile
@@ -165,3 +166,8 @@ def to_datetime(string, fmt):
 
 def list_entries(entries_dir):
     return sorted([int(f.stem) for f in Path(entries_dir).glob("*.txt")])
+
+
+def hline():
+    window_size = os.get_terminal_size()
+    return "-" * window_size.columns

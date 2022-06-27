@@ -11,9 +11,9 @@ def cli():
 
 @cli.command()
 def show():
-    from thought_log.entry_handler import load_entries
+    from thought_log.entry_handler import show_entries
 
-    click.echo_via_pager(load_entries())
+    click.echo_via_pager(show_entries())
 
 
 @cli.command()

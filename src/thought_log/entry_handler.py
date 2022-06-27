@@ -11,13 +11,16 @@ from thought_log.utils import (
     snakecase,
     to_datetime,
     list_entries,
+    hline,
 )
 
 
-def load_entries():
-    return list(
-        map(lambda e: load_entry(e).content + "\n-------\n", list_entries(STORAGE_DIR))
-    )
+def show_entries():
+    for zkid in list_entries(STORAGE_DIR):
+        entry = load_entry(zkid)
+        timestamp = entry.metadata["timestamp"]
+        display = f"[{timestamp}]\n\n{entry.content}\n\n{hline()}\n\n"
+        yield display
 
 
 def load_entry(zkid: Union[str, int]):
