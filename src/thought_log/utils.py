@@ -1,9 +1,13 @@
+import csv
 import json
+import os
 import re
 import shutil
 import tarfile
+import textwrap
+from datetime import datetime
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 import requests
 from appdirs import user_data_dir, user_cache_dir, user_config_dir
@@ -15,6 +19,13 @@ APP_NAME = "ThoughtLog"
 APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
+ZKID_DATE_FMT = "%Y%m%d%H%M%S"
+
+
+def read_csv(filename: str) -> List[Dict]:
+    with open(filename) as f:
+        csv_data = csv.DictReader(f)
+        return list(csv_data)
 
 
 def read_json(filename: str, as_type=None) -> Dict:
@@ -127,3 +138,53 @@ def download(url, dest_path):
         with tqdm.wrapattr(r.raw, "read", total=total_length, desc="") as f:
             with open(dest_path, "wb") as output:
                 shutil.copyfileobj(f, output)
+
+
+def zettelkasten_id(datetime_obj=None, include_seconds=True):
+    """Generate an extended zettelksaten id"""
+    if not datetime_obj:
+        datetime_obj = datetime.now()
+
+    fmt = ZKID_DATE_FMT if include_seconds else ZKID_DATE_FMT.replace("%S", "")
+
+    return datetime_obj.strftime(fmt)
+
+
+def snakecase(string):
+    # From https://www.geeksforgeeks.org/python-program-to-convert-camel-case-string-to-snake-case/
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", string)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+
+def to_datetime(string, fmt):
+    if fmt == "isoformat":
+        return datetime.fromisoformat(string)
+    elif fmt == "zkid":
+        return datetime.strptime(string, ZKID_DATE_FMT)
+    else:
+        return datetime.strptime(string, fmt)
+
+
+def list_entries(entries_dir, reverse=False, num_entries=-1):
+    entry_ids = sorted(
+        [int(f.stem) for f in Path(entries_dir).glob("*.txt")], reverse=reverse
+    )
+    return entry_ids if num_entries < 0 else entry_ids[:num_entries]
+
+
+def window_size():
+    return os.get_terminal_size()
+
+
+def hline():
+    return "-" * window_size().columns
+
+
+def display_text(text):
+    paragraphs = list(map(wrap_text, text.splitlines()))
+    return "\n".join(paragraphs)
+
+
+def wrap_text(text, padding: int = 5):
+    lines = textwrap.wrap(text, width=window_size().columns - padding)
+    return "\n".join(lines)

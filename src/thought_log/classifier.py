@@ -2,15 +2,16 @@ from typing import Dict, List, Union
 
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
+from thought_log.config import CLASSIFIER_NAME
 from thought_log.res import labels
 
 
 class Classifier:
     def __init__(
         self,
-        model: Union[str, PreTrainedModel],
-        tokenizer: Union[str, PreTrainedTokenizer],
-        device: str,
+        model: Union[str, PreTrainedModel] = CLASSIFIER_NAME,
+        tokenizer: Union[str, PreTrainedTokenizer] = CLASSIFIER_NAME,
+        device: str = "cpu",
     ) -> None:
         self.pipe = pipeline(
             "text-classification",
