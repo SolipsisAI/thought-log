@@ -17,6 +17,7 @@ APP_NAME = "ThoughtLog"
 APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
+ZKID_DATE_FMT = "%Y%m%d%H%M%S"
 
 
 def read_csv(filename: str) -> List[Dict]:
@@ -142,8 +143,7 @@ def zettelkasten_id(datetime_obj=None, include_seconds=True):
     if not datetime_obj:
         datetime_obj = datetime.now()
 
-    fmt = "%Y%m%d%H%M"
-    fmt = fmt + "%S" if include_seconds else fmt
+    fmt = ZKID_DATE_FMT if include_seconds else ZKID_DATE_FMT.replace("%S", "")
 
     return datetime_obj.strftime(fmt)
 
@@ -154,7 +154,10 @@ def snakecase(string):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-def to_datetime(string, fmt="isoformat"):
+def to_datetime(string, fmt):
     if fmt == "isoformat":
         return datetime.fromisoformat(string)
-    return datetime.strptime(string, fmt)
+    elif fmt == "zkid":
+        return datetime.strptime(string, ZKID_DATE_FMT)
+    else:
+        return datetime.strptime(string, fmt)
