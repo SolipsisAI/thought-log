@@ -16,8 +16,10 @@ from thought_log.utils import (
 )
 
 
-def show_entries():
-    for zkid in list_entries(STORAGE_DIR):
+def show_entries(reverse):
+    entry_ids = list_entries(STORAGE_DIR, reverse=reverse)
+
+    for zkid in entry_ids:
         entry = load_entry(zkid)
 
         # Make timestamp prettier

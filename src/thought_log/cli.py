@@ -10,10 +10,12 @@ def cli():
 
 
 @cli.command()
-def show():
+@click.option("--reverse/--no-reverse", "-r", help="Show in reverse order")
+def show(reverse):
+    """Show entries"""
     from thought_log.entry_handler import show_entries
 
-    click.echo_via_pager(show_entries())
+    click.echo_via_pager(show_entries(reverse))
 
 
 @cli.command()
@@ -42,6 +44,7 @@ def import_csv(import_filename):
 @click.option("--storage_dir", "-d", default=os.getenv("TL_STORAGE_DIR", None))
 @click.option("--overwrite/--no_overwrite", default=False)
 def configure(storage_dir, overwrite):
+    """Configure settings"""
     from thought_log.utils import update_config, read_config
 
     config = read_config()
