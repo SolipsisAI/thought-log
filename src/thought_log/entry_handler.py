@@ -11,6 +11,7 @@ from thought_log.utils import (
     snakecase,
     to_datetime,
     list_entries,
+    display_text,
     hline,
 )
 
@@ -18,8 +19,14 @@ from thought_log.utils import (
 def show_entries():
     for zkid in list_entries(STORAGE_DIR):
         entry = load_entry(zkid)
+
+        # Make timestamp prettier
         timestamp = entry.metadata["timestamp"]
-        display = f"[{timestamp}]\n\n{entry.content}\n\n{hline()}\n\n"
+        datetime_obj = to_datetime(timestamp, fmt="isoformat")
+        datetime_str = datetime_obj.strftime("%x %X")
+
+        # Format display
+        display = f"[{datetime_str}]\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
         yield display
 
 

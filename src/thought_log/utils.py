@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import tarfile
+import textwrap
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
@@ -168,6 +169,14 @@ def list_entries(entries_dir):
     return sorted([int(f.stem) for f in Path(entries_dir).glob("*.txt")])
 
 
+def window_size():
+    return os.get_terminal_size()
+
+
 def hline():
-    window_size = os.get_terminal_size()
-    return "-" * window_size.columns
+    return "-" * window_size().columns
+
+
+def display_text(text, padding: int = 5):
+    lines = textwrap.wrap(text, width=window_size().columns - padding)
+    return "\n".join(lines)
