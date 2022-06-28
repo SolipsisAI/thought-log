@@ -66,27 +66,18 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
     if entry_filepath.exists():
         return
 
-    with open(entry_filepath, "a+") as f:
-        post = frontmatter.load(f)
-        post.content = text
-
-        # Set metadata
-        metadata["id"] = int(zkid)
-        metadata["timestamp"] = datetime_obj.isoformat()
-
-        # Update metadata
-        post.metadata.update(metadata)
-
-        # Write to file
-        f.write(frontmatter.dumps(post))
-
-        return post
+    return update_entry(zkid, text, metadata)
 
 
-def update_entry(zkid: Union[str, int], text: str, metadata: Dict = None):
+def update_entry(
+    zkid: Union[str, int],
+    text: str,
+    metadata: Dict = None,
+    create_if_missing: bool = True,
+):
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
-    if not entry_filepath.exists():
+    if not entry_filepath.exists() and not create_if_missing:
         raise ValueError(f"{entry_filepath} does not exist")
 
     if not metadata:
@@ -111,6 +102,7 @@ def update_entry(zkid: Union[str, int], text: str, metadata: Dict = None):
 def import_from_csv(filename: str):
     """Import DayOne exported CSV"""
     rows = read_csv(filename)
+    skipped = 0
 
     for row in tqdm(rows):
         datetime_string = row.pop("date")
@@ -118,8 +110,13 @@ def import_from_csv(filename: str):
         metadata = dict([(snakecase(k), v) for k, v in row.items()])
         metadata["imported_from"] = "dayone"
 
-        write_entry(
+        entry = write_entry(
             text,
             datetime_obj=to_datetime(datetime_string[:-1], fmt="isoformat"),
             metadata=metadata,
         )
+
+        if not entry:
+            skipped += 1
+
+    print(f"Skipped: {skipped}")
