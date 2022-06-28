@@ -25,6 +25,8 @@ from thought_log.utils import (
     zettelkasten_id,
 )
 
+SUPPORTED_EXTS = ["markdown", "md", "txt"]
+
 
 def show_entries(reverse: bool, num_entries: int, show_id: bool):
     if not STORAGE_DIR:
@@ -57,10 +59,10 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
         yield display
 
 
-def load_entry(zkid: Union[str, int]):
+def load_entry(zkid: Union[str, int], mode: str = "r"):
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
-    with open(entry_filepath) as f:
+    with open(entry_filepath, mode) as f:
         entry = frontmatter.load(f)
         return entry
 
@@ -77,7 +79,7 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
     if entry_filepath.exists():
-        return
+        return frontmatter.load(entry_filepath)
 
     metadata["id"] = int(zkid)
     metadata["timestamp"] = datetime_obj.isoformat()
@@ -111,12 +113,19 @@ def update_entry(
         return post
 
 
-def import_from_file(filename: Union[str, Path], update: bool = False):
+def import_from_file(filename: Union[str, Path]):
     """Import from a text file (txt, markdown)"""
     filepath = Path(filename) if isinstance(filename, str) else filename
-    history_filepath = STORAGE_DIR.joinpath(".import_history")
-    source_entry = frontmatter.load(filepath)
 
+    if filepath.suffix[1:] not in SUPPORTED_EXTS:
+        print(f"{filepath} is not supported")
+        return
+
+    source_entry = None
+    with open(filepath, "r") as f:
+        source_entry = frontmatter.load(f)
+
+    history_filepath = STORAGE_DIR.joinpath(".import_history")
     history_filepath.touch()
 
     try:
@@ -133,10 +142,11 @@ def import_from_file(filename: Union[str, Path], update: bool = False):
     text = source_entry.content
     datetime_obj = find_date(str(filepath))
     entry = write_entry(text, datetime_obj=datetime_obj)
-
     zkid = entry.metadata["id"]
     history.update({filepath.name: zkid})
     write_json(history, history_filepath)
+
+    return entry
 
 
 def import_from_csv(filename: str):
@@ -175,12 +185,18 @@ def import_from_directory(directory_name: Union[str, Path]):
         print(f"{dirpath} does not exist")
         return
 
-    filepaths = list(dirpath.glob("**/*.txt"))
+    filepaths = list(
+        filter(lambda p: p.suffix[1:] in SUPPORTED_EXTS, dirpath.glob("**/*"))
+    )
+
+    skipped = 0
 
     for filepath in tqdm(filepaths):
-        datetime_obj = find_date(filepath.name)
-        text = filepath.read_text()
-        write_entry(text, datetime_obj=datetime_obj)
+        entry = import_from_file(filepath)
+        if not entry:
+            skipped += 1
+
+    print(f"Skipped {skipped}")
 
 
 def classify_entries(
