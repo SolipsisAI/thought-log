@@ -12,7 +12,7 @@ from thought_log.config import CLASSIFIER_NAME, EMOTION_CLASSIFIER_NAME, STORAGE
 from thought_log.nlp.utils import split_paragraphs, tokenize
 from thought_log.utils import (
     display_text,
-    find_date,
+    find_datetime,
     frequency,
     get_top_labels,
     hline,
@@ -140,7 +140,7 @@ def import_from_file(filename: Union[str, Path]):
         return
 
     text = source_entry.content
-    datetime_obj = find_date(str(filepath))
+    datetime_obj = find_datetime(str(filepath))
     entry = write_entry(text, datetime_obj=datetime_obj)
     zkid = entry.metadata["id"]
     history.update({filepath.name: zkid})

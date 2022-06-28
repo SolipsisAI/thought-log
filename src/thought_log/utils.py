@@ -272,7 +272,8 @@ def get_top_labels(label_frequency: Counter, k: int = 1):
     return top_labels
 
 
-def find_date(input_string: str):
+def find_datetime(input_string: str):
+    """Extract a datetime object from an input string"""
     date_pattern = (
         "(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01])"
     )
@@ -293,6 +294,9 @@ def find_date(input_string: str):
             candidates[0][4:6],
         )
         time_matches = re.findall(time_pattern, f"{hour}:{minutes}:{seconds}")
+
+    if not date_matches and not time_matches:
+        return
 
     if date_matches:
         date_string = "-".join(date_matches[0])
