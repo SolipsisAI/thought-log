@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest.mock import Mock
+from datetime import datetime
 
 import pytest
 from appdirs import user_cache_dir, user_config_dir, user_data_dir
@@ -44,3 +45,8 @@ def test_preprocess_text(mock_classifier, with_classifier, text, expected):
 ])
 def test_postprocess_text(text, expected):
     assert common.postprocess_text(text) == expected
+
+
+def test_zettelkasten_id():
+    datetime_obj = datetime(1989, 10, 1, 12, 0, 0)
+    assert common.zettelkasten_id(datetime_obj) == "19891001120000"
