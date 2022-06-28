@@ -134,7 +134,6 @@ def import_from_file(filename: Union[str, Path]):
     already_imported = filepath.name in history
 
     if already_imported:
-        print(f"Already imported {filepath.name}")
         return
 
     text = source_entry.content
