@@ -1,11 +1,9 @@
-from copy import copy
 from datetime import datetime
-import json
 from json.decoder import JSONDecodeError
 from typing import Dict, Union
-from click.types import Path
 
 import frontmatter
+from click.types import Path
 from tqdm.auto import tqdm
 
 from thought_log.config import CLASSIFIER_NAME, EMOTION_CLASSIFIER_NAME, STORAGE_DIR
@@ -136,12 +134,16 @@ def import_from_file(filename: Union[str, Path]):
     already_imported = filepath.name in history
 
     if already_imported:
-        print(f"Already imported {filepath.name}")
         return
 
     text = source_entry.content
     datetime_obj = find_datetime(str(filepath))
+
     entry = write_entry(text, datetime_obj=datetime_obj)
+
+    if not entry:
+        entry = load_entry(zettelkasten_id(datetime_obj))
+
     zkid = entry.metadata["id"]
     history.update({filepath.name: zkid})
     write_json(history, history_filepath)

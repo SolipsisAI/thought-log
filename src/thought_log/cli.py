@@ -1,9 +1,9 @@
-import os
 from pathlib import Path
 
 import click
 
 from thought_log.entry_handler import import_from_directory
+from thought_log.utils import unset_config
 
 
 @click.group()
@@ -53,7 +53,7 @@ def add(text):
 
 @cli.command(name="import")
 @click.argument("filename_or_directory", type=click.Path(exists=True))
-def import_from_source(filename_or_directory):
+def handle_import(filename_or_directory):
     """Import a file"""
     from thought_log.entry_handler import import_from_csv, import_from_file
 
@@ -70,14 +70,20 @@ def import_from_source(filename_or_directory):
         import_from_file(filepath)
 
 
-@cli.command()
-@click.option("--storage-dir", "-d", default=os.getenv("TL_STORAGE_DIR", None))
-@click.option("--overwrite/--no-overwrite", default=False)
-def configure(storage_dir, overwrite):
+@cli.command(name="config")
+@click.argument("action", type=click.Choice(["set", "unset", "show"]))
+@click.option("--key", "-k")
+@click.option("--value", "-v")
+def handle_config(action, key, value):
     """Configure settings"""
-    from thought_log.utils import configure_app
+    from thought_log.utils import get_config, set_config
 
-    configure_app(storage_dir, overwrite)
+    if action == "set":
+        set_config(key, value)
+    elif action == "unset":
+        unset_config(key)
+    else:
+        click.echo(f"{get_config(key)}")
 
 
 @cli.command()

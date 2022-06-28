@@ -3,7 +3,6 @@ from typing import Dict, List, Union
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
-from thought_log.res import labels
 from thought_log.utils import DEBUG
 
 
