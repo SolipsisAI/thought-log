@@ -45,9 +45,14 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
         # Get emotion
         emotion = entry.metadata.get("emotion", "")
+        mood = f"mood: {emotion}\n" if emotion else ""
+
+        # Get context
+        context = entry.metadata.get("context", "")
+        tags = f"tags: {context}\n" if context else ""
 
         # Format display
-        display = f"[{datetime_str}] mood: {emotion}\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
+        display = f"[{datetime_str}]\n\n{mood}{tags}\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
         display = f"ID: {zkid}\n{display}" if show_id else display
         yield display
 
