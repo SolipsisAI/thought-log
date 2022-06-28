@@ -24,9 +24,14 @@ def show(oldest, num_entries, show_id):
     """Show entries"""
     from thought_log.entry_handler import show_entries
 
-    click.echo_via_pager(
-        show_entries(reverse=not oldest, num_entries=num_entries, show_id=show_id)
-    )
+    try:
+        entries = show_entries(
+            reverse=not oldest, num_entries=num_entries, show_id=show_id
+        )
+        click.echo_via_pager(entries)
+    except ValueError as e:
+        print(e)
+        exit(1)
 
 
 @cli.command()
