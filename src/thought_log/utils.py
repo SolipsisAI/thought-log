@@ -288,12 +288,13 @@ def find_datetime(input_string: str):
 
     if not time_matches:
         candidates = re.findall("(\d{6})", input_string)
-        hour, minutes, seconds = (
-            candidates[0][:2],
-            candidates[0][2:4],
-            candidates[0][4:6],
-        )
-        time_matches = re.findall(time_pattern, f"{hour}:{minutes}:{seconds}")
+        if candidates:
+            hour, minutes, seconds = (
+                candidates[0][:2],
+                candidates[0][2:4],
+                candidates[0][4:6],
+            )
+            time_matches = re.findall(time_pattern, f"{hour}:{minutes}:{seconds}")
 
     if not date_matches and not time_matches:
         return
