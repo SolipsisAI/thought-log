@@ -272,16 +272,42 @@ def get_top_labels(label_frequency: Counter, k: int = 1):
     return top_labels
 
 
-def find_date(input_string: str):
-    pattern = "^(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01]):?"
-    matches = re.findall(pattern, input_string)
+def find_datetime(input_string: str):
+    """Extract a datetime object from an input string"""
+    date_pattern = (
+        "(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01])"
+    )
+    date_matches = re.findall(date_pattern, input_string)
+    time_pattern = (
+        "(0[1-2]|[0-2][0-9])(?:\:)(0[1-9]|[0-5][0-9])(?:\:)(0[1-9]|[0-5][0-9])"
+    )
+    time_matches = re.findall(time_pattern, input_string)
+    date_string = ""
+    time_string = ""
+    fmt = ""
 
-    if not matches:
+    if not time_matches:
+        candidates = re.findall("(\d{6})", input_string)
+        if candidates:
+            hour, minutes, seconds = (
+                candidates[0][:2],
+                candidates[0][2:4],
+                candidates[0][4:6],
+            )
+            time_matches = re.findall(time_pattern, f"{hour}:{minutes}:{seconds}")
+
+    if not date_matches and not time_matches:
         return
 
-    year, month, day = matches[0]
+    if date_matches:
+        date_string = "-".join(date_matches[0])
+        fmt = "%Y-%m-%d"
 
-    return to_datetime(f"{year}-{month}-{day}", fmt="%Y-%m-%d")
+    if time_matches:
+        time_string = ":".join(time_matches[0])
+        fmt = f"{fmt}%H:%M:%S"
+
+    return to_datetime(f"{date_string}{time_string}", fmt=fmt)
 
 
 def make_tarfile(output_filename, source_dir):
