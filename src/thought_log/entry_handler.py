@@ -163,7 +163,6 @@ def import_from_csv(filename: str):
 
 
 def classify_entries(
-    update: bool = False,
     reverse: bool = True,
     num_entries: int = -1,
 ):
@@ -187,7 +186,7 @@ def classify_entries(
         needs_context = not bool(entry.metadata.get("context"))
         needs_analysis = needs_emotion or needs_context
 
-        if not needs_analysis or not update:
+        if not needs_analysis:
             skipped += 1
             continue
 
