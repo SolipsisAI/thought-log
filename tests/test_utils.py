@@ -36,3 +36,11 @@ def test_paths(path_fn, expected):
 def test_preprocess_text(mock_classifier, with_classifier, text, expected):
     classifier = mock_classifier if with_classifier else None
     assert common.preprocess_text(text, classifier=classifier) == expected
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("LABEL hello world", "hello world"),
+    ("LABEL hello_comma_ world", "hello, world"),
+])
+def test_postprocess_text(text, expected):
+    assert common.postprocess_text(text) == expected
