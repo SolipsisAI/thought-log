@@ -16,6 +16,7 @@ dependencies = [
     "tdqm>=0.0.1",
     "python-frontmatter>=1.0.0",
     "pytz>=2022.1",
+    "spacy>=3.3.1",
 ]
 requires-python = ">=3.9"
 license = {text = "MIT"}
