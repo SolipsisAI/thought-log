@@ -273,26 +273,27 @@ def get_top_labels(label_frequency: Counter, k: int = 1):
 
 
 def find_date(input_string: str):
-    pattern = "^(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01]):?"
-    matches = re.findall(pattern, input_string)
+    date_pattern = (
+        "(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01])"
+    )
+    date_matches = re.findall(date_pattern, input_string)
+    time_pattern = (
+        "(0[1-2]|[1-2][0-9])(?:\:)(0[1-9]|[1-5][0-9])(?:\:)(0[1-9]|[1-5][0-9])"
+    )
+    time_matches = re.findall(time_pattern, input_string)
+    date_string = ""
+    time_string = ""
+    fmt = ""
 
-    if not matches:
-        return
+    if date_matches:
+        date_string = "-".join(date_matches[0])
+        fmt = "%Y-%m-%d"
 
-    year, month, day = matches[0]
+    if time_matches:
+        time_string = ":".join(time_matches[0])
+        fmt = f"{fmt} %H:%M:%S"
 
-    return to_datetime(f"{year}-{month}-{day}", fmt="%Y-%m-%d")
-
-
-def find_time(input_string: str):
-    pattern = "(0[1-2]|[1-2][0-9])(?:\:)(0[1-9]|[1-5][0-9])(?:\:)(0[1-9]|[1-5][0-9])"
-    matches = re.findall(pattern, input_string)
-    
-    if not matches:
-        return
-
-    hour, minutes, seconds = matches[0]
-    return f"{hour}:{minutes}:{seconds}"
+    return to_datetime(f"{date_string} {time_string}", fmt=fmt)
 
 
 def make_tarfile(output_filename, source_dir):
