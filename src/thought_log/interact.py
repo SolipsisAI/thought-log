@@ -9,7 +9,7 @@ from transformers import (
     ConversationalPipeline,
 )
 
-from thought_log.classifier import Classifier
+from thought_log.nlp.classifier import Classifier
 from thought_log.utils import postprocess_text, preprocess_text, load_config
 
 
