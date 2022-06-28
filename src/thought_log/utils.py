@@ -5,13 +5,15 @@ import re
 import shutil
 import tarfile
 import textwrap
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
 import click
 import requests
-from appdirs import user_data_dir, user_cache_dir, user_config_dir
+from appdirs import user_cache_dir, user_config_dir, user_data_dir
+from huggingface_hub import snapshot_download
 from tqdm.auto import tqdm
 
 from thought_log.res import urls
@@ -21,6 +23,7 @@ APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
 ZKID_DATE_FMT = "%Y%m%d%H%M%S"
+DEBUG = os.getenv("DEBUG", False)
 
 
 def configure_app(storage_dir, overwrite):
@@ -55,6 +58,12 @@ def read_json(filename: str, as_type=None) -> Dict:
         return data
 
 
+def write_json(data: Dict, filename: str, mode: str = "w+"):
+    with open(filename, mode) as f:
+        json.dump(data, f, indent=4)
+        return data
+
+
 def load_config():
     config_filepath = config_path().joinpath("config.json")
 
@@ -73,7 +82,12 @@ def preprocess_text(text, classifier=None):
     """Prepend context label if classifier specified"""
     prefix = ""
     if classifier:
+        text = text.strip()
         context_label = classifier.classify(text, k=1)[0]
+
+        if DEBUG:
+            print(context_label)
+
         prefix = f"{context_label} "
     return f"{prefix}{text}"
 
@@ -133,12 +147,21 @@ def download_models():
     model_urls = urls.MODELS
     config_data = {}
 
-    for name, url in model_urls.items():
+    for name, info in model_urls.items():
+        url = info["url"]
+        source = info["source"]
+
+        if source == "huggingface":
+            config_data[f"{name}_path"] = url
+            download(url, source=source)
+            # Skip extraction since huggingface handles this
+            continue
+
         # Download the model
         dest_path = cache_path().joinpath(Path(url).name)
 
         if not dest_path.exists():
-            download(url, dest_path=dest_path)
+            download(url, source=source, dest_path=dest_path)
 
         # Extract the model files
         model_data_path = models_data_path().joinpath(name)
@@ -158,7 +181,14 @@ def download_models():
     update_config(config_data)
 
 
-def download(url, dest_path):
+def download(url, source, dest_path=None, revision="main"):
+    if source == "huggingface":
+        snapshot_download(repo_id=url, revision=revision)
+        return
+
+    if not dest_path:
+        raise ValueError("dest_path is not set, please specify")
+
     with requests.get(url, stream=True) as r:
         total_length = int(r.headers.get("Content-Length"))
         with tqdm.wrapattr(r.raw, "read", total=total_length, desc="") as f:
@@ -214,3 +244,46 @@ def display_text(text):
 def wrap_text(text, padding: int = 5):
     lines = textwrap.wrap(text, width=window_size().columns - padding)
     return "\n".join(lines)
+
+
+def flatten(original_list, key: str = "label"):
+    # https://appdividend.com/2022/06/17/how-to-flatten-list-in-python/
+    return [element for sublist in original_list for element in sublist]
+
+
+def frequency(labels, key: str):
+    get_label = lambda x: x[key][0]["label"] if "score" in x[key][0] else x[key][0]
+    return Counter(list(map(get_label, labels)))
+
+
+def get_top_labels(label_frequency: Counter, k: int = 1):
+    """Get top labels. If there is a tie, show all"""
+    counts = sorted(set(list(label_frequency.values())), reverse=True)
+    top_counts = counts[:k] if k > 0 else counts
+    is_top = lambda l: l[1] in top_counts
+
+    top_labels = list(
+        map(
+            lambda label: label[0],
+            filter(is_top, label_frequency.items()),
+        )
+    )
+
+    return top_labels
+
+
+def find_date(input_string: str):
+    pattern = "^(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01]):?"
+    matches = re.findall(pattern, input_string)
+
+    if not matches:
+        return
+
+    year, month, day = matches[0]
+
+    return to_datetime(f"{year}-{month}-{day}", fmt="%Y-%m-%d")
+
+
+def make_tarfile(output_filename, source_dir):
+    with tarfile.open(output_filename, "w:gz") as tar:
+        tar.add(source_dir, arcname=os.path.basename(source_dir))

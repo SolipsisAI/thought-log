@@ -1,5 +1,3 @@
-import re
-
 import torch
 from transformers import (
     AutoConfig,
@@ -9,8 +7,8 @@ from transformers import (
     ConversationalPipeline,
 )
 
-from thought_log.classifier import Classifier
-from thought_log.utils import postprocess_text, preprocess_text, load_config
+from thought_log.nlp.classifier import Classifier
+from thought_log.utils import load_config, postprocess_text, preprocess_text
 
 
 def chat(model, tokenizer, device, classifier=None, max_length: int = 1000):
@@ -85,7 +83,12 @@ def chat_pipeline(model, tokenizer, classifier=None, device=None, max_length=100
 
 
 def interact(
-    model_name, tokenizer_name, config_name, classifier_name, pipeline, max_length
+    model_name,
+    tokenizer_name,
+    config_name,
+    classifier_name,
+    pipeline,
+    max_length,
 ):
     config_data = load_config()
     device = "cuda" if torch.cuda.is_available() else "cpu"

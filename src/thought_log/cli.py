@@ -1,8 +1,7 @@
 import os
+from pathlib import Path
 
 import click
-
-from thought_log.entry_handler import add_entry
 
 
 @click.group()
@@ -34,33 +33,35 @@ def show(oldest, num_entries, show_id):
 
 
 @cli.command()
-@click.option("--text", "-t")
-@click.option("--filename", "-f", type=click.Path(exists=True))
-def add(text, filename):
-    """Add a new entry to the log"""
-    from thought_log.entry_handler import write_entry
+@click.option("--update/--no-update", default=False, help="Update existing files")
+def analyze(update):
+    """Assign emotion classifications"""
+    from thought_log.entry_handler import classify_entries
 
-    if not any([text, filename]):
-        print("Please supply text (--text/-t) or a path to a filename (--filename/-f)")
-        exit(1)
-
-    if all([text, filename]):
-        print("Please either specify a file to import from or add text")
-        exit(1)
-
-    if text:
-        write_entry(text)
-    elif filename:
-        add_entry(filename)
+    classify_entries(update)
 
 
 @cli.command()
-@click.option("--filename", "-f", type=click.Path(exists=True))
-def import_csv(filename):
-    """Import a DayOne-exported CSV"""
-    from thought_log.entry_handler import import_from_csv
+@click.argument("text")
+def add(text):
+    """Add entry from stdin"""
+    from thought_log.entry_handler import write_entry
 
-    import_from_csv(filename)
+    write_entry(text)
+
+
+@cli.command(name="import")
+@click.argument("filename", type=click.Path(exists=True))
+def import_file(filename):
+    """Import a file"""
+    from thought_log.entry_handler import import_from_csv, import_from_file
+
+    filepath = Path(filename)
+
+    if filepath.suffix == ".csv":
+        import_from_csv(filepath)
+    else:
+        import_from_file(filepath)
 
 
 @cli.command()

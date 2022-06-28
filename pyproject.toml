@@ -1,6 +1,6 @@
 [project]
 name = "thought-log"
-version = "0.1.0b6"
+version = "0.1.0b7"
 description = "Test thing"
 authors = [
     {name = "Bitjockey", email = "bitjockey@jackpoint.network"},
@@ -16,6 +16,9 @@ dependencies = [
     "tdqm>=0.0.1",
     "python-frontmatter>=1.0.0",
     "pytz>=2022.1",
+    "spacy>=3.3.1",
+    "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.3.0/en_core_web_sm-3.3.0-py3-none-any.whl",
+    "huggingface-hub>=0.8.1",
 ]
 requires-python = ">=3.9"
 license = {text = "MIT"}
