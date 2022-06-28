@@ -63,5 +63,12 @@ def test_find_date(input_string, expected):
     assert common.find_date(input_string) == expected
 
 
-def test_find_time():
-    assert common.find_time("15:30:01") == time(15, 30, 1)
+@pytest.mark.parametrize("input_string,expected", [
+    ("", None),
+    ("none", None),
+    ("2022-10-01 15:55:02", time(15, 55, 2)),
+    ("15:55:02", time(15, 55, 2)),
+    ("date: 2022-10-01 15:55:02", time(15, 55, 2)),
+])
+def test_find_time(input_string, expected):
+    assert common.find_time(input_string) == expected
