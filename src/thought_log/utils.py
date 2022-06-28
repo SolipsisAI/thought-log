@@ -285,6 +285,15 @@ def find_date(input_string: str):
     time_string = ""
     fmt = ""
 
+    if not time_matches:
+        candidates = re.findall("(\d{6})", input_string)
+        hour, minutes, seconds = (
+            candidates[0][:2],
+            candidates[0][2:4],
+            candidates[0][4:6],
+        )
+        time_matches = re.findall(time_pattern, f"{hour}:{minutes}:{seconds}")
+
     if date_matches:
         date_string = "-".join(date_matches[0])
         fmt = "%Y-%m-%d"
