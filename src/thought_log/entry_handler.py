@@ -1,5 +1,4 @@
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, Union
 
 import frontmatter
@@ -80,6 +79,33 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
 
         # Write to file
         f.write(frontmatter.dumps(post))
+
+        return post
+
+
+def update_entry(zkid: str, text: str, metadata: Dict = None):
+    entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
+
+    if not entry_filepath.exists():
+        raise ValueError(f"{entry_filepath} does not exist")
+
+    if not metadata:
+        metadata = {}
+
+    with open(entry_filepath, "a+") as f:
+        post = frontmatter.load(f)
+
+        # Update entry content if text is different
+        if post.content != text:
+            post.content = text
+
+        # Update metadata
+        post.metadata.update(metadata)
+
+        # Write to file
+        f.write(frontmatter.dumps(post))
+
+        return post
 
 
 def import_from_csv(filename: str):
