@@ -278,7 +278,7 @@ def find_date(input_string: str):
     )
     date_matches = re.findall(date_pattern, input_string)
     time_pattern = (
-        "(0[1-2]|[1-2][0-9])(?:\:)(0[1-9]|[1-5][0-9])(?:\:)(0[1-9]|[1-5][0-9])"
+        "(0[1-2]|[0-2][0-9])(?:\:)(0[1-9]|[0-5][0-9])(?:\:)(0[1-9]|[0-5][0-9])"
     )
     time_matches = re.findall(time_pattern, input_string)
     date_string = ""
@@ -291,9 +291,9 @@ def find_date(input_string: str):
 
     if time_matches:
         time_string = ":".join(time_matches[0])
-        fmt = f"{fmt} %H:%M:%S"
+        fmt = f"{fmt}%H:%M:%S"
 
-    return to_datetime(f"{date_string} {time_string}", fmt=fmt)
+    return to_datetime(f"{date_string}{time_string}", fmt=fmt)
 
 
 def make_tarfile(output_filename, source_dir):
