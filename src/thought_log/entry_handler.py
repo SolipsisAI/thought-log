@@ -66,6 +66,9 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
     if entry_filepath.exists():
         return
 
+    metadata["id"] = int(zkid)
+    metadata["timestamp"] = datetime_obj.isoformat()
+
     return update_entry(zkid, text, metadata)
 
 
@@ -86,9 +89,7 @@ def update_entry(
     with open(entry_filepath, "a+") as f:
         post = frontmatter.load(f)
 
-        # Update entry content if text is different
-        if post.content != text:
-            post.content = text
+        post.content = text
 
         # Update metadata
         post.metadata.update(metadata)
