@@ -33,6 +33,8 @@ def get_config(key: str = None):
 
 def set_config(key, value):
     updated_config = update_config({key: value})
+    if key == "storage_dir":
+        configure_storage(value)
     return updated_config
 
 

@@ -24,10 +24,7 @@ thought-log download
 
 ```shell
 # Set the storage directory for the entries
-thought-log configure --storage_dir ~/Documents/.thought-log
-
-# Overwrite existing setting
-thought-log configure --storage_dir ~/Documents/ThoughtLog --overwrite
+thought-log config -k storage_dir -v ~/Documents/.thought-log
 ```
 
 # Usage
