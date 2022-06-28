@@ -83,7 +83,7 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
         return post
 
 
-def update_entry(zkid: str, text: str, metadata: Dict = None):
+def update_entry(zkid: Union[str, int], text: str, metadata: Dict = None):
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
     if not entry_filepath.exists():
