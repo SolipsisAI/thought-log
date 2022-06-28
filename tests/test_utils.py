@@ -89,7 +89,15 @@ def test_find_time(input_string, expected):
     assert common.find_time(input_string) == expected
 
 
-def test_find_datetime():
-    assert common.find_datetime("2022-10-01 15:33:21") == datetime(
-        2022, 10, 1, 15, 33, 21
-    )
+@pytest.mark.freeze_time("2022-09-10")
+@pytest.mark.parametrize(
+    "input_string,expected",
+    [
+        ("", None),
+        ("none", None),
+        ("2022-10-01 15:55:02", datetime(2022, 10, 1, 15, 55, 2)),
+        ("15:55:02", datetime(2022, 9, 10, 15, 55, 2)),
+    ],
+)
+def test_find_datetime(input_string, expected):
+    assert common.find_datetime(input_string) == expected
