@@ -4,7 +4,7 @@ from typing import Dict, Union
 import frontmatter
 from tqdm.auto import tqdm
 
-from thought_log.config import STORAGE_DIR
+from thought_log.config import STORAGE_DIR, EMOTION_CLASSIFIER_NAME
 from thought_log.utils import (
     display_text,
     hline,
@@ -127,7 +127,9 @@ def import_from_csv(filename: str):
 def classify_entries(num_entries: int = -1):
     from thought_log.nlp.classifier import Classifier
 
-    classifier = Classifier()
+    classifier = Classifier(
+        model=EMOTION_CLASSIFIER_NAME, tokenizer=EMOTION_CLASSIFIER_NAME
+    )
     entry_ids = list_entries(STORAGE_DIR, num_entries=num_entries)
 
     for entry_id in tqdm(entry_ids):
