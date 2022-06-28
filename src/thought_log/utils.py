@@ -5,6 +5,7 @@ import re
 import shutil
 import tarfile
 import textwrap
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
@@ -214,3 +215,13 @@ def display_text(text):
 def wrap_text(text, padding: int = 5):
     lines = textwrap.wrap(text, width=window_size().columns - padding)
     return "\n".join(lines)
+
+
+def flatten(original_list):
+    # https://appdividend.com/2022/06/17/how-to-flatten-list-in-python/
+    return [element for sublist in original_list for element in sublist]
+
+
+def frequency(labels):
+    labels = flatten(labels)
+    return Counter(labels)

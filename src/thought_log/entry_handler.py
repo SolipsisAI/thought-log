@@ -7,6 +7,7 @@ from tqdm.auto import tqdm
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import (
     display_text,
+    frequency,
     hline,
     list_entries,
     read_csv,
@@ -140,4 +141,5 @@ def classify_entry(classifier, entry):
     paragraphs = list(map(lambda p: p.text, split_paragraphs(text)))
     classify = lambda t: classifier.classify(t, k=3)
 
-    return list(map(classify, paragraphs))
+    labels = list(map(classify, paragraphs))
+    return frequency(labels)
