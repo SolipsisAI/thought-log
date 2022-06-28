@@ -13,7 +13,11 @@
 ## Installation
 
 ```shell
-pip install --index-url https://packages.solipsis.dev/simple/ thought-log
+# Install
+pip install --upgrade --index-url https://packages.solipsis.dev/simple/ thought-log
+
+# Download and extract models
+thought-log download
 ```
 
 ## Configure
@@ -30,11 +34,17 @@ thought-log configure --storage_dir ~/Documents/ThoughtLog --overwrite
 
 ```shell
 # Add an entry inline
-thought-log add -t "Hello world"
+thought-log add "Hello world"
 
 # Add an entry from a file
-thought-log add -f my_entry.txt
+thought-log import my_entry.txt
 
 # Import DayOne CSV
-thought-log import-csv -f dayone_export.csv
+thought-log import dayone_export.csv
+
+# Show all entries
+thought-log show -n -1
+
+# Assign emotion and context labels
+thought-log analyze
 ```
