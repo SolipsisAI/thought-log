@@ -1,12 +1,12 @@
-from pydoc import doc
 from typing import Union
 
-import en_core_web_sm
 from spacy.tokens import Doc
 
 
-def paragraphs(document: Union[Doc, str]):
+def split_paragraphs(document: Union[Doc, str]):
     if isinstance(document, str):
+        import en_core_web_sm
+
         nlp = en_core_web_sm.load()
         document = nlp(document)
 

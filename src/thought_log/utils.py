@@ -11,7 +11,7 @@ from typing import Dict, List
 
 import click
 import requests
-from appdirs import user_data_dir, user_cache_dir, user_config_dir
+from appdirs import user_cache_dir, user_config_dir, user_data_dir
 from tqdm.auto import tqdm
 
 from thought_log.res import urls
@@ -129,8 +129,6 @@ def models_data_path():
 
 
 def download_models():
-    from spacy.cli import download
-
     create_app_dirs()
     model_urls = urls.MODELS
     config_data = {}
@@ -158,9 +156,6 @@ def download_models():
         config_data[f"{name}_path"] = str(extracted[0])
 
     update_config(config_data)
-
-    # Download spacy model
-    download("en_core_web_sm")
 
 
 def download(url, dest_path):

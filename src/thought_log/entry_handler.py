@@ -6,14 +6,15 @@ from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import (
-    read_csv,
-    zettelkasten_id,
-    snakecase,
-    to_datetime,
-    list_entries,
     display_text,
     hline,
+    list_entries,
+    read_csv,
+    snakecase,
+    to_datetime,
+    zettelkasten_id,
 )
+from thought_log.nlp.utils import split_paragraphs
 
 
 def show_entries(reverse: bool, num_entries: int, show_id: bool):
@@ -121,3 +122,22 @@ def import_from_csv(filename: str):
             skipped += 1
 
     print(f"Skipped: {skipped}")
+
+
+def classify_entries(num_entries: int = -1):
+    from thought_log.nlp.classifier import Classifier
+
+    classifier = Classifier()
+    entry_ids = list_entries(STORAGE_DIR, num_entries=num_entries)
+
+    for entry_id in tqdm(entry_ids):
+        entry = load_entry(entry_id)
+        labels = classify_entry(classifier, entry)
+
+
+def classify_entry(classifier, entry):
+    text = entry.content
+    paragraphs = list(map(lambda p: p.text, split_paragraphs(text)))
+    classify = lambda t: classifier.classify(t, k=3)
+
+    return list(map(classify, paragraphs))

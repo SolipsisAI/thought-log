@@ -10,7 +10,7 @@ from transformers import (
 )
 
 from thought_log.nlp.classifier import Classifier
-from thought_log.utils import postprocess_text, preprocess_text, load_config
+from thought_log.utils import load_config, postprocess_text, preprocess_text
 
 
 def chat(model, tokenizer, device, classifier=None, max_length: int = 1000):
