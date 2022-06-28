@@ -139,11 +139,11 @@ summary = "Docutils -- Python Documentation Utilities"
 
 [[package]]
 name = "en-core-web-sm"
-version = "2.2.0"
-url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.0/en_core_web_sm-2.2.0.tar.gz"
-summary = "English multi-task CNN trained on OntoNotes. Assigns context-specific token vectors, POS tags, dependency parse and named entities."
+version = "3.3.0"
+url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.3.0/en_core_web_sm-3.3.0-py3-none-any.whl"
+summary = "English pipeline optimized for CPU. Components: tok2vec, tagger, parser, senter, ner, attribute_ruler, lemmatizer."
 dependencies = [
-    "spacy>=2.2.0",
+    "spacy<3.4.0,>=3.3.0.dev0",
 ]
 
 [[package]]
@@ -742,7 +742,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:eea2c9bf86d62cf92810a7ff3b0a6cb3d0f911bde1d4c9210830c56528dc9813"
+content_hash = "sha256:da09d31d7e4b98ccc6b2bed5d7dbb5e9a147687376a6cfe6104d36565d509876"
 
 [metadata.files]
 "appdirs 1.4.4" = [
@@ -948,8 +948,8 @@ content_hash = "sha256:eea2c9bf86d62cf92810a7ff3b0a6cb3d0f911bde1d4c9210830c5652
     {file = "docutils-0.18.1-py2.py3-none-any.whl", hash = "sha256:23010f129180089fbcd3bc08cfefccb3b890b0050e1ca00c867036e9d161b98c"},
     {file = "docutils-0.18.1.tar.gz", hash = "sha256:679987caf361a7539d76e584cbeddc311e3aee937877c87346f31debc63e9d06"},
 ]
-"en-core-web-sm 2.2.0" = [
-    {file = "en_core_web_sm-2.2.0.tar.gz", hash = "sha256:65cea113d7509d5ab515583bbcbc9a31b4157bebbb73133d4110d2945476eaa4"},
+"en-core-web-sm 3.3.0" = [
+    {file = "en_core_web_sm-3.3.0-py3-none-any.whl", hash = "sha256:84d7d8059bfbf53c09b39139782f76cd6ac7064851e7799dcc685c06ebf5fd4f"},
 ]
 "executing 0.8.3" = [
     {file = "executing-0.8.3-py2.py3-none-any.whl", hash = "sha256:d1eef132db1b83649a3905ca6dd8897f71ac6f8cac79a7e58a1a09cf137546c9"},
