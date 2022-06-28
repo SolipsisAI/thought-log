@@ -58,8 +58,8 @@ def read_json(filename: str, as_type=None) -> Dict:
         return data
 
 
-def write_json(data: Dict, filename: str):
-    with open(filename, "w+") as f:
+def write_json(data: Dict, filename: str, mode: str = "w+"):
+    with open(filename, mode) as f:
         json.dump(data, f, indent=4)
         return data
 
@@ -270,3 +270,15 @@ def get_top_labels(label_frequency: Counter, k: int = 1):
     )
 
     return top_labels
+
+
+def find_date(input_string: str):
+    pattern = "^(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01]):?"
+    matches = re.findall(pattern, input_string)
+
+    if not matches:
+        return
+
+    year, month, day = matches[0]
+
+    return to_datetime(f"{year}-{month}-{day}", fmt="%Y-%m-%d")

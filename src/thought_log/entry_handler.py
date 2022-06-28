@@ -1,5 +1,9 @@
+from copy import copy
 from datetime import datetime
+import json
+from json.decoder import JSONDecodeError
 from typing import Dict, Union
+from click.types import Path
 
 import frontmatter
 from tqdm.auto import tqdm
@@ -8,11 +12,13 @@ from thought_log.config import CLASSIFIER_NAME, EMOTION_CLASSIFIER_NAME, STORAGE
 from thought_log.nlp.utils import split_paragraphs, tokenize
 from thought_log.utils import (
     display_text,
+    find_date,
     frequency,
     get_top_labels,
     hline,
     list_entries,
     read_csv,
+    read_json,
     snakecase,
     to_datetime,
     write_json,
@@ -54,18 +60,13 @@ def load_entry(zkid: Union[str, int]):
         return entry
 
 
-def add_entry(filename: str):
-    with open(filename, "r") as f:
-        entry = frontmatter.load(f)
-        write_entry(entry.content, metadata={"imported_from": "file", **entry.metadata})
-
-
 def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
-    if not datetime_obj:
-        datetime_obj = datetime.now()
-
     if not metadata:
         metadata = {}
+
+    if not datetime_obj:
+        timestamp = metadata.get("timestamp") or metadata.get("date")
+        datetime_obj = datetime.now() if not timestamp else to_datetime(timestamp)
 
     zkid = zettelkasten_id(datetime_obj=datetime_obj)
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
@@ -105,6 +106,34 @@ def update_entry(
         return post
 
 
+def import_from_file(filename: Union[str, Path], update: bool = False):
+    """Import from a text file (txt, markdown)"""
+    filepath = Path(filename) if isinstance(filename, str) else filename
+    history_filepath = STORAGE_DIR.joinpath(".import_history")
+    source_entry = frontmatter.load(filepath)
+
+    history_filepath.touch()
+
+    try:
+        history = read_json(history_filepath)
+    except JSONDecodeError:
+        history = {}
+
+    already_imported = filepath.name in history
+
+    if already_imported:
+        print(f"Already imported {filepath.name}")
+        return
+
+    text = source_entry.content
+    datetime_obj = find_date(str(filepath))
+    entry = write_entry(text, datetime_obj=datetime_obj)
+
+    zkid = entry.metadata["id"]
+    history.update({filepath.name: zkid})
+    write_json(history, history_filepath)
+
+
 def import_from_csv(filename: str):
     """Import DayOne exported CSV"""
     rows = read_csv(filename)
@@ -114,7 +143,7 @@ def import_from_csv(filename: str):
         datetime_string = row.pop("date")
         text = row.pop("text")
         metadata = dict([(snakecase(k), v) for k, v in row.items()])
-        metadata["imported_from"] = "dayone"
+        metadata["imported_from"] = str(filename)
 
         entry = write_entry(
             text,
