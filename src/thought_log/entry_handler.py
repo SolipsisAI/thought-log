@@ -79,7 +79,7 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
         f.write(frontmatter.dumps(post))
 
 
-def import_dayone_csv(filename: str):
+def import_from_csv(filename: str):
     """Import DayOne exported CSV"""
     rows = read_csv(filename)
 
