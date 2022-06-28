@@ -108,6 +108,16 @@ def update_entry(zkid: Union[str, int], text: str, metadata: Dict = None):
         return post
 
 
+def write_or_update_entry(text: str, datetime_obj=None, metadata=None):
+    zkid = zettelkasten_id(datetime_obj)
+    entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
+
+    if not entry_filepath.exists():
+        return write_entry(text, datetime_obj, metadata)
+
+    return update_entry(zkid, text, metadata)
+
+
 def import_from_csv(filename: str):
     """Import DayOne exported CSV"""
     rows = read_csv(filename)
@@ -117,9 +127,10 @@ def import_from_csv(filename: str):
         text = row.pop("text")
         metadata = dict([(snakecase(k), v) for k, v in row.items()])
         metadata["imported_from"] = "dayone"
+        datetime_obj = to_datetime(datetime_string[:-1], fmt="isoformat")
 
-        write_entry(
+        write_or_update_entry(
             text,
-            datetime_obj=to_datetime(datetime_string[:-1], fmt="isoformat"),
+            datetime_obj=datetime_obj,
             metadata=metadata,
         )
