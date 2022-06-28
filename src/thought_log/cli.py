@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import click
 
@@ -24,9 +23,14 @@ def show(oldest, num_entries, show_id):
     """Show entries"""
     from thought_log.entry_handler import show_entries
 
-    click.echo_via_pager(
-        show_entries(reverse=not oldest, num_entries=num_entries, show_id=show_id)
-    )
+    try:
+        entries = show_entries(
+            reverse=not oldest, num_entries=num_entries, show_id=show_id
+        )
+        click.echo_via_pager(entries)
+    except ValueError as e:
+        print(e)
+        exit(1)
 
 
 @cli.command()
@@ -51,12 +55,12 @@ def add(text, filename):
 
 
 @cli.command()
-@click.option("--import-filename", "-i", type=click.Path(exists=True))
-def import_csv(import_filename):
+@click.option("--filename", "-f", type=click.Path(exists=True))
+def import_csv(filename):
     """Import a DayOne-exported CSV"""
-    from thought_log.entry_handler import import_dayone_csv
+    from thought_log.entry_handler import import_from_csv
 
-    import_dayone_csv(import_filename)
+    import_from_csv(filename)
 
 
 @cli.command()
@@ -64,21 +68,9 @@ def import_csv(import_filename):
 @click.option("--overwrite/--no-overwrite", default=False)
 def configure(storage_dir, overwrite):
     """Configure settings"""
-    from thought_log.utils import update_config, read_config
+    from thought_log.utils import configure_app
 
-    config = read_config()
-
-    if not storage_dir:
-        storage_dir = click.prompt("Where do you want files to be stored? ")
-
-    if "storage_dir" not in config or overwrite:
-        config["storage_dir"] = storage_dir
-
-    if not Path(storage_dir).exists():
-        click.echo(f"{storage_dir} doesn't yet exist; created.")
-        Path(storage_dir).mkdir(parents=True)
-
-    update_config(config)
+    configure_app(storage_dir, overwrite)
 
 
 @cli.command()

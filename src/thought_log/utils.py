@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
+import click
 import requests
 from appdirs import user_data_dir, user_cache_dir, user_config_dir
 from tqdm.auto import tqdm
@@ -20,6 +21,22 @@ APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
 ZKID_DATE_FMT = "%Y%m%d%H%M%S"
+
+
+def configure_app(storage_dir, overwrite):
+    config = load_config()
+
+    if not storage_dir:
+        storage_dir = click.prompt("Where do you want files to be stored? ")
+
+    if "storage_dir" not in config or overwrite:
+        config["storage_dir"] = storage_dir
+
+    if not Path(storage_dir).exists():
+        click.echo(f"{storage_dir} doesn't yet exist; created.")
+        Path(storage_dir).mkdir(parents=True)
+
+    update_config(config)
 
 
 def read_csv(filename: str) -> List[Dict]:
@@ -38,8 +55,17 @@ def read_json(filename: str, as_type=None) -> Dict:
         return data
 
 
-def read_config():
-    config_data = read_json(config_path().joinpath("config.json"))
+def load_config():
+    config_filepath = config_path().joinpath("config.json")
+
+    if not config_path().exists():
+        config_path().mkdir(parents=True)
+
+    if not config_filepath.exists():
+        update_config({})
+
+    config_data = read_json(config_filepath)
+
     return config_data
 
 
