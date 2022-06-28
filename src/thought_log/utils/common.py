@@ -14,6 +14,7 @@ from huggingface_hub import snapshot_download
 from tqdm.auto import tqdm
 
 from thought_log.res import urls
+
 from .config import update_config
 from .paths import cache_path, create_app_dirs, models_data_path
 

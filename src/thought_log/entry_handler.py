@@ -1,29 +1,20 @@
+import json
 from copy import copy
 from datetime import datetime
-import json
 from json.decoder import JSONDecodeError
 from typing import Dict, Union
-from click.types import Path
 
 import frontmatter
+from click.types import Path
 from tqdm.auto import tqdm
 
-from thought_log.config import CLASSIFIER_NAME, EMOTION_CLASSIFIER_NAME, STORAGE_DIR
+from thought_log.config import (CLASSIFIER_NAME, EMOTION_CLASSIFIER_NAME,
+                                STORAGE_DIR)
 from thought_log.nlp.utils import split_paragraphs, tokenize
-from thought_log.utils import (
-    display_text,
-    find_datetime,
-    frequency,
-    get_top_labels,
-    hline,
-    list_entries,
-    read_csv,
-    read_json,
-    snakecase,
-    to_datetime,
-    write_json,
-    zettelkasten_id,
-)
+from thought_log.utils import (display_text, find_datetime, frequency,
+                               get_top_labels, hline, list_entries, read_csv,
+                               read_json, snakecase, to_datetime, write_json,
+                               zettelkasten_id)
 
 SUPPORTED_EXTS = ["markdown", "md", "txt"]
 

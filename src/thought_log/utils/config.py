@@ -4,8 +4,8 @@ from typing import Dict, Union
 
 import click
 
-from .paths import config_path
 from .io import read_json
+from .paths import config_path
 
 
 def load_config():

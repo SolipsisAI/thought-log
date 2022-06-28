@@ -1,6 +1,6 @@
 import csv
 import json
-from typing import List, Dict
+from typing import Dict, List
 
 
 def read_csv(filename: str) -> List[Dict]:
