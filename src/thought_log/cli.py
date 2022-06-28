@@ -34,6 +34,14 @@ def show(oldest, num_entries, show_id):
 
 
 @cli.command()
+def analyze():
+    """Assign emotion classifications"""
+    from thought_log.entry_handler import classify_entries
+
+    classify_entries()
+
+
+@cli.command()
 @click.option("--text", "-t")
 @click.option("--filename", "-f", type=click.Path(exists=True))
 def add(text, filename):

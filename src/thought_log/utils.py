@@ -58,6 +58,12 @@ def read_json(filename: str, as_type=None) -> Dict:
         return data
 
 
+def write_json(data: Dict, filename: str):
+    with open(filename, "w+") as f:
+        json.dump(data, f, indent=4)
+        return data
+
+
 def load_config():
     config_filepath = config_path().joinpath("config.json")
 
@@ -240,11 +246,27 @@ def wrap_text(text, padding: int = 5):
     return "\n".join(lines)
 
 
-def flatten(original_list):
+def flatten(original_list, key: str = "label"):
     # https://appdividend.com/2022/06/17/how-to-flatten-list-in-python/
     return [element for sublist in original_list for element in sublist]
 
 
 def frequency(labels):
-    labels = flatten(labels)
-    return Counter(labels)
+    get_label = (
+        lambda x: x["labels"][0]["label"]
+        if "score" in x["labels"][0]
+        else x["labels"][0]
+    )
+    return Counter(list(map(get_label, labels)))
+
+
+def get_top_labels(label_frequency: Counter, k: int = 1):
+    sorted_freq = sorted(
+        list(label_frequency.items()), key=lambda i: i[1], reverse=True
+    )
+    results = sorted_freq
+
+    if k > 0:
+        results = sorted_freq[:k]
+
+    return [i[0] for i in results]

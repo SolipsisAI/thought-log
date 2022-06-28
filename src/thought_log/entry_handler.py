@@ -7,11 +7,14 @@ from tqdm.auto import tqdm
 from thought_log.config import STORAGE_DIR, EMOTION_CLASSIFIER_NAME
 from thought_log.utils import (
     display_text,
+    frequency,
+    get_top_labels,
     hline,
     list_entries,
     read_csv,
     snakecase,
     to_datetime,
+    write_json,
     zettelkasten_id,
 )
 from thought_log.nlp.utils import split_paragraphs, tokenize
@@ -34,8 +37,11 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
         datetime_obj = to_datetime(timestamp, fmt="isoformat")
         datetime_str = datetime_obj.strftime("%x %X")
 
+        # Get emotion
+        emotion = entry.metadata.get("emotion", "")
+
         # Format display
-        display = f"[{datetime_str}]\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
+        display = f"[{datetime_str}] mood: {emotion}\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
         display = f"ID: {zkid}\n{display}" if show_id else display
         yield display
 
@@ -87,7 +93,7 @@ def update_entry(
     if not metadata:
         metadata = {}
 
-    with open(entry_filepath, "a+") as f:
+    with open(entry_filepath, "w+") as f:
         post = frontmatter.load(f)
 
         post.content = text
@@ -125,21 +131,38 @@ def import_from_csv(filename: str):
 
 
 def classify_entries(
-    classifier_name: str = EMOTION_CLASSIFIER_NAME, num_entries: int = -1
+    classifier_name: str = EMOTION_CLASSIFIER_NAME,
+    reverse: bool = True,
+    num_entries: int = -1,
 ):
     from thought_log.nlp.classifier import Classifier
 
     classifier = Classifier(model=classifier_name, tokenizer=classifier_name)
-    entry_ids = list_entries(STORAGE_DIR, num_entries=num_entries)
+    entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
     for entry_id in tqdm(entry_ids):
         entry = load_entry(entry_id)
-        labels = classify_entry(classifier, entry)
+        paragraph_labels = classify_entry(classifier, entry)
+        label_frequency = frequency(paragraph_labels)
+
+        # Save labels for each paragraph and their scores
+        labels_filepath = STORAGE_DIR.joinpath(f"{entry_id}.json")
+        data = {
+            "paragraphs": paragraph_labels,
+            "frequency": label_frequency,
+        }
+        write_json(data, labels_filepath)
+
+        # Update entry with emotion tag
+        text = entry.content
+        metadata = {"emotion": get_top_labels(label_frequency, k=1)[0]}
+        update_entry(entry_id, text, metadata)
 
 
 def classify_entry(
-    classifier, entry: Union[str, frontmatter.Post], split: bool = True, k: int = 3
+    classifier, entry: Union[str, frontmatter.Post], split: bool = True, k: int = 1
 ):
+    """Assign emotion classifiers to an entry/text"""
     if isinstance(entry, frontmatter.Post):
         text = entry.content
     else:
