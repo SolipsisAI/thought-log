@@ -64,6 +64,9 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
     zkid = zettelkasten_id(datetime_obj=datetime_obj)
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
+    if entry_filepath.exists():
+        return
+
     with open(entry_filepath, "a+") as f:
         post = frontmatter.load(f)
         post.content = text
