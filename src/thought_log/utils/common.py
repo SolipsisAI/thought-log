@@ -6,7 +6,7 @@ import shutil
 import tarfile
 import textwrap
 from collections import Counter
-from datetime import datetime, date, time
+from datetime import date, datetime, time
 from pathlib import Path
 
 import requests
@@ -180,24 +180,27 @@ def find_datetime(input_string: str):
     """Extract a datetime object from an input string"""
     if not input_string:
         return
-    
-    date_fmt = "%Y-%m-%d"
-    time_fmt = "%H:%M:%S"   
 
-    date_string, date_fmt = find_date(input_string)
-    time_string, time_fmt = find_time(input_string)
-    datetime_string = f"{date_string}{time_string}"
+    date_obj = find_date(input_string)
+    time_obj = find_time(input_string)
 
-    if date_string and time_string:
-        fmt = f"{date_fmt}{time_fmt}"
-        return to_datetime(datetime_string, fmt=fmt)
+    if not date_obj and not time_obj:
+        return
+
+    if not date_obj:
+        d = datetime.today()
+        date_obj = date(d.year, d.month, d.day)
+
+    datetime_obj = datetime.combine(date_obj, time_obj)
+
+    return datetime_obj
 
 
 def find_date(input_string):
     date_pattern = (
         "(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01])"
     )
-    date_matches = re.findall(date_pattern, input_string)   
+    date_matches = re.findall(date_pattern, input_string)
 
     if not date_matches:
         return

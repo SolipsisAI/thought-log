@@ -46,7 +46,7 @@ dev = [
 
 [tool.pdm.scripts]
 tests = "pytest -vv tests/"
-format = "isort .; black ."
+format = "black ."
 autoremove = "autoflake --in-place --remove-all-unused-imports --remove-unused-variables ."
 
 [build-system]

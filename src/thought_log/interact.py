@@ -1,6 +1,11 @@
 import torch
-from transformers import (AutoConfig, AutoModelForCausalLM, AutoTokenizer,
-                          Conversation, ConversationalPipeline)
+from transformers import (
+    AutoConfig,
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    Conversation,
+    ConversationalPipeline,
+)
 
 from thought_log.nlp.classifier import Classifier
 from thought_log.utils import load_config, postprocess_text, preprocess_text
