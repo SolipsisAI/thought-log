@@ -124,12 +124,12 @@ def import_from_csv(filename: str):
     print(f"Skipped: {skipped}")
 
 
-def classify_entries(num_entries: int = -1):
+def classify_entries(
+    classifier_name: str = EMOTION_CLASSIFIER_NAME, num_entries: int = -1
+):
     from thought_log.nlp.classifier import Classifier
 
-    classifier = Classifier(
-        model=EMOTION_CLASSIFIER_NAME, tokenizer=EMOTION_CLASSIFIER_NAME
-    )
+    classifier = Classifier(model=classifier_name, tokenizer=classifier_name)
     entry_ids = list_entries(STORAGE_DIR, num_entries=num_entries)
 
     for entry_id in tqdm(entry_ids):
@@ -138,7 +138,7 @@ def classify_entries(num_entries: int = -1):
 
 
 def classify_entry(
-    classifier, entry: Union[str, frontmatter.Post], split: bool = True, top_k: int = 3
+    classifier, entry: Union[str, frontmatter.Post], split: bool = True, k: int = 3
 ):
     if isinstance(entry, frontmatter.Post):
         text = entry.content
@@ -147,7 +147,7 @@ def classify_entry(
 
     doc = tokenize(text)
     classify = lambda t: dict(
-        labels=classifier.classify(t, k=top_k, include_score=True),
+        labels=classifier.classify(t, k=k, include_score=True),
         text=t.strip(),
     )
 
