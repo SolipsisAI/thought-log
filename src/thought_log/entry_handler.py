@@ -139,7 +139,12 @@ def import_from_file(filename: Union[str, Path]):
 
     text = source_entry.content
     datetime_obj = find_datetime(str(filepath))
+
     entry = write_entry(text, datetime_obj=datetime_obj)
+
+    if not entry:
+        entry = load_entry(zettelkasten_id(datetime_obj))
+
     zkid = entry.metadata["id"]
     history.update({filepath.name: zkid})
     write_json(history, history_filepath)

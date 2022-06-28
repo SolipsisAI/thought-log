@@ -189,6 +189,9 @@ def find_datetime(input_string: str):
         d = datetime.today()
         date_obj = date(d.year, d.month, d.day)
 
+    if not time_obj:
+        time_obj = time(0, 0, 0)
+
     datetime_obj = datetime.combine(date_obj, time_obj)
 
     return datetime_obj
