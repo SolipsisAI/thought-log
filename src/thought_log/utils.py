@@ -22,6 +22,7 @@ APP_AUTHOR = "SolipsisAI"
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
 ZKID_DATE_FMT = "%Y%m%d%H%M%S"
+DEBUG = os.getenv("DEBUG", False)
 
 
 def configure_app(storage_dir, overwrite):
@@ -74,7 +75,12 @@ def preprocess_text(text, classifier=None):
     """Prepend context label if classifier specified"""
     prefix = ""
     if classifier:
+        text = text.strip()
         context_label = classifier.classify(text, k=1)[0]
+
+        if DEBUG:
+            print(context_label)
+
         prefix = f"{context_label} "
     return f"{prefix}{text}"
 

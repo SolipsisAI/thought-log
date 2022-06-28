@@ -1,5 +1,3 @@
-import re
-
 import torch
 from transformers import (
     AutoConfig,
@@ -85,7 +83,12 @@ def chat_pipeline(model, tokenizer, classifier=None, device=None, max_length=100
 
 
 def interact(
-    model_name, tokenizer_name, config_name, classifier_name, pipeline, max_length
+    model_name,
+    tokenizer_name,
+    config_name,
+    classifier_name,
+    pipeline,
+    max_length,
 ):
     config_data = load_config()
     device = "cuda" if torch.cuda.is_available() else "cpu"

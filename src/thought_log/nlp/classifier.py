@@ -4,6 +4,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
 from thought_log.res import labels
+from thought_log.utils import DEBUG
 
 
 class Classifier:
@@ -24,11 +25,16 @@ class Classifier:
         self.pipe.model.config.label2id = labels.LABEL2ID
         # This is deprecated, but the recommended param top_k=1 is not working
         self.pipe.model.config.return_all_scores = True
+        self.max_length = self.pipe.model.config.max_length
+        self.max_position_embeddings = self.pipe.model.config.max_position_embeddings
 
     def classify(
         self, text, k: int = 1, include_score=False
     ) -> Union[List[Dict], List[str]]:
         results = self.pipe(text)
+
+        if DEBUG:
+            print(results)
 
         if not results:
             return

@@ -7,7 +7,6 @@ from tqdm.auto import tqdm
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import (
     display_text,
-    frequency,
     hline,
     list_entries,
     read_csv,
@@ -15,7 +14,7 @@ from thought_log.utils import (
     to_datetime,
     zettelkasten_id,
 )
-from thought_log.nlp.utils import split_paragraphs
+from thought_log.nlp.utils import split_paragraphs, tokenize
 
 
 def show_entries(reverse: bool, num_entries: int, show_id: bool):
@@ -136,10 +135,24 @@ def classify_entries(num_entries: int = -1):
         labels = classify_entry(classifier, entry)
 
 
-def classify_entry(classifier, entry):
-    text = entry.content
-    paragraphs = list(map(lambda p: p.text, split_paragraphs(text)))
-    classify = lambda t: classifier.classify(t, k=3)
+def classify_entry(
+    classifier, entry: Union[str, frontmatter.Post], split: bool = True, top_k: int = 3
+):
+    if isinstance(entry, frontmatter.Post):
+        text = entry.content
+    else:
+        text = entry
 
-    labels = list(map(classify, paragraphs))
-    return frequency(labels)
+    doc = tokenize(text)
+    classify = lambda t: dict(
+        labels=classifier.classify(t, k=top_k, include_score=True),
+        text=t.strip(),
+    )
+
+    if not split:
+        results = [classify(doc.text)]
+    else:
+        paragraphs = list(map(lambda p: p.text, split_paragraphs(doc)))
+        results = list(map(classify, paragraphs))
+
+    return results
