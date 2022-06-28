@@ -4,7 +4,8 @@ from typing import Dict, Union
 import frontmatter
 from tqdm.auto import tqdm
 
-from thought_log.config import CLASSIFIER_NAME, STORAGE_DIR, EMOTION_CLASSIFIER_NAME
+from thought_log.config import CLASSIFIER_NAME, EMOTION_CLASSIFIER_NAME, STORAGE_DIR
+from thought_log.nlp.utils import split_paragraphs, tokenize
 from thought_log.utils import (
     display_text,
     frequency,
@@ -17,7 +18,6 @@ from thought_log.utils import (
     write_json,
     zettelkasten_id,
 )
-from thought_log.nlp.utils import split_paragraphs, tokenize
 
 
 def show_entries(reverse: bool, num_entries: int, show_id: bool):
