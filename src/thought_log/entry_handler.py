@@ -18,6 +18,12 @@ from thought_log.utils import (
 
 
 def show_entries(reverse: bool, num_entries: int, show_id: bool):
+    if not STORAGE_DIR:
+        raise ValueError(
+            "Please configure a storage_dir with: "
+            "thought-log configure -d path/to/storage_dir"
+        )
+
     entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
     for zkid in entry_ids:
