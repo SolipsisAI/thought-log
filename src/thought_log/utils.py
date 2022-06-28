@@ -251,12 +251,8 @@ def flatten(original_list, key: str = "label"):
     return [element for sublist in original_list for element in sublist]
 
 
-def frequency(labels):
-    get_label = (
-        lambda x: x["labels"][0]["label"]
-        if "score" in x["labels"][0]
-        else x["labels"][0]
-    )
+def frequency(labels, key: str):
+    get_label = lambda x: x[key][0]["label"] if "score" in x[key][0] else x[key][0]
     return Counter(list(map(get_label, labels)))
 
 

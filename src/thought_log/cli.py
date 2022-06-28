@@ -34,11 +34,12 @@ def show(oldest, num_entries, show_id):
 
 
 @cli.command()
-def analyze():
+@click.option("--update/--no-update")
+def analyze(update):
     """Assign emotion classifications"""
     from thought_log.entry_handler import classify_entries
 
-    classify_entries()
+    classify_entries(update)
 
 
 @cli.command()

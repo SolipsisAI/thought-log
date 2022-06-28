@@ -4,7 +4,7 @@ from typing import Dict, Union
 import frontmatter
 from tqdm.auto import tqdm
 
-from thought_log.config import STORAGE_DIR, EMOTION_CLASSIFIER_NAME
+from thought_log.config import CLASSIFIER_NAME, STORAGE_DIR, EMOTION_CLASSIFIER_NAME
 from thought_log.utils import (
     display_text,
     frequency,
@@ -129,36 +129,67 @@ def import_from_csv(filename: str):
 
 
 def classify_entries(
-    classifier_name: str = EMOTION_CLASSIFIER_NAME,
+    update: bool = False,
     reverse: bool = True,
     num_entries: int = -1,
 ):
     from thought_log.nlp.classifier import Classifier
 
-    classifier = Classifier(model=classifier_name, tokenizer=classifier_name)
+    classifiers = {
+        "emotion": Classifier(
+            model=EMOTION_CLASSIFIER_NAME, tokenizer=EMOTION_CLASSIFIER_NAME
+        ),
+        "context": Classifier(model=CLASSIFIER_NAME, tokenizer=CLASSIFIER_NAME),
+    }
+
     entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
+
+    skipped = 0
 
     for entry_id in tqdm(entry_ids):
         entry = load_entry(entry_id)
-        paragraph_labels = classify_entry(classifier, entry)
-        label_frequency = frequency(paragraph_labels)
+
+        has_emotion = bool(entry.metadata.get("emotion"))
+        has_context = bool(entry.metadata.get("context"))
+        needs_analysis = not has_emotion or not has_context
+
+        if not update or not needs_analysis:
+            skipped += 1
+            continue
+
+        paragraph_labels = classify_entry(classifiers, entry)
+
+        emotion_frequency = frequency(paragraph_labels, key="emotion")
+        context_frequency = frequency(paragraph_labels, key="context")
 
         # Save labels for each paragraph and their scores
         labels_filepath = STORAGE_DIR.joinpath(f"{entry_id}.json")
         data = {
             "paragraphs": paragraph_labels,
-            "frequency": label_frequency,
+            "frequency": {
+                "emotion": emotion_frequency,
+                "context": context_frequency,
+            },
         }
         write_json(data, labels_filepath)
 
         # Update entry with emotion tag
         text = entry.content
-        metadata = {"emotion": get_top_labels(label_frequency, k=1)}
+        metadata = {
+            "emotion": get_top_labels(emotion_frequency, k=1),
+            "context": get_top_labels(context_frequency, k=3),
+        }
         update_entry(entry_id, text, metadata)
+
+    print(f"Skipped {skipped}")
 
 
 def classify_entry(
-    classifier, entry: Union[str, frontmatter.Post], split: bool = True, k: int = 1
+    classifiers,
+    entry: Union[str, frontmatter.Post],
+    split: bool = True,
+    emotion_k: int = 1,
+    context_k: int = 3,
 ):
     """Assign emotion classifiers to an entry/text"""
     if isinstance(entry, frontmatter.Post):
@@ -167,8 +198,10 @@ def classify_entry(
         text = entry
 
     doc = tokenize(text)
+
     classify = lambda t: dict(
-        labels=classifier.classify(t, k=k, include_score=True),
+        emotion=classifiers["emotion"].classify(t, k=emotion_k, include_score=True),
+        context=classifiers["context"].classify(t, k=context_k, include_score=True),
         text=t.strip(),
     )
 
