@@ -284,6 +284,17 @@ def find_date(input_string: str):
     return to_datetime(f"{year}-{month}-{day}", fmt="%Y-%m-%d")
 
 
+def find_time(input_string: str):
+    pattern = "(0[1-2]|[1-2][0-9])(?:\:)(0[1-9]|[1-5][0-9])(?:\:)(0[1-9]|[1-5][0-9])"
+    matches = re.findall(pattern, input_string)
+    
+    if not matches:
+        return
+
+    hour, minutes, seconds = matches[0]
+    return f"{hour}:{minutes}:{seconds}"
+
+
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir, arcname=os.path.basename(source_dir))
