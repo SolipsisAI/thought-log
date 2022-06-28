@@ -149,11 +149,11 @@ def classify_entries(
     for entry_id in tqdm(entry_ids):
         entry = load_entry(entry_id)
 
-        has_emotion = bool(entry.metadata.get("emotion"))
-        has_context = bool(entry.metadata.get("context"))
-        needs_analysis = not has_emotion or not has_context
+        needs_emotion = not bool(entry.metadata.get("emotion"))
+        needs_context = not bool(entry.metadata.get("context"))
+        needs_analysis = needs_emotion or needs_context
 
-        if not update or not needs_analysis:
+        if not needs_analysis or not update:
             skipped += 1
             continue
 
