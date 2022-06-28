@@ -1,6 +1,6 @@
 from pathlib import Path
 from unittest.mock import Mock
-from datetime import datetime
+from datetime import datetime, date, time
 
 import pytest
 from appdirs import user_cache_dir, user_config_dir, user_data_dir
@@ -50,3 +50,11 @@ def test_postprocess_text(text, expected):
 def test_zettelkasten_id():
     datetime_obj = datetime(1989, 10, 1, 12, 0, 0)
     assert common.zettelkasten_id(datetime_obj) == "19891001120000"
+
+
+def test_find_date():
+    assert common.find_date("2022-10-01") == date(2022, 10, 1)
+
+
+def test_find_time():
+    assert common.find_time("15:30:01") == time(15, 30, 1)
