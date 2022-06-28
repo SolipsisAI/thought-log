@@ -52,8 +52,15 @@ def test_zettelkasten_id():
     assert common.zettelkasten_id(datetime_obj) == "19891001120000"
 
 
-def test_find_date():
-    assert common.find_date("2022-10-01") == date(2022, 10, 1)
+@pytest.mark.parametrize("input_string,expected", [
+    ("", None),
+    ("none", None),
+    ("2022-10-01", date(2022, 10, 1)),
+    ("DATE: 2022-10-01", date(2022, 10, 1)),
+    ("2022-10-01 15:55:02", date(2022, 10, 1)),
+])
+def test_find_date(input_string, expected):
+    assert common.find_date(input_string) == expected
 
 
 def test_find_time():
