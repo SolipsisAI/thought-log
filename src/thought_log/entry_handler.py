@@ -153,7 +153,7 @@ def classify_entries(
 
         # Update entry with emotion tag
         text = entry.content
-        metadata = {"emotion": get_top_labels(label_frequency, k=1)[0]}
+        metadata = {"emotion": get_top_labels(label_frequency, k=1)}
         update_entry(entry_id, text, metadata)
 
 

@@ -261,12 +261,16 @@ def frequency(labels):
 
 
 def get_top_labels(label_frequency: Counter, k: int = 1):
-    sorted_freq = sorted(
-        list(label_frequency.items()), key=lambda i: i[1], reverse=True
+    """Get top labels. If there is a tie, show all"""
+    counts = sorted(set(list(label_frequency.values())), reverse=True)
+    top_counts = counts[:k] if k > 0 else counts
+    is_top = lambda l: l[1] in top_counts
+
+    top_labels = list(
+        map(
+            lambda label: label[0],
+            filter(is_top, label_frequency.items()),
+        )
     )
-    results = sorted_freq
 
-    if k > 0:
-        results = sorted_freq[:k]
-
-    return [i[0] for i in results]
+    return top_labels
