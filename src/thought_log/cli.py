@@ -3,6 +3,8 @@ from pathlib import Path
 
 import click
 
+from thought_log.entry_handler import import_from_directory
+
 
 @click.group()
 def cli():
@@ -50,16 +52,21 @@ def add(text):
 
 
 @cli.command(name="import")
-@click.argument("filename", type=click.Path(exists=True))
-def import_file(filename):
+@click.argument("filename_or_directory", type=click.Path(exists=True))
+def import_from_source(filename_or_directory):
     """Import a file"""
     from thought_log.entry_handler import import_from_csv, import_from_file
 
-    filepath = Path(filename)
+    filepath = Path(filename_or_directory)
 
-    if filepath.suffix == ".csv":
+    if filepath.is_dir():
+        print("Importing from directory")
+        import_from_directory(filepath)
+    elif filepath.suffix == ".csv":
+        print("Importing from csv")
         import_from_csv(filepath)
     else:
+        print("Import from file")
         import_from_file(filepath)
 
 

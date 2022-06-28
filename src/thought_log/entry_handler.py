@@ -162,6 +162,27 @@ def import_from_csv(filename: str):
     print(f"Skipped: {skipped}")
 
 
+def import_from_directory(directory_name: Union[str, Path]):
+    dirpath = (
+        Path(directory_name) if isinstance(directory_name, str) else directory_name
+    )
+
+    if not dirpath.is_dir():
+        print(f"{dirpath} is not a directory")
+        return
+
+    if not dirpath.exists():
+        print(f"{dirpath} does not exist")
+        return
+
+    filepaths = list(dirpath.glob("**/*.txt"))
+
+    for filepath in tqdm(filepaths):
+        datetime_obj = find_date(filepath.name)
+        text = filepath.read_text()
+        write_entry(text, datetime_obj=datetime_obj)
+
+
 def classify_entries(
     reverse: bool = True,
     num_entries: int = -1,
