@@ -90,20 +90,18 @@ def update_entry(
     if not entry_filepath.exists() and not create_if_missing:
         raise ValueError(f"{entry_filepath} does not exist")
 
+    if not entry_filepath.exists():
+        entry_filepath.touch()
+
     if not metadata:
         metadata = {}
 
+    post = frontmatter.load(entry_filepath)
+    post.content = text
+    post.metadata.update(metadata)
+
     with open(entry_filepath, "w+") as f:
-        post = frontmatter.load(f)
-
-        post.content = text
-
-        # Update metadata
-        post.metadata.update(metadata)
-
-        # Write to file
         f.write(frontmatter.dumps(post))
-
         return post
 
 
