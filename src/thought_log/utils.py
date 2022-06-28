@@ -13,6 +13,7 @@ from typing import Dict, List
 import click
 import requests
 from appdirs import user_cache_dir, user_config_dir, user_data_dir
+from huggingface_hub import snapshot_download
 from tqdm.auto import tqdm
 
 from thought_log.res import urls
@@ -140,12 +141,21 @@ def download_models():
     model_urls = urls.MODELS
     config_data = {}
 
-    for name, url in model_urls.items():
+    for name, info in model_urls.items():
+        url = info["url"]
+        source = info["source"]
+
+        if source == "huggingface":
+            config_data[f"{name}_path"] = url
+            download(url, source=source)
+            # Skip extraction since huggingface handles this
+            continue
+
         # Download the model
         dest_path = cache_path().joinpath(Path(url).name)
 
         if not dest_path.exists():
-            download(url, dest_path=dest_path)
+            download(url, source=source, dest_path=dest_path)
 
         # Extract the model files
         model_data_path = models_data_path().joinpath(name)
@@ -165,7 +175,14 @@ def download_models():
     update_config(config_data)
 
 
-def download(url, dest_path):
+def download(url, source, dest_path=None, revision="main"):
+    if source == "huggingface":
+        snapshot_download(repo_id=url, revision=revision)
+        return
+
+    if not dest_path:
+        raise ValueError("dest_path is not set, please specify")
+
     with requests.get(url, stream=True) as r:
         total_length = int(r.headers.get("Content-Length"))
         with tqdm.wrapattr(r.raw, "read", total=total_length, desc="") as f:

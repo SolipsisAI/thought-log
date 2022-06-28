@@ -159,9 +159,9 @@ summary = "A platform independent file lock."
 
 [[package]]
 name = "huggingface-hub"
-version = "0.7.0"
+version = "0.8.1"
 requires_python = ">=3.7.0"
-summary = "Client library to download and publish models on the huggingface.co hub"
+summary = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
 dependencies = [
     "filelock",
     "packaging>=20.9",
@@ -742,7 +742,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:da09d31d7e4b98ccc6b2bed5d7dbb5e9a147687376a6cfe6104d36565d509876"
+content_hash = "sha256:532468d9f099d936ea3eeafdad713903a867e1c075750386423c9eb8fcfd7c02"
 
 [metadata.files]
 "appdirs 1.4.4" = [
@@ -959,9 +959,9 @@ content_hash = "sha256:da09d31d7e4b98ccc6b2bed5d7dbb5e9a147687376a6cfe6104d36565
     {file = "filelock-3.7.1-py3-none-any.whl", hash = "sha256:37def7b658813cda163b56fc564cdc75e86d338246458c4c28ae84cabefa2404"},
     {file = "filelock-3.7.1.tar.gz", hash = "sha256:3a0fd85166ad9dbab54c9aec96737b744106dc5f15c0b09a6744a445299fcf04"},
 ]
-"huggingface-hub 0.7.0" = [
-    {file = "huggingface_hub-0.7.0-py3-none-any.whl", hash = "sha256:fd448fd0b738d803411c79bdf9f12f0ba171fecd24a59edf88c1391b473bc2c0"},
-    {file = "huggingface_hub-0.7.0.tar.gz", hash = "sha256:8154dc2fad84b32a4bca18372a647d9381ed8550a80b11050758357b8fcea639"},
+"huggingface-hub 0.8.1" = [
+    {file = "huggingface_hub-0.8.1-py3-none-any.whl", hash = "sha256:a11fb8d696a26f927833d46b7633105fd864fd92a2beb1140cbf1b2f703dedb3"},
+    {file = "huggingface_hub-0.8.1.tar.gz", hash = "sha256:75c70797da54b849f06c2cbf7ba2217250ee217230b9f65547d5db3c5bd84bb5"},
 ]
 "idna 3.3" = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
