@@ -79,7 +79,7 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
 
     if entry_filepath.exists():
-        return frontmatter.load(entry_filepath)
+        return
 
     metadata["id"] = int(zkid)
     metadata["timestamp"] = datetime_obj.isoformat()
