@@ -12,8 +12,8 @@ APP_AUTHOR = "SolipsisAI"
 
 @pytest.fixture
 def mock_classifier():
-    def mock_classify(text, *args, **kwargs):
-        return f"LABEL {text}"
+    def mock_classify(*args, **kwargs):
+        return ["LABEL"]
 
     _mock = Mock()
     _mock.classify = mock_classify
@@ -29,9 +29,10 @@ def test_paths(path_fn, expected):
     assert path_fn() == expected
 
 
-def test_preprocess_text_no_classifier():
-    assert common.preprocess_text("testing") == "testing"
-
-
-def test_preprocess_text_with_classifier(mock_classifier):
-    assert mock_classifier.classify("Test") == "LABEL Test"
+@pytest.mark.parametrize("with_classifier,text,expected", [
+    (True, "hello world", "LABEL hello world"),
+    (False, "hello world", "hello world"),
+])
+def test_preprocess_text(mock_classifier, with_classifier, text, expected):
+    classifier = mock_classifier if with_classifier else None
+    assert common.preprocess_text(text, classifier=classifier) == expected
