@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 
 from thought_log.entry_handler import import_from_directory
+from thought_log.utils import unset_config
 
 
 @click.group()
@@ -72,7 +73,7 @@ def handle_import(filename_or_directory):
 
 @cli.command(name="config")
 @click.argument("action", type=click.Choice(["set", "unset", "show"]))
-@click.option("--key", "-k", type=click.Choice(["storage_dir"]))
+@click.option("--key", "-k")
 @click.option("--value", "-v")
 def handle_config(action, key, value):
     """Configure settings"""
@@ -81,7 +82,7 @@ def handle_config(action, key, value):
     if action == "set":
         set_config(key, value)
     elif action == "unset":
-        set_config(key, None)
+        unset_config(key)
     else:
         click.echo(f"{get_config(key)}")
 
