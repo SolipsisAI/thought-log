@@ -45,7 +45,7 @@ dev = [
 
 [tool.pdm.scripts]
 format = "isort .; black ."
-clean_imports = "autoflake --in-place --remove-unused-variables ."
+autoremove = "autoflake --in-place --remove-all-unused-imports --remove-unused-variables ."
 
 [build-system]
 requires = ["pdm-pep517>=0.12.0"]
