@@ -55,12 +55,12 @@ def add(text, filename):
 
 
 @cli.command()
-@click.option("--import-filename", "-i", type=click.Path(exists=True))
-def import_csv(import_filename):
+@click.option("--filename", "-f", type=click.Path(exists=True))
+def import_csv(filename):
     """Import a DayOne-exported CSV"""
     from thought_log.entry_handler import import_from_csv
 
-    import_from_csv(import_filename)
+    import_from_csv(filename)
 
 
 @cli.command()
