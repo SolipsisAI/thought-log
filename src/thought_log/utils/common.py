@@ -8,15 +8,14 @@ import textwrap
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Union
 
-import click
 import requests
-from appdirs import user_cache_dir, user_config_dir, user_data_dir
 from huggingface_hub import snapshot_download
 from tqdm.auto import tqdm
 
 from thought_log.res import urls
+from .config import update_config
+from .paths import cache_path, create_app_dirs, models_data_path
 
 APP_NAME = "ThoughtLog"
 APP_AUTHOR = "SolipsisAI"
@@ -24,100 +23,6 @@ ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 DATA_DIR = ROOT_DIR.joinpath("data")
 ZKID_DATE_FMT = "%Y%m%d%H%M%S"
 DEBUG = os.getenv("DEBUG", False)
-
-
-def load_config():
-    config_filepath = config_path().joinpath("config.json")
-
-    if not config_path().exists():
-        config_path().mkdir(parents=True)
-
-    if not config_filepath.exists():
-        update_config({})
-
-    config_data = read_json(config_filepath)
-
-    return config_data
-
-
-def get_config(key: str = None):
-    config = load_config()
-
-    if not key:
-        return "\n".join([f"{k}: {v}" for k,v in config.items()])
-
-    return config.get(key)
-
-
-def set_config(key, value):
-    updated_config = update_config({key: value})
-    return updated_config
-
-
-def unset_config(key):
-    config_data = load_config()
-    if key in config_data:
-        config_data.pop(key)
-    save_config(config_data)
-
-
-def update_config(data: Dict) -> Dict:
-    config_filepath = config_path().joinpath("config.json")
-
-    if config_filepath.exists():
-        config_data = read_json(config_filepath)
-        config_data.update(data)
-    else:
-        config_data = data
-
-    save_config(config_data)
-
-    return config_data
-
-
-def save_config(config_data):
-    config_filepath = config_path().joinpath("config.json")
-
-    with open(config_filepath, "w+") as fp:
-        json.dump(config_data, fp, indent=4)
-
-
-def configure_storage(storage_dir: Union[str, Path]):
-    config = load_config()
-
-    if not storage_dir:
-        storage_dir = click.prompt("Where do you want files to be stored? ")
-
-    if "storage_dir" not in config:
-        config["storage_dir"] = storage_dir
-
-    if not Path(storage_dir).exists():
-        click.echo(f"{storage_dir} doesn't yet exist; created.")
-        Path(storage_dir).mkdir(parents=True)
-
-    update_config(config)
-
-
-def read_csv(filename: str) -> List[Dict]:
-    with open(filename) as f:
-        csv_data = csv.DictReader(f)
-        return list(csv_data)
-
-
-def read_json(filename: str, as_type=None) -> Dict:
-    with open(filename, "r") as json_file:
-        data = json.load(json_file)
-
-        if as_type is not None:
-            data = dict([(as_type(k), v) for k, v in data.items()])
-
-        return data
-
-
-def write_json(data: Dict, filename: str, mode: str = "w+"):
-    with open(filename, mode) as f:
-        json.dump(data, f, indent=4)
-        return data
 
 
 def preprocess_text(text, classifier=None):
@@ -138,35 +43,6 @@ def postprocess_text(text):
     """Clean response text"""
     text = re.sub(r"^\w+\s", "", text)
     return re.sub(r"_comma_", ",", text)
-
-
-def create_app_dirs():
-    paths = [
-        config_path(),
-        cache_path(),
-        app_data_path(),
-        models_data_path(),
-    ]
-    for path in paths:
-        if not path.exists():
-            # Create user data directory
-            path.mkdir(parents=True)
-
-
-def config_path():
-    return Path(user_config_dir(APP_NAME, APP_AUTHOR))
-
-
-def cache_path():
-    return Path(user_cache_dir(APP_NAME, APP_AUTHOR))
-
-
-def app_data_path():
-    return Path(user_data_dir(APP_NAME, APP_AUTHOR))
-
-
-def models_data_path():
-    return app_data_path().joinpath("models")
 
 
 def download_models():
