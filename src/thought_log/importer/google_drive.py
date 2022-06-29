@@ -25,6 +25,6 @@ def build_query(
 
     if content_type:
         cond = "=" if content_type == "dir" else "!="
-        query_parts.append(f"mimetype {cond} '{FOLDER_MIMETYPE}'")
+        query_parts.append(f"mimeType {cond} '{FOLDER_MIMETYPE}'")
 
     return " and ".join(query_parts)
