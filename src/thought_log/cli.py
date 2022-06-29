@@ -70,6 +70,17 @@ def handle_import(filename_or_directory):
         import_from_file(filepath)
 
 
+@cli.command()
+def import_gdoc():
+    """Allow access to GDrive"""
+    from thought_log.importer import google_drive
+
+    drive = google_drive.init_drive()
+    google_drive.walk(
+        drive=drive, content_type="dir", process_fn=google_drive.import_from_file
+    )
+
+
 @cli.command(name="config")
 @click.argument("action", type=click.Choice(["set", "unset", "show"]))
 @click.option("--key", "-k")
