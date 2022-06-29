@@ -12,11 +12,11 @@ def cli():
 
 
 @cli.command()
-def google_auth():
+def google():
     """Allow access to GDrive"""
     from thought_log.importer import google_drive
 
-    print(google_drive.list_dirs())
+    postbox = google_drive.list_dirs("Postbox")
 
 
 @cli.command()
