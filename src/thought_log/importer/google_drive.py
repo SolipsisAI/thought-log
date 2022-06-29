@@ -11,10 +11,13 @@ def authenticate():
 def list_dirs(folder_name: str = None, subfolder_name: str = None):
     gauth = GoogleAuth()
     drive = GoogleDrive(gauth)
+
+    folder_type = "mimeType = 'application/vnd.google-apps.folder'"
+    file_type = "mimeType != 'application/vnd.google-apps.folder'"
+
+    query = "'{folder_id}' in parents and trashed=false and {mimetype}"
     folders = drive.ListFile(
-        {
-            "q": "'root' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'"
-        }
+        {"q": query.format(folder_id="root", mimetype=folder_type)}
     ).GetList()
 
     if not folder_name:
@@ -26,7 +29,7 @@ def list_dirs(folder_name: str = None, subfolder_name: str = None):
 
     folder_id = folder["id"]
     subfolders = drive.ListFile(
-        {"q": f"parents in '{folder_id}' and trashed = false"}
+        {"q": query.format(folder_id=folder_id, mimetype=folder_type)}
     ).GetList()
 
     if not subfolder_name:
@@ -37,4 +40,6 @@ def list_dirs(folder_name: str = None, subfolder_name: str = None):
             break
 
     subfolder_id = subfolder["id"]
-    return drive.ListFile({"q": f"'{subfolder_id}' in parents"}).GetList()
+    return drive.ListFile(
+        {"q": query.format(folder_id=subfolder_id, mimetype=file_type)}
+    ).GetList()
