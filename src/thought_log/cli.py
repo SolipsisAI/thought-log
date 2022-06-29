@@ -10,12 +10,13 @@ from thought_log.utils import unset_config
 def cli():
     pass
 
+
 @cli.command()
 def google_auth():
     """Allow access to GDrive"""
-    from thought_log.auth import google_drive
+    from thought_log.importer import google_drive
 
-    google_drive.authenticate()
+    print(google_drive.list_dirs())
 
 
 @cli.command()
