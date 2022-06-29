@@ -1,7 +1,6 @@
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 
-QUERY = "'{folder_id}' in parents and trashed=false"
 FOLDER_MIMETYPE = "application/vnd.google-apps.folder"
 
 
@@ -14,11 +13,8 @@ def authenticate():
 def list_contents(*, folder_id: str = "root", content_type: str = None):
     drive = GoogleDrive(GoogleAuth())
 
-    cond = "!=" if content_type == "file" else "="
-    mimetype = f"and mimetype {cond} {FOLDER_MIMETYPE}" if content_type else ""
-
     return drive.ListFile(
-        {"q": QUERY.format(folder_id=folder_id, mimetype=mimetype)},
+        {"q": build_query(folder_id=folder_id, content_type=content_type)},
     ).GetList()
 
 
