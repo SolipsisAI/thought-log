@@ -12,15 +12,6 @@ def cli():
 
 
 @cli.command()
-def google():
-    """Allow access to GDrive"""
-    from thought_log.importer import google_drive
-
-    drive = google_drive.init_drive()
-    google_drive.walk(drive=drive, content_type="dir")
-
-
-@cli.command()
 @click.option("--oldest/--no-oldest", "-o", help="Oldest first")
 @click.option(
     "--num_entries",
@@ -77,6 +68,17 @@ def handle_import(filename_or_directory):
     else:
         print("Import from file")
         import_from_file(filepath)
+
+
+@cli.command()
+def import_gdoc():
+    """Allow access to GDrive"""
+    from thought_log.importer import google_drive
+
+    drive = google_drive.init_drive()
+    google_drive.walk(
+        drive=drive, content_type="dir", process_fn=google_drive.import_from_file
+    )
 
 
 @cli.command(name="config")

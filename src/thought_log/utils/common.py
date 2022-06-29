@@ -116,6 +116,8 @@ def snakecase(string):
 
 def to_datetime(string, fmt):
     if fmt == "isoformat":
+        if string[-1] == "Z":
+            string = string[:-1]
         return datetime.fromisoformat(string)
     elif fmt == "zkid":
         return datetime.strptime(string, ZKID_DATE_FMT)
