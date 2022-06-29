@@ -18,14 +18,20 @@ def init_drive():
 
 def walk(folder_id: str = "root", content_type: str = None, drive=None):
     # Start at the root
-    directories = list_contents(folder_id=folder_id, drive=drive)
-    directories.sort(key=lambda d: d["title"])
-    for idx, directory in enumerate(directories):
+    contents = list_contents(folder_id=folder_id, drive=drive)
+    contents.sort(key=lambda d: d["title"])
+    for idx, directory in enumerate(contents):
         title = directory["title"]
         click.echo(f"{idx}: {title}")
 
-    selected_idx = click.prompt("Select a directory by number: ", type=int)
-    walk(directories[selected_idx]["id"], drive=drive, content_type=content_type)
+    selected_idx = click.prompt("Select", type=int)
+    selected_content = contents[selected_idx]
+
+    if selected_content.get("mimeType") != FOLDER_MIMETYPE:
+        print(selected_content["title"], "is a file")
+        return
+
+    walk(contents[selected_idx]["id"], drive=drive, content_type=content_type)
 
 
 def list_contents(*, folder_id: str = "root", content_type: str = None, drive=None):
