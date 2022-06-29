@@ -16,7 +16,8 @@ def google():
     """Allow access to GDrive"""
     from thought_log.importer import google_drive
 
-    postbox = google_drive.list_dirs("Postbox")
+    drive = google_drive.init_drive()
+    google_drive.walk(drive=drive)
 
 
 @cli.command()

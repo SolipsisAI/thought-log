@@ -1,3 +1,5 @@
+import click
+
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 
@@ -10,8 +12,24 @@ def authenticate():
     gauth.LocalWebserverAuth()  # Creates local webserver and auto handles authentication.
 
 
-def list_contents(*, folder_id: str = "root", content_type: str = None):
-    drive = GoogleDrive(GoogleAuth())
+def init_drive():
+    return GoogleDrive(GoogleAuth())
+
+
+def walk(folder_id: str = "root", drive=None):
+    # Start at the root
+    directories = list_contents(folder_id=folder_id, drive=drive)
+    for idx, directory in enumerate(directories):
+        title = directory["title"]
+        click.echo(f"{idx}: {title}")
+
+    selected_idx = click.prompt("Select a directory by number: ", type=int)
+    walk(directories[selected_idx]["id"], drive=drive)
+
+
+def list_contents(*, folder_id: str = "root", content_type: str = None, drive=None):
+    if not drive:
+        drive = GoogleDrive(GoogleAuth())
 
     return drive.ListFile(
         {"q": build_query(folder_id=folder_id, content_type=content_type)},
