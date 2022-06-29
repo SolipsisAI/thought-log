@@ -17,7 +17,7 @@ def google():
     from thought_log.importer import google_drive
 
     drive = google_drive.init_drive()
-    google_drive.walk(drive=drive)
+    google_drive.walk(drive=drive, content_type="dir")
 
 
 @cli.command()
