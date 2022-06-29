@@ -29,7 +29,7 @@ def walk(folder_id: str = "root", drive=None):
 
 def list_contents(*, folder_id: str = "root", content_type: str = None, drive=None):
     if not drive:
-        drive = GoogleDrive(GoogleAuth())
+        drive = init_drive()
 
     return drive.ListFile(
         {"q": build_query(folder_id=folder_id, content_type=content_type)},
