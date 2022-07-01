@@ -21,6 +21,8 @@ dependencies = [
     "huggingface-hub>=0.8.1",
     "pytest-freezegun>=0.4.2",
     "pydrive2>=1.10.1",
+    "pyowm>=3.3.0",
+    "python-dotenv>=0.20.0",
 ]
 requires-python = ">=3.9"
 license = {text = "MIT"}

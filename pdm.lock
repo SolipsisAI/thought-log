@@ -102,7 +102,7 @@ dependencies = [
 [[package]]
 name = "charset-normalizer"
 version = "2.0.12"
-requires_python = ">=3.5.0"
+requires_python = ">=3.6.0"
 summary = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 
 [[package]]
@@ -179,6 +179,11 @@ summary = "Let your Python tests travel through time"
 dependencies = [
     "python-dateutil>=2.7",
 ]
+
+[[package]]
+name = "geojson"
+version = "2.5.0"
+summary = "Python bindings and utilities for GeoJSON"
 
 [[package]]
 name = "google-api-core"
@@ -418,7 +423,7 @@ version = "0.6.1"
 requires_python = ">= 3.6"
 summary = "pathlib.Path subclasses for local and cloud bucket storage"
 dependencies = [
-    "smart-open<6.0.0,>=5.0.0",
+    "smart-open<6.0.0,>=5.2.1",
     "typer<1.0.0,>=0.3.0",
 ]
 
@@ -555,10 +560,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "pyowm"
+version = "3.3.0"
+requires_python = ">=3.7"
+summary = "A Python wrapper around OpenWeatherMap web APIs"
+dependencies = [
+    "PySocks<2,>=1.7.1",
+    "geojson<3,>=2.3.0",
+    "requests<3,>=2.20.0",
+    "requests[socks]",
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.0.9"
 requires_python = ">=3.6.8"
 summary = "pyparsing module - Classes and methods to define and execute parsing grammars"
+
+[[package]]
+name = "pysocks"
+version = "1.7.1"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+summary = "A Python SOCKS client module. See https://github.com/Anorov/PySocks for more information."
 
 [[package]]
 name = "pytermgui"
@@ -599,6 +622,12 @@ summary = "Extensions to the standard Python datetime module"
 dependencies = [
     "six>=1.5",
 ]
+
+[[package]]
+name = "python-dotenv"
+version = "0.20.0"
+requires_python = ">=3.5"
+summary = "Read key-value pairs from a .env file and set them as environment variables"
 
 [[package]]
 name = "python-frontmatter"
@@ -648,7 +677,7 @@ requires_python = ">=3.7, <4"
 summary = "Python HTTP for Humans."
 dependencies = [
     "certifi>=2017.4.17",
-    "charset-normalizer~=2.0.0",
+    "charset-normalizer<3,>=2",
     "idna<4,>=2.5",
     "urllib3<1.27,>=1.21.1",
 ]
@@ -659,6 +688,17 @@ version = "0.9.1"
 summary = "A utility belt for advanced users of python-requests"
 dependencies = [
     "requests<3.0.0,>=2.0.1",
+]
+
+[[package]]
+name = "requests"
+version = "2.28.1"
+extras = ["socks"]
+requires_python = ">=3.7, <4"
+summary = "Python HTTP for Humans."
+dependencies = [
+    "PySocks!=1.5.7,>=1.5.6",
+    "requests",
 ]
 
 [[package]]
@@ -921,7 +961,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:e3ca9989d06293676225f067c4d0af0855efd59cefe17752569271b545925329"
+content_hash = "sha256:77c658beaad0c3a2109312a4f79de1baa14f73158f7843552e87bb6f0c786441"
 
 [metadata.files]
 "appdirs 1.4.4" = [
@@ -1148,6 +1188,10 @@ content_hash = "sha256:e3ca9989d06293676225f067c4d0af0855efd59cefe17752569271b54
 "freezegun 1.2.1" = [
     {file = "freezegun-1.2.1-py3-none-any.whl", hash = "sha256:15103a67dfa868ad809a8f508146e396be2995172d25f927e48ce51c0bf5cb09"},
     {file = "freezegun-1.2.1.tar.gz", hash = "sha256:b4c64efb275e6bc68dc6e771b17ffe0ff0f90b81a2a5189043550b6519926ba4"},
+]
+"geojson 2.5.0" = [
+    {file = "geojson-2.5.0-py2.py3-none-any.whl", hash = "sha256:ccbd13368dd728f4e4f13ffe6aaf725b6e802c692ba0dde628be475040c534ba"},
+    {file = "geojson-2.5.0.tar.gz", hash = "sha256:6e4bb7ace4226a45d9c8c8b1348b3fc43540658359f93c3f7e03efa9f15f658a"},
 ]
 "google-api-core 2.8.2" = [
     {file = "google_api_core-2.8.2-py3-none-any.whl", hash = "sha256:93c6a91ccac79079ac6bbf8b74ee75db970cc899278b97d53bc012f35908cf50"},
@@ -1457,9 +1501,18 @@ content_hash = "sha256:e3ca9989d06293676225f067c4d0af0855efd59cefe17752569271b54
     {file = "pyOpenSSL-22.0.0-py2.py3-none-any.whl", hash = "sha256:ea252b38c87425b64116f808355e8da644ef9b07e429398bfece610f893ee2e0"},
     {file = "pyOpenSSL-22.0.0.tar.gz", hash = "sha256:660b1b1425aac4a1bea1d94168a85d99f0b3144c869dd4390d27629d0087f1bf"},
 ]
+"pyowm 3.3.0" = [
+    {file = "pyowm-3.3.0-py3-none-any.whl", hash = "sha256:86463108e7613171531ba306040b43c972b3fc0b0acf73b12c50910cdd2107ab"},
+    {file = "pyowm-3.3.0.tar.gz", hash = "sha256:8196f77c91eac680676ed5ee484aae8a165408055e3e2b28025cbf60b8681e03"},
+]
 "pyparsing 3.0.9" = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
+]
+"pysocks 1.7.1" = [
+    {file = "PySocks-1.7.1-py27-none-any.whl", hash = "sha256:08e69f092cc6dbe92a0fdd16eeb9b9ffbc13cadfe5ca4c7bd92ffb078b293299"},
+    {file = "PySocks-1.7.1-py3-none-any.whl", hash = "sha256:2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5"},
+    {file = "PySocks-1.7.1.tar.gz", hash = "sha256:3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0"},
 ]
 "pytermgui 6.4.0" = [
     {file = "pytermgui-6.4.0.tar.gz", hash = "sha256:8cd01a8ca386b47d8fb6c0562f52993a3bcb4e06f4219b4d85131b9d907abf76"},
@@ -1475,6 +1528,10 @@ content_hash = "sha256:e3ca9989d06293676225f067c4d0af0855efd59cefe17752569271b54
 "python-dateutil 2.8.2" = [
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
+]
+"python-dotenv 0.20.0" = [
+    {file = "python_dotenv-0.20.0-py3-none-any.whl", hash = "sha256:d92a187be61fe482e4fd675b6d52200e7be63a12b724abbf931a40ce4fa92938"},
+    {file = "python-dotenv-0.20.0.tar.gz", hash = "sha256:b7e3b04a59693c42c36f9ab1cc2acc46fa5df8c78e178fc33a8d4cd05c8d498f"},
 ]
 "python-frontmatter 1.0.0" = [
     {file = "python_frontmatter-1.0.0-py3-none-any.whl", hash = "sha256:766ae75f1b301ffc5fe3494339147e0fd80bc3deff3d7590a93991978b579b08"},
@@ -1610,6 +1667,10 @@ content_hash = "sha256:e3ca9989d06293676225f067c4d0af0855efd59cefe17752569271b54
 "requests-toolbelt 0.9.1" = [
     {file = "requests_toolbelt-0.9.1-py2.py3-none-any.whl", hash = "sha256:380606e1d10dc85c3bd47bf5a6095f815ec007be7a8b69c878507068df059e6f"},
     {file = "requests-toolbelt-0.9.1.tar.gz", hash = "sha256:968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0"},
+]
+"requests 2.28.1" = [
+    {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
+    {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
 ]
 "rfc3986 2.0.0" = [
     {file = "rfc3986-2.0.0-py2.py3-none-any.whl", hash = "sha256:50b1502b60e289cb37883f3dfd34532b8873c7de9f49bb546641ce9cbd256ebd"},
