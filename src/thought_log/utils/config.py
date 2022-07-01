@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Dict, Union
 
 import click
-from dotenv import load_dotenv
 
 from .io import read_json
 from .paths import config_path
@@ -81,6 +80,3 @@ def configure_storage(storage_dir: Union[str, Path]):
         Path(storage_dir).mkdir(parents=True)
 
     update_config(config)
-
-
-load_dotenv()
