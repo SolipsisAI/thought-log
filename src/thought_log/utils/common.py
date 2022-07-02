@@ -120,9 +120,6 @@ def make_datetime(obj: Union[str, datetime], fmt: str = None):
     if isinstance(obj, datetime):
         return obj
 
-    if not obj:
-        return datetime.now()
-
     if fmt and isinstance(obj, str):
         if fmt == "isoformat":
             return datetime.fromisoformat(obj[:-1])
