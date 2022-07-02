@@ -14,6 +14,30 @@ from thought_log.utils.io import write_json
 SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv"]
 
 
+def import_from_file(filename: Union[str, Path]):
+    """Import from plaintext or markdown"""
+    filetype = get_filetype(filename)
+
+    if filetype not in SUPPORTED_FILETYPES:
+        return
+
+    post = read_file(filename)
+    data = prepare_data(post)
+
+    # If no date is found, try getting it from the name
+    if not data.get("date"):
+        date = make_datetime(str(filename)) or datetime.now()
+        data["date"] = date
+        data["id"] = zettelkasten_id(date)
+
+    zkid = data["id"]
+
+    if already_imported(zkid):
+        return
+
+    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.json"))
+
+
 def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     """Prepare data for import"""
     import_data = {}
@@ -40,25 +64,9 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     return import_data
 
 
-def import_from_file(filename: Union[str, Path]):
-    """Import from plaintext or markdown"""
-    filetype = get_filetype(filename)
-
-    if filetype not in SUPPORTED_FILETYPES:
-        print(f"{filetype} not supported")
-        return
-
-    data = prepare_data(read_file(filename))
-
-    # If no date is found, try getting it from the name
-    if not data.get("date"):
-        date = make_datetime(str(filename)) or datetime.now()
-        data["date"] = date
-        data["id"] = zettelkasten_id(date)
-
-    zkid = data["id"]
-    write_json(data, STORAGE_DIR.joinpath(f"{zkid}.json"))
-
-
 def import_from_directory():
     """Import from a directory"""
+
+
+def already_imported(zkid):
+    return STORAGE_DIR.joinpath(f"{zkid}.json").exists()

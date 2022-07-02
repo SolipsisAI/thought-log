@@ -106,3 +106,6 @@ def test_find_datetime(input_string, expected):
 def test_make_datetime():
     datetime_obj = datetime(2022, 9, 10)
     assert common.make_datetime(datetime_obj) == datetime_obj
+
+    datetime_obj = "2018-01-01"
+    assert common.make_datetime(datetime_obj) == datetime(2018, 1, 1, 0, 0)
