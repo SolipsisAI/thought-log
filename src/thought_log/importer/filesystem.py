@@ -24,7 +24,7 @@ def import_from_file(filename: Union[str, Path]):
     post = read_file(filename)
     data = prepare_data(post)
 
-    return write_data(data)
+    return import_data(data)
 
 
 def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
@@ -53,7 +53,7 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     return import_data
 
 
-def write_data(data, filename: str = None):
+def import_data(data, filename: str = None):
     # If no date is found, try getting it from the name
     if not data.get("date") and filename:
         date = make_datetime(str(filename)) or datetime.now()
@@ -78,7 +78,7 @@ def import_from_csv(filename: str):
 
     for row in tqdm(rows):
         data = prepare_data(row)
-        result = write_data(data)
+        result = import_data(data)
         if not result:
             skipped += 1
 
