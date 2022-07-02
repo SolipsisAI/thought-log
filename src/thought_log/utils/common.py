@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from stat import FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
 import tarfile
 import textwrap
 from collections import Counter
@@ -12,6 +13,7 @@ from huggingface_hub import snapshot_download
 from tqdm.auto import tqdm
 
 from thought_log.res import urls
+from traitlets import Instance
 
 from .config import update_config
 from .paths import cache_path, create_app_dirs, models_data_path
@@ -114,15 +116,10 @@ def snakecase(string):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-def to_datetime(string, fmt):
-    if fmt == "isoformat":
-        if string[-1] == "Z":
-            string = string[:-1]
-        return datetime.fromisoformat(string)
-    elif fmt == "zkid":
-        return datetime.strptime(string, ZKID_DATE_FMT)
-    else:
-        return datetime.strptime(string, fmt)
+def to_datetime(obj):
+    if isinstance(obj, datetime):
+        return obj
+    return find_datetime(obj)
 
 
 def list_entries(entries_dir, reverse=False, num_entries=-1):
