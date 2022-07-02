@@ -13,3 +13,4 @@ EMOTION_CLASSIFIER_NAME = os.getenv("TL_EMOTION_CLASSIFIER_NAME") or config.get(
     "emotion_classifier_path"
 )
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY") or config.get("openweather_api_key")
+DEFAULT_LOCATION = os.getenv("OPENWEATHER_LOCATION") or config.get("openweather_location")  # example: "New York, US"
