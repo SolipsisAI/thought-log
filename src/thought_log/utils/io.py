@@ -2,6 +2,8 @@ import csv
 import json
 from typing import Dict, List
 
+import frontmatter
+
 
 def read_csv(filename: str) -> List[Dict]:
     with open(filename) as f:
@@ -23,3 +25,8 @@ def write_json(data: Dict, filename: str, mode: str = "w+"):
     with open(filename, mode) as f:
         json.dump(data, f, indent=4)
         return data
+
+
+def read_file(filename: str):
+    with open(filename, "r") as f:
+        return frontmatter.load(f)
