@@ -5,7 +5,7 @@ from unittest.mock import mock_open, patch
 import frontmatter
 
 from thought_log.importer import filesystem
-from thought_log.utils import to_datetime
+from thought_log.utils import make_datetime
 
 
 def read_data(name):

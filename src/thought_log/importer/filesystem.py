@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, Union
 
 from thought_log.utils import read_file, zettelkasten_id
-from thought_log.utils.common import to_datetime
+from thought_log.utils.common import make_datetime
 from thought_log.utils.io import write_json
 
 

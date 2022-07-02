@@ -5,7 +5,7 @@ from pydrive2.drive import GoogleDrive
 from pydrive2.files import GoogleDriveFile
 
 from thought_log.entry_handler import write_entry
-from thought_log.utils import to_datetime
+from thought_log.utils import make_datetime
 
 FOLDER_MIMETYPE = "application/vnd.google-apps.folder"
 
@@ -19,7 +19,7 @@ def authenticate():
 def import_from_file(selected_file: GoogleDriveFile):
     created_date = selected_file["createdDate"]
     text = selected_file.GetContentString()
-    datetime_obj = to_datetime(created_date, fmt="isoformat")
+    datetime_obj = make_datetime(created_date, fmt="isoformat")
     write_entry(text, datetime_obj=datetime_obj)
 
 

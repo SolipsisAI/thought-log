@@ -1,12 +1,12 @@
 import os
 import re
 import shutil
-from stat import FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
 import tarfile
 import textwrap
 from collections import Counter
 from datetime import date, datetime, time
 from pathlib import Path
+from typing import Union
 
 import requests
 from huggingface_hub import snapshot_download
@@ -116,9 +116,13 @@ def snakecase(string):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-def to_datetime(obj):
+def make_datetime(obj: Union[str, datetime], fmt: str = None):
     if isinstance(obj, datetime):
         return obj
+
+    if isinstance(obj, str):
+        return datetime.strptime(obj, fmt)
+
     return find_datetime(obj)
 
 
@@ -174,7 +178,7 @@ def get_top_labels(label_frequency: Counter, k: int = 1):
 
 
 def find_datetime(input_string: str):
-    """Extract a datetime object from an input string"""
+    """Extract the first datetime object from an input string"""
     if not input_string:
         return
 

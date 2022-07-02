@@ -18,7 +18,7 @@ from thought_log.utils import (
     read_csv,
     read_json,
     snakecase,
-    to_datetime,
+    make_datetime,
     write_json,
     zettelkasten_id,
 )
@@ -40,7 +40,7 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
         # Make timestamp prettier
         timestamp = entry.metadata["timestamp"]
-        datetime_obj = to_datetime(timestamp, fmt="isoformat")
+        datetime_obj = make_datetime(timestamp, fmt="isoformat")
         datetime_str = datetime_obj.strftime("%x %X")
 
         # Get emotion
@@ -71,7 +71,7 @@ def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
 
     if not datetime_obj:
         timestamp = metadata.get("timestamp") or metadata.get("date")
-        datetime_obj = datetime.now() if not timestamp else to_datetime(timestamp)
+        datetime_obj = datetime.now() if not timestamp else make_datetime(timestamp)
 
     zkid = zettelkasten_id(datetime_obj=datetime_obj)
     entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
@@ -164,7 +164,7 @@ def import_from_csv(filename: str):
 
         entry = write_entry(
             text,
-            datetime_obj=to_datetime(datetime_string[:-1], fmt="isoformat"),
+            datetime_obj=make_datetime(datetime_string[:-1], fmt="isoformat"),
             metadata=metadata,
         )
 
