@@ -2,6 +2,7 @@ import csv
 import json
 import datetime
 from json import JSONEncoder
+from mimetypes import guess_type
 from typing import Dict, List
 
 import frontmatter
@@ -12,6 +13,11 @@ class DateTimeEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
+
+
+def get_filetype(filename: str) -> str:
+    filetype, _ = guess_type(filename)
+    return filetype
 
 
 def read_csv(filename: str) -> List[Dict]:

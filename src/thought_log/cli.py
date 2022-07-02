@@ -55,16 +55,16 @@ def add(text):
 @click.argument("filename_or_directory", type=click.Path(exists=True))
 def handle_import(filename_or_directory):
     """Import a file"""
-    from thought_log.entry_handler import import_from_csv, import_from_file
+    from thought_log.importer.filesystem import import_from_file
 
     filepath = Path(filename_or_directory)
 
     if filepath.is_dir():
         print("Importing from directory")
-        import_from_directory(filepath)
+        # import_from_directory(filepath)
     elif filepath.suffix == ".csv":
         print("Importing from csv")
-        import_from_csv(filepath)
+        # import_from_csv(filepath)
     else:
         print("Import from file")
         import_from_file(filepath)
