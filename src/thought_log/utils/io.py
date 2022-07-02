@@ -1,8 +1,17 @@
 import csv
 import json
+import datetime
+from json import JSONEncoder
 from typing import Dict, List
 
 import frontmatter
+
+
+class DateTimeEncoder(JSONEncoder):
+    # https://pynative.com/python-serialize-datetime-into-json/
+    def default(self, obj):
+        if isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat()
 
 
 def read_csv(filename: str) -> List[Dict]:
@@ -23,7 +32,7 @@ def read_json(filename: str, as_type=None) -> Dict:
 
 def write_json(data: Dict, filename: str, mode: str = "w+"):
     with open(filename, mode) as f:
-        json.dump(data, f, indent=4)
+        json.dump(data, f, indent=4, cls=DateTimeEncoder)
         return data
 
 

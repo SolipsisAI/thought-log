@@ -98,14 +98,14 @@ def download(url, source, dest_path=None, revision="main"):
                 shutil.copyfileobj(f, output)
 
 
-def zettelkasten_id(datetime_obj=None, include_seconds=True):
+def zettelkasten_id(datetime_obj=None, include_seconds=True) -> int:
     """Generate an extended zettelksaten id"""
     if not datetime_obj:
         datetime_obj = datetime.now()
 
     fmt = ZKID_DATE_FMT if include_seconds else ZKID_DATE_FMT.replace("%S", "")
 
-    return datetime_obj.strftime(fmt)
+    return int(datetime_obj.strftime(fmt))
 
 
 def snakecase(string):
