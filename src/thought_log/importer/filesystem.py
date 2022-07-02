@@ -11,6 +11,7 @@ from thought_log.utils.io import write_json
 def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     """Prepare data for import"""
     import_data = {}
+    metadata = {}
 
     if isinstance(data, frontmatter.Post):
         text = data.content
@@ -21,9 +22,11 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
         date = data.pop("date")
         metadata = data
     else:
-        pass
+        text = data
+        date = make_datetime(text)
 
     import_data["id"] = zettelkasten_id(date)
+    import_data["date"] = make_datetime(date)
     import_data["metadata"] = metadata
     import_data["text"] = text
 
