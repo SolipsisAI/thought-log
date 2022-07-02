@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Union
 
 from thought_log.utils import read_file, zettelkasten_id
+from thought_log.utils.common import to_datetime
 from thought_log.utils.io import write_json
 
 
@@ -12,11 +13,13 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     import_data = {}
 
     if isinstance(data, frontmatter.Post):
-        metadata = data.metadata
         text = data.content
         date = metadata["date"]
+        metadata = data.metadata
     elif isinstance(data, Dict):
-        pass
+        text = data.pop("text")
+        date = data.pop("date")
+        metadata = data
     else:
         pass
 

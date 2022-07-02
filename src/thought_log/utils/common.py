@@ -178,8 +178,8 @@ def find_datetime(input_string: str):
     if not input_string:
         return
 
-    date_obj = find_date(input_string)
-    time_obj = find_time(input_string)
+    date_obj = find_dates(input_string)
+    time_obj = find_times(input_string)
 
     if not date_obj and not time_obj:
         return
@@ -196,7 +196,11 @@ def find_datetime(input_string: str):
     return datetime_obj
 
 
-def find_date(input_string):
+def find_dates(input_string):
+    def format_date(m):
+        year, month, day = m
+        return date(int(year), int(month), int(day))
+
     date_pattern = (
         "(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01])"
     )
@@ -205,11 +209,11 @@ def find_date(input_string):
     if not date_matches:
         return
 
-    year, month, day = date_matches[0]
-    return date(int(year), int(month), int(day))
+    dates = list(map(format_date, date_matches))
+    return dates[0] if len(dates) == 1 else dates
 
 
-def find_time(input_string):
+def find_times(input_string):
     time_pattern = (
         "(0[1-2]|[0-2][0-9])(?:\:)(0[1-9]|[0-5][0-9])(?:\:)(0[1-9]|[0-5][0-9])"
     )
