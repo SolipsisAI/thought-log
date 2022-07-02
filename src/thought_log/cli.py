@@ -66,7 +66,7 @@ def handle_import(filename_or_directory):
         print("Importing from csv")
         # import_from_csv(filepath)
     else:
-        print("Import from file")
+        print("Importing from file")
         import_from_file(filepath)
 
 

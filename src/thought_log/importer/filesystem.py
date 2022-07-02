@@ -1,9 +1,9 @@
 from datetime import datetime
-
 from pathlib import Path
 from typing import Dict, Union
 
 import frontmatter
+from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
@@ -24,18 +24,7 @@ def import_from_file(filename: Union[str, Path]):
     post = read_file(filename)
     data = prepare_data(post)
 
-    # If no date is found, try getting it from the name
-    if not data.get("date"):
-        date = make_datetime(str(filename)) or datetime.now()
-        data["date"] = date
-        data["id"] = zettelkasten_id(date)
-
-    zkid = data["id"]
-
-    if already_imported(zkid):
-        return
-
-    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.json"))
+    return write_data(data)
 
 
 def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
@@ -64,8 +53,36 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     return import_data
 
 
+def write_data(data, filename: str = None):
+    # If no date is found, try getting it from the name
+    if not data.get("date") and filename:
+        date = make_datetime(str(filename)) or datetime.now()
+        data["date"] = date
+        data["id"] = zettelkasten_id(date)
+
+    zkid = data["id"]
+
+    if already_imported(zkid):
+        return
+
+    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.json"))
+
+
 def import_from_directory():
     """Import from a directory"""
+
+
+def import_from_csv(filename: str):
+    rows = read_csv(filename)
+    skipped = 0
+
+    for row in tqdm(rows):
+        data = prepare_data(row)
+        result = write_data(data)
+        if not result:
+            skipped += 1
+
+    print(f"Skipped {skipped} rows")
 
 
 def already_imported(zkid):
