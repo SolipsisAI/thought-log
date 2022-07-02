@@ -24,12 +24,12 @@ def import_from_file(filename: Union[str, Path]):
     post = read_file(filename)
     data = prepare_data(post)
 
-    return import_data(data)
+    return import_data(data, filename)
 
 
 def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
     """Prepare data for import"""
-    import_data = {}
+    prepared_data = {}
     metadata = {}
     date = None
 
@@ -45,12 +45,12 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
         text = data
         date = find_datetime(text)
 
-    import_data["date"] = make_datetime(date) if date else None
-    import_data["id"] = zettelkasten_id(date) if date else None
-    import_data["metadata"] = metadata
-    import_data["text"] = text
+    prepared_data["date"] = make_datetime(date) if date else None
+    prepared_data["id"] = zettelkasten_id(date) if date else None
+    prepared_data["metadata"] = metadata
+    prepared_data["text"] = text
 
-    return import_data
+    return prepared_data
 
 
 def import_data(data, filename: str = None):
@@ -68,8 +68,19 @@ def import_data(data, filename: str = None):
     return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.json"))
 
 
-def import_from_directory():
+def import_from_directory(dirpath: Union[str, Path]):
     """Import from a directory"""
+    dirpath = Path(dirpath) if isinstance(dir, str) else dirpath
+    filenames = list(dirpath.glob("**/*"))
+    skipped = 0
+
+    for filename in tqdm(filenames):
+        result = import_from_file(filename)
+        if not result:
+            print(f"Skipped: {filename}")
+            skipped += 1
+
+    print(f"Skipped {skipped} files")
 
 
 def import_from_csv(filename: str):
