@@ -90,8 +90,14 @@ def handle_config(action, key, value):
     from thought_log.utils import get_config, set_config
 
     if action == "set":
+        if not value or not key:
+            click.echo("--key/-k and --value/-v required")
+            exit(1)
         set_config(key, value)
     elif action == "unset":
+        if not key:
+            click("--key/-k required")
+            exit(1)
         unset_config(key)
     else:
         click.echo(f"{get_config(key)}")
