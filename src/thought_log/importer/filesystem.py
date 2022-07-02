@@ -14,7 +14,7 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
 
     if isinstance(data, frontmatter.Post):
         text = data.content
-        date = metadata["date"]
+        date = data.metadata["date"]
         metadata = data.metadata
     elif isinstance(data, Dict):
         text = data.pop("text")

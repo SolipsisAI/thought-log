@@ -107,7 +107,7 @@ def zettelkasten_id(datetime_obj=None, include_seconds=True) -> int:
 
     fmt = ZKID_DATE_FMT if include_seconds else ZKID_DATE_FMT.replace("%S", "")
 
-    return int(datetime_obj.strftime(fmt))
+    return int(make_datetime(datetime_obj).strftime(fmt))
 
 
 def snakecase(string):
@@ -120,7 +120,9 @@ def make_datetime(obj: Union[str, datetime], fmt: str = None):
     if isinstance(obj, datetime):
         return obj
 
-    if isinstance(obj, str):
+    if fmt and isinstance(obj, str):
+        if fmt == "isoformat":
+            return datetime.fromisoformat(obj[:-1])
         return datetime.strptime(obj, fmt)
 
     return find_datetime(obj)
