@@ -33,7 +33,13 @@ def import_from_file(filename: Union[str, Path]):
 
     data = read_file(filename)
     data = prepare_data(data, _hash)
-
+    # store the import source
+    data["metadata"].update(
+        {
+            "tl_source_dir": str(Path(filename).parent.absolute()),
+            "tl_source_file": Path(filename).name,
+        }
+    )
     return import_data(data, filename)
 
 
@@ -72,6 +78,13 @@ def import_from_csv(filename: str):
     for row in tqdm(rows):
         _hash = generate_hash_from_string(row["text"])
         data = prepare_data(row, _hash)
+        # store the import source
+        data["metadata"].update(
+            {
+                "tl_source_dir": str(Path(filename).parent.absolute()),
+                "tl_source_file": Path(filename).name,
+            }
+        )
         result = import_data(data)
 
         if not result:
