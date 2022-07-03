@@ -17,15 +17,16 @@ class DateTimeEncoder(JSONEncoder):
             return obj.isoformat()
 
 
-def generate_hash(filename_or_string: str):
+def generate_hash_from_file(filename: str) -> str:
     """Generate hash based on string or filename"""
-    if Path(filename_or_string).exists():
-        with open(filename_or_string, "r") as f:
+    if Path(filename).exists():
+        with open(filename, "r") as f:
             content = f.read()
-    else:
-        content = filename_or_string
+            return hashlib.md5(content.encode("utf-8")).hexdigest()
 
-    return hashlib.md5(content.encode("utf-8")).hexdigest()
+
+def generate_hash_from_string(text: str) -> str:
+    return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 
 def get_filetype(filename: str) -> str:

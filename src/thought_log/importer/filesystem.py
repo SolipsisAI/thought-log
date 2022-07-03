@@ -8,7 +8,11 @@ from tqdm.auto import tqdm
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
 from thought_log.utils.common import find_datetime, make_datetime
-from thought_log.utils.io import write_json, generate_hash
+from thought_log.utils.io import (
+    write_json,
+    generate_hash_from_file,
+    generate_hash_from_string,
+)
 
 
 SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv"]
@@ -21,7 +25,7 @@ def import_from_file(filename: Union[str, Path]):
     if filetype not in SUPPORTED_FILETYPES:
         return
 
-    _hash = generate_hash(filename)
+    _hash = generate_hash_from_file(filename)
 
     if already_imported(_hash):
         print(f"{filename} already imported. filehash: {_hash}")
@@ -31,32 +35,6 @@ def import_from_file(filename: Union[str, Path]):
     data = prepare_data(data, _hash)
 
     return import_data(data, filename)
-
-
-def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
-    """Prepare data for import"""
-    prepared_data = {"_hash": _hash}
-    metadata = {}
-    date = None
-
-    if isinstance(data, frontmatter.Post):
-        text = data.content
-        date = data.metadata.get("date")
-        metadata = data.metadata
-    elif isinstance(data, Dict):
-        text = data.pop("text")
-        date = data.pop("date", None)
-        metadata = data
-    else:
-        text = data
-        date = find_datetime(text)
-
-    prepared_data["date"] = make_datetime(date) if date else None
-    prepared_data["id"] = zettelkasten_id(date) if date else None
-    prepared_data["metadata"] = metadata
-    prepared_data["text"] = text
-
-    return prepared_data
 
 
 def import_data(data, filename: str = None):
@@ -92,8 +70,10 @@ def import_from_csv(filename: str):
     skipped = 0
 
     for row in tqdm(rows):
-        data = prepare_data(row)
+        _hash = generate_hash_from_string(row["text"])
+        data = prepare_data(row, _hash)
         result = import_data(data)
+
         if not result:
             skipped += 1
 
@@ -103,3 +83,29 @@ def import_from_csv(filename: str):
 def already_imported(_hash) -> bool:
     matching_files = list(STORAGE_DIR.glob(f"*.{_hash}.json"))
     return bool(matching_files)
+
+
+def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
+    """Prepare data for import"""
+    prepared_data = {"_hash": _hash}
+    metadata = {}
+    date = None
+
+    if isinstance(data, frontmatter.Post):
+        text = data.content
+        date = data.metadata.get("date")
+        metadata = data.metadata
+    elif isinstance(data, Dict):
+        text = data.pop("text")
+        date = data.pop("date", None)
+        metadata = data
+    else:
+        text = data
+        date = find_datetime(text)
+
+    prepared_data["date"] = make_datetime(date) if date else None
+    prepared_data["id"] = zettelkasten_id(date) if date else None
+    prepared_data["metadata"] = metadata
+    prepared_data["text"] = text
+
+    return prepared_data
