@@ -21,7 +21,7 @@ def generate_hash(filename_or_string: str):
     """Generate hash based on string or filename"""
     if Path(filename_or_string).exists():
         with open(filename_or_string, "r") as f:
-            content = f.read() 
+            content = f.read()
     else:
         content = filename_or_string
 
@@ -57,4 +57,5 @@ def write_json(data: Dict, filename: str, mode: str = "w+"):
 
 def read_file(filename: str):
     with open(filename, "r") as f:
-        return frontmatter.load(f)
+        data = frontmatter.load(f)
+        return data

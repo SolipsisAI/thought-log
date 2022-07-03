@@ -21,15 +21,21 @@ def import_from_file(filename: Union[str, Path]):
     if filetype not in SUPPORTED_FILETYPES:
         return
 
-    post = read_file(filename)
-    data = prepare_data(post)
+    _hash = generate_hash(filename)
+
+    if already_imported(_hash):
+        print(f"{filename} already imported. filehash: {_hash}")
+        return
+
+    data = read_file(filename)
+    data = prepare_data(data, _hash)
 
     return import_data(data, filename)
 
 
-def prepare_data(data: Union[frontmatter.Post, Dict, str]) -> Dict:
+def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
     """Prepare data for import"""
-    prepared_data = {}
+    prepared_data = {"_hash": _hash}
     metadata = {}
     date = None
 
@@ -61,11 +67,9 @@ def import_data(data, filename: str = None):
         data["id"] = zettelkasten_id(date)
 
     zkid = data["id"]
+    _hash = data["_hash"]
 
-    if already_imported(zkid):
-        return
-
-    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.json"))
+    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.{_hash}.json"))
 
 
 def import_from_directory(dirpath: Union[str, Path]):
@@ -96,5 +100,6 @@ def import_from_csv(filename: str):
     print(f"Skipped {skipped} rows")
 
 
-def already_imported(zkid, filehash):
-    return STORAGE_DIR.joinpath(f"{zkid}.{filehash}.json").exists()
+def already_imported(_hash) -> bool:
+    matching_files = list(STORAGE_DIR.glob(f"*.{_hash}.json"))
+    return bool(matching_files)
