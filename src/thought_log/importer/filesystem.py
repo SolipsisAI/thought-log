@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
 from thought_log.utils.common import find_datetime, make_datetime
-from thought_log.utils.io import write_json
+from thought_log.utils.io import write_json, generate_hash
 
 
 SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv"]
@@ -96,5 +96,5 @@ def import_from_csv(filename: str):
     print(f"Skipped {skipped} rows")
 
 
-def already_imported(zkid):
-    return STORAGE_DIR.joinpath(f"{zkid}.json").exists()
+def already_imported(zkid, filehash):
+    return STORAGE_DIR.joinpath(f"{zkid}.{filehash}.json").exists()

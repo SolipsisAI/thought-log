@@ -1,8 +1,10 @@
 import csv
-import json
 import datetime
+import hashlib
+import json
 from json import JSONEncoder
 from mimetypes import guess_type
+from pathlib import Path
 from typing import Dict, List
 
 import frontmatter
@@ -13,6 +15,17 @@ class DateTimeEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
+
+
+def generate_hash(filename_or_string: str):
+    """Generate hash based on string or filename"""
+    if Path(filename_or_string).exists():
+        with open(filename_or_string, "r") as f:
+            content = f.read() 
+    else:
+        content = filename_or_string
+
+    return hashlib.md5(content.encode("utf-8")).hexdigest()
 
 
 def get_filetype(filename: str) -> str:
