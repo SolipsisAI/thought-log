@@ -75,7 +75,7 @@ def import_data(data, filename: str = None):
 def import_from_directory(dirpath: Union[str, Path]):
     """Import from a directory"""
     dirpath = Path(dirpath) if isinstance(dir, str) else dirpath
-    filenames = list(dirpath.glob("**/*"))
+    filenames = list(filter(lambda p: not p.is_dir(), dirpath.glob("**/*")))
     skipped = 0
 
     for filename in tqdm(filenames):
