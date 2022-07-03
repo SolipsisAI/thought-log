@@ -9,13 +9,14 @@ from thought_log.config import STORAGE_DIR
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
 from thought_log.utils.common import find_datetime, make_datetime
 from thought_log.utils.io import (
+    read_json,
     write_json,
     generate_hash_from_file,
     generate_hash_from_string,
 )
 
 
-SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv"]
+SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv", "text/json"]
 
 
 def import_from_file(filename: Union[str, Path]):
@@ -71,20 +72,34 @@ def import_from_directory(dirpath: Union[str, Path]):
     print(f"Skipped {skipped} files")
 
 
+def import_from_json(filename: str):
+    source_data = read_json(filename)
+    metadata = {
+        "tl_source_dir": str(Path(filename).parent.absolute()),
+        "tl_source_file": Path(filename).name,
+    }
+    entries = source_data["entries"]
+    batch_import(entries, metadata)
+
+
 def import_from_csv(filename: str):
-    rows = read_csv(filename)
+    metadata = {
+        "tl_source_dir": str(Path(filename).parent.absolute()),
+        "tl_source_file": Path(filename).name,
+    }
+    entries = read_csv(filename)
+    batch_import(entries, metadata)
+
+
+def batch_import(entries, metadata):
     skipped = 0
 
-    for row in tqdm(rows):
+    for row in tqdm(entries):
         _hash = generate_hash_from_string(row["text"])
         data = prepare_data(row, _hash)
+
         # store the import source
-        data["metadata"].update(
-            {
-                "tl_source_dir": str(Path(filename).parent.absolute()),
-                "tl_source_file": Path(filename).name,
-            }
-        )
+        data["metadata"].update(metadata)
         result = import_data(data)
 
         if not result:
