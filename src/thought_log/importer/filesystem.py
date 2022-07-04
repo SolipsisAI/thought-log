@@ -101,6 +101,11 @@ def batch_import(entries, metadata):
 
         entry["text"] = sanitize_text(entry["text"])
         _hash = generate_hash_from_string(entry["text"])
+
+        if already_imported(_hash):
+            skipped += 1
+            continue
+
         data = prepare_data(entry, _hash)
 
         # store the import source
