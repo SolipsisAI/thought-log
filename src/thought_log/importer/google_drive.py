@@ -26,7 +26,7 @@ def import_from_file(selected_file: GoogleDriveFile):
         "date": datetime_obj,
     }
     _hash = generate_hash_from_string(text)
-    data = prepare_data(data, _hash)
+    data = prepare_data(data, _hash, selected_file.metadata)
     return import_data(data)
 
 

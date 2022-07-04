@@ -128,22 +128,25 @@ def already_imported(_hash, _uuid) -> bool:
     return found_hashes or found_uuids
 
 
-def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
+def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str, metadata: Dict = None) -> Dict:
     """Prepare data for import"""
     prepared_data = {"_hash": _hash}
-    metadata = {}
+
+    if not metadata:
+        metadata = {}
+
     date = None
     uuid = None
 
     if isinstance(data, frontmatter.Post):
         text = data.content
         date = data.metadata.get("date") or find_datetime(text)
-        metadata = data.metadata
+        metadata.update(data.metadata)
         uuid = metadata.get("uuid")
     elif isinstance(data, Dict):
         text = data.pop("text", "")
         date = data.pop("date", None) or data.pop("creationDate", None)
-        metadata = data
+        metadata.update(data)
         uuid = data.get("uuid")
     else:
         text = data
