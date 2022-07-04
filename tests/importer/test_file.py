@@ -5,7 +5,6 @@ from unittest.mock import mock_open, patch
 import frontmatter
 
 from thought_log.importer import filesystem
-from thought_log.utils import make_datetime
 
 
 def read_data(name):
@@ -17,7 +16,9 @@ def read_data(name):
 def test_prepare_data_from_frontmatter_post():
     data = frontmatter.loads(read_data("entry.md"))
     date = datetime.datetime(2022, 7, 2, 12, 49, 38, 119625)
-    assert filesystem.prepare_data(data, "fakehash") == {
+    result = filesystem.prepare_data(data, "fakehash")
+    result.pop("uuid")
+    assert result == {
         "id": 20220702124938,
         "_hash": "fakehash",
         "metadata": {"date": date},
@@ -34,7 +35,9 @@ def test_prepare_data_from_dict():
         "country": "United States",
     }
     date = datetime.datetime(2018, 6, 24, 22, 32, 17)
-    assert filesystem.prepare_data(data, "fakehash") == {
+    result = filesystem.prepare_data(data, "fakehash")
+    result.pop("uuid")
+    assert result == {
         "id": 20180624223217,
         "_hash": "fakehash",
         "metadata": data,
@@ -46,7 +49,9 @@ def test_prepare_data_from_dict():
 def test_prepare_data_from_string():
     data = read_data("entry.txt")
     date = datetime.datetime(1969, 1, 1)
-    assert filesystem.prepare_data(data, "fakehash") == {
+    result = filesystem.prepare_data(data, "fakehash")
+    result.pop("uuid")
+    assert result == {
         "id": 19690101000000,
         "_hash": "fakehash",
         "metadata": {},
