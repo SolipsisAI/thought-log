@@ -94,9 +94,13 @@ def import_from_csv(filename: str):
 def batch_import(entries, metadata):
     skipped = 0
 
-    for row in tqdm(entries):
-        _hash = generate_hash_from_string(row["text"])
-        data = prepare_data(row, _hash)
+    for entry in tqdm(entries):
+        if not bool(entry.get("text")):
+            skipped += 1
+            continue
+
+        _hash = generate_hash_from_string(entry["text"])
+        data = prepare_data(entry, _hash)
 
         # store the import source
         data["metadata"].update(metadata)
@@ -105,7 +109,7 @@ def batch_import(entries, metadata):
         if not result:
             skipped += 1
 
-    print(f"Skipped {skipped} rows")
+    print(f"Skipped {skipped} entries")
 
 
 def already_imported(_hash) -> bool:
@@ -124,7 +128,7 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
         date = data.metadata.get("date")
         metadata = data.metadata
     elif isinstance(data, Dict):
-        text = data.pop("text")
+        text = data.pop("text", "")
         date = data.pop("date", None)
         metadata = data
     else:

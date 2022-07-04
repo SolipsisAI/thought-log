@@ -22,7 +22,7 @@ def generate_hash_from_file(filename: str) -> str:
     if Path(filename).exists():
         with open(filename, "r") as f:
             content = f.read()
-            return hashlib.md5(content.encode("utf-8")).hexdigest()
+            return generate_hash_from_string(content)
 
 
 def generate_hash_from_string(text: str) -> str:

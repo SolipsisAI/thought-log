@@ -65,6 +65,9 @@ def handle_import(filename_or_directory):
     elif filepath.suffix == ".csv":
         print("Importing from csv")
         fs.import_from_csv(filepath)
+    elif filepath.suffix == ".json":
+        print("Importing from json")
+        fs.import_from_json(filepath)
     else:
         print("Importing from file")
         fs.import_from_file(filepath)
