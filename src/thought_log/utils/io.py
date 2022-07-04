@@ -6,6 +6,7 @@ from json import JSONEncoder
 from mimetypes import guess_type
 from pathlib import Path
 from typing import Dict, List
+from uuid import uuid4
 
 import frontmatter
 
@@ -27,6 +28,15 @@ def generate_hash_from_file(filename: str) -> str:
 
 def generate_hash_from_string(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
+
+
+def generate_uuid(dashes: bool = False, uppercase: bool = True) -> str:
+    uuid_string = str(uuid4())
+    if not dashes:
+        uuid_string = uuid_string.replace("-", "")
+    if uppercase:
+        uuid_string = uuid_string.upper()
+    return uuid_string
 
 
 def get_filetype(filename: str) -> str:

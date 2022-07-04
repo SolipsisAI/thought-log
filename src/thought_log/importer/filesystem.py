@@ -9,6 +9,7 @@ from thought_log.config import STORAGE_DIR
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
 from thought_log.utils.common import find_datetime, make_datetime, sanitize_text
 from thought_log.utils.io import (
+    generate_uuid,
     read_json,
     write_json,
     generate_hash_from_file,
@@ -28,7 +29,7 @@ def import_from_file(filename: Union[str, Path]):
 
     _hash = generate_hash_from_file(filename)
 
-    if already_imported(_hash):
+    if already_imported(_hash, None):
         print(f"{filename} already imported. filehash: {_hash}")
         return
 
@@ -53,8 +54,9 @@ def import_data(data, filename: str = None):
 
     zkid = data["id"]
     _hash = data["_hash"]
+    uuid = data["uuid"]
 
-    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.{_hash}.json"))
+    return write_json(data, STORAGE_DIR.joinpath(f"{zkid}.{uuid}.{_hash}.json"))
 
 
 def import_from_directory(dirpath: Union[str, Path]):
@@ -102,7 +104,7 @@ def batch_import(entries, metadata):
         entry["text"] = sanitize_text(entry["text"])
         _hash = generate_hash_from_string(entry["text"])
 
-        if already_imported(_hash):
+        if already_imported(_hash, entry.get("uuid")):
             skipped += 1
             continue
 
@@ -118,9 +120,10 @@ def batch_import(entries, metadata):
     print(f"Skipped {skipped} entries")
 
 
-def already_imported(_hash) -> bool:
-    matching_files = list(STORAGE_DIR.glob(f"*.{_hash}.json"))
-    return bool(matching_files)
+def already_imported(_hash, _uuid) -> bool:
+    found_hashes = _hash and list(STORAGE_DIR.glob(f"*.*.{_hash}.json"))
+    found_uuids = _uuid and list(STORAGE_DIR.glob(f"*.{_uuid}.*.json"))
+    return found_hashes or found_uuids
 
 
 def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
@@ -128,21 +131,25 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
     prepared_data = {"_hash": _hash}
     metadata = {}
     date = None
+    uuid = None
 
     if isinstance(data, frontmatter.Post):
         text = data.content
         date = data.metadata.get("date")
         metadata = data.metadata
+        uuid = metadata.get("uuid")
     elif isinstance(data, Dict):
         text = data.pop("text", "")
         date = data.pop("date", None) or data.pop("creationDate", None)
         metadata = data
+        uuid = data.get("uuid")
     else:
         text = data
         date = find_datetime(text)
 
     prepared_data["date"] = make_datetime(date) if date else None
     prepared_data["id"] = zettelkasten_id(date) if date else None
+    prepared_data["uuid"] = uuid if uuid else generate_uuid()
     prepared_data["metadata"] = metadata
     prepared_data["text"] = text
 
