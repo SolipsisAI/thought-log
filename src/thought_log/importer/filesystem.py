@@ -135,7 +135,7 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
 
     if isinstance(data, frontmatter.Post):
         text = data.content
-        date = data.metadata.get("date")
+        date = data.metadata.get("date") or find_datetime(text)
         metadata = data.metadata
         uuid = metadata.get("uuid")
     elif isinstance(data, Dict):
