@@ -130,7 +130,7 @@ def make_datetime(obj: Union[str, datetime], fmt: str = None):
 
 def list_entries(entries_dir, reverse=False, num_entries=-1):
     entry_ids = sorted(
-        [int(f.stem) for f in Path(entries_dir).glob("*.txt")], reverse=reverse
+        [int(f.stem.split(".")[0]) for f in Path(entries_dir).glob("*.json")], reverse=reverse
     )
     return entry_ids if num_entries < 0 else entry_ids[:num_entries]
 
