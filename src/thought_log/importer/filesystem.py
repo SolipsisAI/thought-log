@@ -60,7 +60,7 @@ def import_data(data, filename: str = None):
 
 
 def import_from_directory(dirpath: Union[str, Path]):
-    """Import from a directory"""
+    """Import plain text/markdown from a directory"""
     dirpath = Path(dirpath) if isinstance(dir, str) else dirpath
     filenames = list(filter(lambda p: not p.is_dir(), dirpath.glob("**/*")))
     skipped = 0
@@ -75,6 +75,7 @@ def import_from_directory(dirpath: Union[str, Path]):
 
 
 def import_from_json(filename: str):
+    """Import from a DayOne JSON export"""
     source_data = read_json(filename)
     metadata = {
         "tl_source_dir": str(Path(filename).parent.absolute()),
@@ -85,6 +86,7 @@ def import_from_json(filename: str):
 
 
 def import_from_csv(filename: str):
+    """Import from a DayOne CSV export"""
     metadata = {
         "tl_source_dir": str(Path(filename).parent.absolute()),
         "tl_source_file": Path(filename).name,

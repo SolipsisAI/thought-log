@@ -4,8 +4,8 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from pydrive2.files import GoogleDriveFile
 
-from thought_log.entry_handler import write_entry
-from thought_log.utils import make_datetime
+from thought_log.utils import make_datetime, generate_hash_from_string
+from .filesystem import import_data, prepare_data
 
 FOLDER_MIMETYPE = "application/vnd.google-apps.folder"
 
@@ -20,7 +20,14 @@ def import_from_file(selected_file: GoogleDriveFile):
     created_date = selected_file["createdDate"]
     text = selected_file.GetContentString()
     datetime_obj = make_datetime(created_date, fmt="isoformat")
-    write_entry(text, datetime_obj=datetime_obj)
+    selected_file.FetchMetadata()
+    data = {
+        "text": text,
+        "date": datetime_obj,
+    }
+    _hash = generate_hash_from_string(text)
+    data = prepare_data(data, _hash)
+    return import_data(data)
 
 
 def init_drive():
