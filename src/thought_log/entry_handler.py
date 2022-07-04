@@ -36,33 +36,32 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
     entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
     for zkid in entry_ids:
-        entry = load_entry(zkid)
+        entries = load_entries(zkid)
 
-        # Make timestamp prettier
-        timestamp = entry.metadata["timestamp"]
-        datetime_obj = make_datetime(timestamp, fmt="isoformat")
-        datetime_str = datetime_obj.strftime("%x %X")
+        for entry in entries:
+            datetime_str = entry["date"]
+            metadata = entry["metadata"]
 
-        # Get emotion
-        emotion = entry.metadata.get("emotion", "")
-        mood = f"mood: {emotion}\n" if emotion else ""
+            # Get emotion
+            emotion = metadata.get("emotion", "")
+            mood = f"mood: {emotion}\n" if emotion else ""
 
-        # Get context
-        context = entry.metadata.get("context", "")
-        tags = f"tags: {context}\n" if context else ""
+            # Get context
+            context = metadata.get("context", "")
+            tags = f"tags: {context}\n" if context else ""
 
-        # Format display
-        display = f"[{datetime_str}]\n\n{mood}{tags}\n\n{display_text(entry.content)}\n\n{hline()}\n\n"
-        display = f"ID: {zkid}\n{display}" if show_id else display
-        yield display
+            # Get text
+            text = entry["text"]
+
+            # Format display
+            display = f"[{datetime_str}]\n\n{mood}{tags}\n\n{display_text(text)}\n\n{hline()}\n\n"
+            display = f"ID: {zkid}\n{display}" if show_id else display
+            yield display
 
 
-def load_entry(zkid: Union[str, int], mode: str = "r"):
-    entry_filepath = STORAGE_DIR.joinpath(f"{zkid}.txt")
-
-    with open(entry_filepath, mode) as f:
-        entry = frontmatter.load(f)
-        return entry
+def load_entries(zkid: Union[str, int]):
+    entry_filepaths = STORAGE_DIR.glob(f"{zkid}.*.*.json")
+    return list(map(read_json, entry_filepaths))
 
 
 def write_entry(text: str, datetime_obj=None, metadata: Dict = None):
