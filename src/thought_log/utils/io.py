@@ -60,3 +60,10 @@ def read_file(filename: str):
     with open(filename, "r") as f:
         data = frontmatter.load(f)
         return data
+
+
+def sanitize_json_string(json_obj):
+    # https://stackoverflow.com/a/64045192
+    s = json.dumps(json_obj)
+    s = s.replace('\\"', '')
+    return json.loads(s)

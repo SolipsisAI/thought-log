@@ -10,6 +10,7 @@ from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
 from thought_log.utils.common import find_datetime, make_datetime
 from thought_log.utils.io import (
     read_json,
+    sanitize_json_string,
     write_json,
     generate_hash_from_file,
     generate_hash_from_string,
@@ -78,7 +79,7 @@ def import_from_json(filename: str):
         "tl_source_dir": str(Path(filename).parent.absolute()),
         "tl_source_file": Path(filename).name,
     }
-    entries = source_data["entries"]
+    entries = list(map(sanitize_json_string, source_data["entries"]))
     batch_import(entries, metadata)
 
 
@@ -129,7 +130,7 @@ def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str) -> Dict:
         metadata = data.metadata
     elif isinstance(data, Dict):
         text = data.pop("text", "")
-        date = data.pop("date", None)
+        date = data.pop("date", None) or data.pop("creationDate", None)
         metadata = data
     else:
         text = data
