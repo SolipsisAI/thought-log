@@ -153,6 +153,11 @@ def wrap_text(text, padding: int = 5):
     return "\n".join(lines)
 
 
+def sanitize_text(text):
+    """Sanitize JSON-encoded text"""
+    return text.replace("\\", "")
+
+
 def flatten(original_list, key: str = "label"):
     # https://appdividend.com/2022/06/17/how-to-flatten-list-in-python/
     return [element for sublist in original_list for element in sublist]

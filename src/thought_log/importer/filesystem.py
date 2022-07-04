@@ -7,10 +7,9 @@ from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
-from thought_log.utils.common import find_datetime, make_datetime
+from thought_log.utils.common import find_datetime, make_datetime, sanitize_text
 from thought_log.utils.io import (
     read_json,
-    sanitize_json_string,
     write_json,
     generate_hash_from_file,
     generate_hash_from_string,
@@ -79,7 +78,7 @@ def import_from_json(filename: str):
         "tl_source_dir": str(Path(filename).parent.absolute()),
         "tl_source_file": Path(filename).name,
     }
-    entries = list(map(sanitize_json_string, source_data["entries"]))
+    entries = source_data["entries"]
     batch_import(entries, metadata)
 
 
@@ -100,6 +99,7 @@ def batch_import(entries, metadata):
             skipped += 1
             continue
 
+        entry["text"] = sanitize_text(entry["text"])
         _hash = generate_hash_from_string(entry["text"])
         data = prepare_data(entry, _hash)
 

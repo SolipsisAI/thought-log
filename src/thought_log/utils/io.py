@@ -65,5 +65,5 @@ def read_file(filename: str):
 def sanitize_json_string(json_obj):
     # https://stackoverflow.com/a/64045192
     s = json.dumps(json_obj)
-    s = s.replace('\\"', '')
+    s = s.replace('\\', '')
     return json.loads(s)
