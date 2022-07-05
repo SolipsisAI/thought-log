@@ -33,12 +33,12 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
             "thought-log configure -d path/to/storage_dir"
         )
 
-    entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
+    zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
-    for zkid in entry_ids:
+    for zkid in zkids:
         entries = load_entries(zkid)
 
-        for entry in entries:
+        for entry, _ in entries:
             datetime_str = entry["date"]
             metadata = entry["metadata"]
 
@@ -60,8 +60,10 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
 
 def load_entries(zkid: Union[str, int]):
+    def load_entry(filepath):
+        return read_json(filepath), filepath
     entry_filepaths = STORAGE_DIR.glob(f"{zkid}.*.*.json")
-    return list(map(read_json, entry_filepaths))
+    return list(map(load_entry, entry_filepaths))
 
 
 def classify_entries(
@@ -77,44 +79,40 @@ def classify_entries(
         "context": Classifier(model=CLASSIFIER_NAME, tokenizer=CLASSIFIER_NAME),
     }
 
-    entry_ids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
+    zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
     skipped = 0
 
-    for entry_id in tqdm(entry_ids):
-        entry = load_entries(entry_id)
+    for zkid in tqdm(zkids):
+        entries = load_entries(zkid)
 
-        needs_emotion = not bool(entry.metadata.get("emotion"))
-        needs_context = not bool(entry.metadata.get("context"))
-        needs_analysis = needs_emotion or needs_context
+        for entry in entries:
+            needs_emotion = not bool(entry.metadata.get("emotion"))
+            needs_context = not bool(entry.metadata.get("context"))
+            needs_analysis = needs_emotion or needs_context
 
-        if not needs_analysis:
-            skipped += 1
-            continue
+            if not needs_analysis:
+                skipped += 1
+                continue
 
-        paragraph_labels = classify_entry(classifiers, entry)
+            paragraph_labels = classify_entry(classifiers, entry)
 
-        emotion_frequency = frequency(paragraph_labels, key="emotion")
-        context_frequency = frequency(paragraph_labels, key="context")
+            emotion_frequency = frequency(paragraph_labels, key="emotion")
+            context_frequency = frequency(paragraph_labels, key="context")
 
-        # Save labels for each paragraph and their scores
-        labels_filepath = STORAGE_DIR.joinpath(f"{entry_id}.json")
-        data = {
-            "paragraphs": paragraph_labels,
-            "frequency": {
-                "emotion": emotion_frequency,
-                "context": context_frequency,
-            },
-        }
-        write_json(data, labels_filepath)
-
-        # Update entry with emotion tag
-        text = entry.content
-        metadata = {
-            "emotion": get_top_labels(emotion_frequency, k=1),
-            "context": get_top_labels(context_frequency, k=3),
-        }
-        update_entry(entry_id, text, metadata)
+            # Save labels for each paragraph and their scores
+            analysis = {
+                "paragraphs": paragraph_labels,
+                "frequency": {
+                    "emotion": emotion_frequency,
+                    "context": context_frequency,
+                },
+            }
+            # Update entry with emotion tag
+            analysis["all_labels"] = {
+                "emotion": get_top_labels(emotion_frequency, k=1),
+                "context": get_top_labels(context_frequency, k=3),
+            }
 
     print(f"Skipped {skipped}")
 

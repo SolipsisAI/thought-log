@@ -128,7 +128,9 @@ def already_imported(_hash, _uuid) -> bool:
     return found_hashes or found_uuids
 
 
-def prepare_data(data: Union[frontmatter.Post, Dict, str], _hash: str, metadata: Dict = None) -> Dict:
+def prepare_data(
+    data: Union[frontmatter.Post, Dict, str], _hash: str, metadata: Dict = None
+) -> Dict:
     """Prepare data for import"""
     prepared_data = {"_hash": _hash}
 

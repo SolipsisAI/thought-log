@@ -2,7 +2,6 @@ from pathlib import Path
 
 import click
 
-from thought_log.entry_handler import import_from_directory
 from thought_log.utils import unset_config
 
 
