@@ -11,4 +11,8 @@ MODELS = {
         "source": "huggingface",
         "url": "j-hartmann/emotion-english-distilroberta-base",
     },
+    "sentiment": {
+        "source": "huggingface",
+        "url": "distilbert-base-uncased-finetuned-sst-2-english",
+    },
 }

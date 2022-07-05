@@ -37,8 +37,8 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
             tags = f"tags: {context}\n" if context else ""
 
             # Get sentiment
-            sentiment_label = labels.get("sentiment")
-            sentiment = f"sentiment: {sentiment_label}\n" if context else ""
+            sentiment = labels.get("sentiment")
+            sentiment = f"sentiment: {sentiment}\n" if sentiment else ""
 
             # Get text
             text = entry["text"]
