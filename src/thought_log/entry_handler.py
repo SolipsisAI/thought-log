@@ -51,11 +51,15 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
             context = labels.get("")
             tags = f"tags: {context}\n" if context else ""
 
+            # Get sentiment
+            sentiment_label = labels.get("sentiment")
+            sentiment = f"sentiment: {sentiment_label}\n" if context else ""
+
             # Get text
             text = entry["text"]
 
             # Format display
-            display = f"[{datetime_str}]\n\n{mood}{tags}\n\n{display_text(text)}\n\n{hline()}\n\n"
+            display = f"[{datetime_str}]\n\n{mood}{tags}{sentiment}\n\n{display_text(text)}\n\n{hline()}\n\n"
             display = f"ID: {zkid}\n{display}" if show_id else display
             yield display
 
@@ -80,6 +84,7 @@ def classify_entries(
         "emotion": Classifier(
             model=EMOTION_CLASSIFIER_NAME, tokenizer=EMOTION_CLASSIFIER_NAME
         ),
+        "sentiment": Classifier(),
         "context": Classifier(model=CLASSIFIER_NAME, tokenizer=CLASSIFIER_NAME),
     }
 
@@ -103,6 +108,7 @@ def classify_entries(
 
             emotion_frequency = frequency(paragraph_labels, key="emotion")
             context_frequency = frequency(paragraph_labels, key="context")
+            sentiment_frequency = frequency(paragraph_labels, key="context")
 
             # Save labels for each paragraph and their scores
             stats = {
@@ -115,6 +121,7 @@ def classify_entries(
                 "paragraphs": paragraph_labels,
                 "emotion": get_top_labels(emotion_frequency, k=1),
                 "context": get_top_labels(context_frequency, k=3),
+                "sentiment": get_top_labels(sentiment_frequency, k=1),
             }
             analysis = {"stats": stats, "labels": top_labels}
             # Update entry with emotion tag
@@ -130,6 +137,7 @@ def classify_entry(
     split: bool = True,
     emotion_k: int = 1,
     context_k: int = 3,
+    sentiment_k: int = 1,
 ):
     """Assign emotion classifiers to an entry/text"""
     doc = tokenize(text)
@@ -138,6 +146,7 @@ def classify_entry(
         emotion=classifiers["emotion"].classify(t, k=emotion_k, include_score=True),
         context=classifiers["context"].classify(t, k=context_k, include_score=True),
         text=t.strip(),
+        sentiment=classifiers["sentiment"].classify(t, k=sentiment_k, include_score=True),
     )
 
     if not split:
