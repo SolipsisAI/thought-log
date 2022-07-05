@@ -60,10 +60,12 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
 
 def load_entries(zkid: Union[str, int]):
-    def load_entry(filepath):
-        return read_json(filepath), filepath
     entry_filepaths = STORAGE_DIR.glob(f"{zkid}.*.*.json")
     return list(map(load_entry, entry_filepaths))
+
+
+def load_entry(filepath):
+    return read_json(filepath), filepath
 
 
 def classify_entries(
