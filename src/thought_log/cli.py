@@ -2,7 +2,6 @@ from pathlib import Path
 
 import click
 
-from thought_log.entry_handler import import_from_directory
 from thought_log.utils import unset_config
 
 
@@ -35,11 +34,14 @@ def show(oldest, num_entries, show_id):
 
 
 @cli.command()
-def analyze():
+@click.option(
+    "--force/--no-force", "-f", default=False, help="Force analysis to re-run"
+)
+def analyze(force):
     """Assign emotion classifications"""
-    from thought_log.entry_handler import classify_entries
+    from thought_log.analyzer import classify_entries
 
-    classify_entries()
+    classify_entries(force=force)
 
 
 @cli.command()
@@ -55,19 +57,22 @@ def add(text):
 @click.argument("filename_or_directory", type=click.Path(exists=True))
 def handle_import(filename_or_directory):
     """Import a file"""
-    from thought_log.entry_handler import import_from_csv, import_from_file
+    from thought_log.importer import filesystem as fs
 
     filepath = Path(filename_or_directory)
 
     if filepath.is_dir():
         print("Importing from directory")
-        import_from_directory(filepath)
+        fs.import_from_directory(filepath)
     elif filepath.suffix == ".csv":
         print("Importing from csv")
-        import_from_csv(filepath)
+        fs.import_from_csv(filepath)
+    elif filepath.suffix == ".json":
+        print("Importing from json")
+        fs.import_from_json(filepath)
     else:
-        print("Import from file")
-        import_from_file(filepath)
+        print("Importing from file")
+        fs.import_from_file(filepath)
 
 
 @cli.command()
@@ -90,8 +95,14 @@ def handle_config(action, key, value):
     from thought_log.utils import get_config, set_config
 
     if action == "set":
+        if not value or not key:
+            click.echo("--key/-k and --value/-v required")
+            exit(1)
         set_config(key, value)
     elif action == "unset":
+        if not key:
+            click("--key/-k required")
+            exit(1)
         unset_config(key)
     else:
         click.echo(f"{get_config(key)}")

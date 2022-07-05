@@ -58,7 +58,7 @@ def test_postprocess_text(text, expected):
 
 def test_zettelkasten_id():
     datetime_obj = datetime(1989, 10, 1, 12, 0, 0)
-    assert common.zettelkasten_id(datetime_obj) == "19891001120000"
+    assert common.zettelkasten_id(datetime_obj) == 19891001120000
 
 
 @pytest.mark.parametrize(
@@ -101,3 +101,11 @@ def test_find_time(input_string, expected):
 )
 def test_find_datetime(input_string, expected):
     assert common.find_datetime(input_string) == expected
+
+
+def test_make_datetime():
+    datetime_obj = datetime(2022, 9, 10)
+    assert common.make_datetime(datetime_obj) == datetime_obj
+
+    datetime_obj = "2018-01-01"
+    assert common.make_datetime(datetime_obj) == datetime(2018, 1, 1, 0, 0)

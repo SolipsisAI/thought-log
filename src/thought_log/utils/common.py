@@ -6,6 +6,7 @@ import textwrap
 from collections import Counter
 from datetime import date, datetime, time
 from pathlib import Path
+from typing import Union
 
 import requests
 from huggingface_hub import snapshot_download
@@ -98,14 +99,14 @@ def download(url, source, dest_path=None, revision="main"):
                 shutil.copyfileobj(f, output)
 
 
-def zettelkasten_id(datetime_obj=None, include_seconds=True):
+def zettelkasten_id(datetime_obj=None, include_seconds=True) -> int:
     """Generate an extended zettelksaten id"""
     if not datetime_obj:
         datetime_obj = datetime.now()
 
     fmt = ZKID_DATE_FMT if include_seconds else ZKID_DATE_FMT.replace("%S", "")
 
-    return datetime_obj.strftime(fmt)
+    return int(make_datetime(datetime_obj).strftime(fmt))
 
 
 def snakecase(string):
@@ -114,20 +115,22 @@ def snakecase(string):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-def to_datetime(string, fmt):
-    if fmt == "isoformat":
-        if string[-1] == "Z":
-            string = string[:-1]
-        return datetime.fromisoformat(string)
-    elif fmt == "zkid":
-        return datetime.strptime(string, ZKID_DATE_FMT)
-    else:
-        return datetime.strptime(string, fmt)
+def make_datetime(obj: Union[str, datetime], fmt: str = None):
+    if isinstance(obj, datetime):
+        return obj
+
+    if fmt and isinstance(obj, str):
+        if fmt == "isoformat":
+            return datetime.fromisoformat(obj[:-1])
+        return datetime.strptime(obj, fmt)
+
+    return find_datetime(obj)
 
 
 def list_entries(entries_dir, reverse=False, num_entries=-1):
     entry_ids = sorted(
-        [int(f.stem) for f in Path(entries_dir).glob("*.txt")], reverse=reverse
+        [int(f.stem.split(".")[0]) for f in Path(entries_dir).glob("*.json")],
+        reverse=reverse,
     )
     return entry_ids if num_entries < 0 else entry_ids[:num_entries]
 
@@ -148,6 +151,11 @@ def display_text(text):
 def wrap_text(text, padding: int = 5):
     lines = textwrap.wrap(text, width=window_size().columns - padding)
     return "\n".join(lines)
+
+
+def sanitize_text(text):
+    """Sanitize JSON-encoded text"""
+    return text.replace("\\", "")
 
 
 def flatten(original_list, key: str = "label"):
@@ -177,7 +185,7 @@ def get_top_labels(label_frequency: Counter, k: int = 1):
 
 
 def find_datetime(input_string: str):
-    """Extract a datetime object from an input string"""
+    """Extract the first datetime object from an input string"""
     if not input_string:
         return
 
@@ -200,6 +208,12 @@ def find_datetime(input_string: str):
 
 
 def find_date(input_string):
+    if isinstance(input_string, date):
+        return input_string
+
+    if not isinstance(input_string, str):
+        return
+
     date_pattern = (
         "(\d{4})(?:\/|-|\.)(0[1-9]|1[0-2])(?:\/|-|\.)(0[1-9]|[12][0-9]|3[01])"
     )
@@ -213,6 +227,12 @@ def find_date(input_string):
 
 
 def find_time(input_string):
+    if isinstance(input_string, time):
+        return input_string
+
+    if not isinstance(input_string, str):
+        return
+
     time_pattern = (
         "(0[1-2]|[0-2][0-9])(?:\:)(0[1-9]|[0-5][0-9])(?:\:)(0[1-9]|[0-5][0-9])"
     )
