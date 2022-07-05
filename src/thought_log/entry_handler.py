@@ -88,50 +88,48 @@ def classify_entries(
     for zkid in tqdm(zkids):
         entries = load_entries(zkid)
 
-        for entry in entries:
-            needs_emotion = not bool(entry.metadata.get("emotion"))
-            needs_context = not bool(entry.metadata.get("context"))
+        for entry, filepath in entries:
+            needs_emotion = not bool(entry.get("analysis", {}).get("emotion"))
+            needs_context = not bool(entry.get("analysis", {}).get("context"))
             needs_analysis = needs_emotion or needs_context
 
             if not needs_analysis:
                 skipped += 1
                 continue
 
-            paragraph_labels = classify_entry(classifiers, entry)
+            paragraph_labels = classify_entry(classifiers, entry["text"])
 
             emotion_frequency = frequency(paragraph_labels, key="emotion")
             context_frequency = frequency(paragraph_labels, key="context")
 
             # Save labels for each paragraph and their scores
-            analysis = {
-                "paragraphs": paragraph_labels,
+            stats = {
                 "frequency": {
                     "emotion": emotion_frequency,
                     "context": context_frequency,
                 },
             }
-            # Update entry with emotion tag
-            analysis["all_labels"] = {
+            top_labels = {
+                "paragraphs": paragraph_labels,
                 "emotion": get_top_labels(emotion_frequency, k=1),
                 "context": get_top_labels(context_frequency, k=3),
             }
+            analysis = {"stats": stats, "labels": top_labels}
+            # Update entry with emotion tag
+            entry["analysis"] = analysis
+            write_json(entry, filepath)
 
     print(f"Skipped {skipped}")
 
 
 def classify_entry(
     classifiers,
-    entry: Union[str, frontmatter.Post],
+    text: str,
     split: bool = True,
     emotion_k: int = 1,
     context_k: int = 3,
 ):
     """Assign emotion classifiers to an entry/text"""
-    if isinstance(entry, frontmatter.Post):
-        text = entry.content
-    else:
-        text = entry
-
     doc = tokenize(text)
 
     classify = lambda t: dict(
