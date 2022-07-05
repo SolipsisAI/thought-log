@@ -23,6 +23,7 @@ dependencies = [
     "pydrive2>=1.10.1",
     "pyowm>=3.3.0",
     "python-dotenv>=0.20.0",
+    "pandas>=1.4.3",
 ]
 requires-python = ">=3.9"
 license = {text = "MIT"}
