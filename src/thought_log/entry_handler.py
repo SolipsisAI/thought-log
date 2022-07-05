@@ -33,7 +33,7 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
             mood = f"mood: {emotion}\n" if emotion else ""
 
             # Get context
-            context = labels.get("")
+            context = labels.get("context")
             tags = f"tags: {context}\n" if context else ""
 
             # Get sentiment
