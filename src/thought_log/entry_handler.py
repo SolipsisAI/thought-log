@@ -40,14 +40,15 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
         for entry, _ in entries:
             datetime_str = entry["date"]
-            metadata = entry["metadata"]
+            analysis = entry["analysis"]
+            labels = analysis.get("labels", {})
 
             # Get emotion
-            emotion = metadata.get("emotion", "")
+            emotion = labels.get("emotion")
             mood = f"mood: {emotion}\n" if emotion else ""
 
             # Get context
-            context = metadata.get("context", "")
+            context = labels.get("")
             tags = f"tags: {context}\n" if context else ""
 
             # Get text
@@ -71,6 +72,7 @@ def load_entry(filepath):
 def classify_entries(
     reverse: bool = True,
     num_entries: int = -1,
+    force: bool = False,
 ):
     from thought_log.nlp.classifier import Classifier
 
@@ -93,7 +95,7 @@ def classify_entries(
             needs_context = not bool(entry.get("analysis", {}).get("context"))
             needs_analysis = needs_emotion or needs_context
 
-            if not needs_analysis:
+            if not force and not needs_analysis:
                 skipped += 1
                 continue
 
