@@ -35,6 +35,11 @@ def classify_entries(
         entries = load_entries(zkid)
 
         for entry, filepath in entries:
+            entry_id = entry["id"]
+            entry_uuid = entry["uuid"]
+            entry_hash = entry["_hash"]
+            print(f"{STORAGE_DIR}/{entry_id}.{entry_uuid}.{entry_hash}.json")
+
             needs_emotion = "emotion" not in entry.get("analysis", {})
 
             if not needs_emotion and not force:

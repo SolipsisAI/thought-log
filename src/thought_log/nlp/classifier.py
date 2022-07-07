@@ -5,7 +5,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
 from thought_log.utils import flatten
-from thought_log.nlp.utils import split_chunks
+from thought_log.nlp.utils import split_chunks, split_paragraphs, tokenize
 
 
 class Classifier:
@@ -46,12 +46,6 @@ class Classifier:
         return {"label": label, "score": score} if include_score else label
 
     def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
-        chunks = list(
-            split_chunks(
-                tokenizer=self.pipe.tokenizer,
-                text=text,
-                per_chunk=self.max_position_embeddings,
-            )
-        )
+        chunks = list(split_paragraphs(tokenize(text)))
         results = self.pipe(chunks, top_k=k)
         return flatten(results)

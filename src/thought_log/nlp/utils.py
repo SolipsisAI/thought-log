@@ -17,18 +17,36 @@ def split_paragraphs(document: Union[Doc, str]):
     start = 0
     for token in document:
         if token.is_space and token.text.count("\n") > 1:
-            yield document[start : token.i]
+            yield document[start : token.i].text
             start = token.i
-    yield document[start:]
+    yield document[start:].text
 
 
-def split_chunks(text: str, per_chunk: int = 512, num_special: int = 7):
-    tokens = tokenize(text)
-    num_tokens = len(tokens)
-    n = per_chunk - (num_special * num_special)  # leave spaces to add special tokens
+def split_chunks(tokenizer, text: str, per_chunk: int = 512):
+    # This fails because we haven't yet split the text into chunks
+    doc = tokenize(text)
+    num_tokens = len(doc)
+    n = per_chunk - len(tokenizer.special_tokens_map)
 
     if num_tokens <= n:
-        yield tokens.text
+        yield doc.text
 
     for i in range(0, num_tokens, n):
-        yield tokens[i : i + n].text
+        yield doc[i : i + n].text
+
+    # token_ids = tokenizer.encode(text)
+    # num_tokens = len(token_ids)
+    # n = per_chunk - 2  # leave spaces to add special tokens
+    # if num_tokens <= n:
+    #     yield tokenizer.decode(
+    #         token_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    #     )
+
+    # for i in range(0, num_tokens, n):
+    #     yield tokenizer.decode(
+    #         token_ids[i : i + n],
+    #         skip_special_tokens=True,
+    #         clean_up_tokenization_spaces=False,
+    #     )
+
+    # get max length sentence
