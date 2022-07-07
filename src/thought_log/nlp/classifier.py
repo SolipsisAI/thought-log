@@ -1,4 +1,5 @@
 from typing import Dict, List, Union
+from thought_log.nlp.utils import split_chunks
 
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
@@ -30,19 +31,26 @@ class Classifier:
     def classify(
         self, text, k: int = 1, include_score=False
     ) -> Union[List[Dict], List[str]]:
-        results = self.pipe(text)
+        chunks = list(
+            split_chunks(
+                text,
+                per_chunk=self.max_position_embeddings,
+                num_special=len(self.pipe.tokenizer.special_tokens_map),
+            )
+        )
+        return self.pipe(list(chunks))
 
-        if DEBUG:
-            print(results)
+        # if DEBUG:
+        #     print(results)
 
-        if not results:
-            return
+        # if not results:
+        #     return
 
-        if k is None:
-            return results
+        # if k is None:
+        #     return results
 
-        # Sort by score, in descending order
-        results.sort(key=lambda item: item.get("score"), reverse=True)
+        # # Sort by score, in descending order
+        # results.sort(key=lambda item: item.get("score"), reverse=True)
 
-        # Return the top k results
-        return [r if include_score else r["label"] for r in results[:k]]
+        # # Return the top k results
+        # return [r if include_score else r["label"] for r in results[:k]]
