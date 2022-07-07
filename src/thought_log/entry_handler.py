@@ -26,25 +26,18 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
         for entry, _ in entries:
             datetime_str = entry["date"]
             analysis = entry.get("analysis", {})
-            labels = analysis.get("labels", {})
 
             # Get emotion
-            emotion = labels.get("emotion")
+            emotion = analysis.get("emotion")
             mood = f"mood: {emotion}\n" if emotion else ""
-
-            # Get context
-            context = labels.get("context")
-            tags = f"tags: {context}\n" if context else ""
-
-            # Get sentiment
-            sentiment = labels.get("sentiment")
-            sentiment = f"sentiment: {sentiment}\n" if sentiment else ""
 
             # Get text
             text = entry["text"]
 
             # Format display
-            display = f"[{datetime_str}]\n\n{mood}{tags}{sentiment}\n\n{display_text(text)}\n\n{hline()}\n\n"
+            display = (
+                f"[{datetime_str}]\n\n{mood}\n\n{display_text(text)}\n\n{hline()}\n\n"
+            )
             display = f"ID: {zkid}\n{display}" if show_id else display
             yield display
 

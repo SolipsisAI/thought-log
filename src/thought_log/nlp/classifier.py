@@ -46,6 +46,9 @@ class Classifier:
         return {"label": label, "score": score} if include_score else label
 
     def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
-        chunks = list(split_paragraphs(tokenize(text)))
-        results = self.pipe(chunks, top_k=k)
+        chunks = self.preprocess(text)
+        results = self.pipe(chunks, top_k=k, padding=True, truncation=True)
         return flatten(results)
+
+    def preprocess(self, text):
+        return list(split_chunks(self.pipe.tokenizer, text))
