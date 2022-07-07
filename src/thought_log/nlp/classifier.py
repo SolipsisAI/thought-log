@@ -38,19 +38,4 @@ class Classifier:
                 num_special=len(self.pipe.tokenizer.special_tokens_map),
             )
         )
-        return self.pipe(list(chunks))
-
-        # if DEBUG:
-        #     print(results)
-
-        # if not results:
-        #     return
-
-        # if k is None:
-        #     return results
-
-        # # Sort by score, in descending order
-        # results.sort(key=lambda item: item.get("score"), reverse=True)
-
-        # # Return the top k results
-        # return [r if include_score else r["label"] for r in results[:k]]
+        return self.pipe(chunks, top_k=k)
