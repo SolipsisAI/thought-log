@@ -34,14 +34,12 @@ def show(oldest, num_entries, show_id):
 
 
 @cli.command()
-@click.option(
-    "--force/--no-force", "-f", default=False, help="Force analysis to re-run"
-)
-def analyze(force):
+@click.option("--update", "-u", type=click.Choice(["emotion", "context", "sentiment"]))
+def analyze(update):
     """Assign emotion classifications"""
     from thought_log.analyzer import classify_entries
 
-    classify_entries(force=force)
+    classify_entries(update=update)
 
 
 @cli.command()

@@ -17,7 +17,7 @@ from thought_log.utils import (
 def classify_entries(
     reverse: bool = True,
     num_entries: int = -1,
-    force: bool = False,
+    update: str = None,
 ):
     from thought_log.nlp.classifier import Classifier
 
@@ -42,27 +42,22 @@ def classify_entries(
 
         for entry, filepath in entries:
             analysis = entry.get("analysis", {})
-            needs_emotion = "emotion" not in analysis
-            needs_sentiment = "sentiment" not in analysis
-            needs_context = "context" not in analysis
+            needs_emotion = "emotion" not in analysis or update == "emotion"
+            needs_sentiment = "sentiment" not in analysis or update == "sentiment"
+            needs_context = "context" not in analysis or update == "context"
 
-            if (
-                not needs_emotion
-                and not needs_sentiment
-                and not needs_context
-                and not force
-            ):
+            if not needs_emotion and not needs_sentiment and not needs_context:
                 continue
 
-            if needs_emotion or force:
+            if needs_emotion:
                 emotion = emotion_classifier.classify(entry["text"])
                 analysis["emotion"] = emotion
 
-            if needs_sentiment or force:
+            if needs_sentiment:
                 sentiment = sentiment_classifier.classify(entry["text"])
                 analysis["sentiment"] = sentiment
 
-            if needs_context or force:
+            if needs_context:
                 context = context_classifier.classify(entry["text"], k=2)
                 analysis["context"] = context
 

@@ -44,7 +44,9 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
             # Format display
             display = f"[{datetime_str}]\n\n{display_emotion}{display_sentiment}{display_context}\n\n{display_text(text)}\n\n{hline()}\n\n"
-            display = f"ID: {zkid}\n{display}" if show_id else display
+            uuid = entry["uuid"]
+            _hash = entry["_hash"]
+            display = f"ID: {zkid}.{uuid}.{_hash}\n{display}" if show_id else display
             yield display
 
 
