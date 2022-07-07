@@ -20,3 +20,14 @@ def split_paragraphs(document: Union[Doc, str]):
             yield document[start : token.i]
             start = token.i
     yield document[start:]
+
+
+def split_chunks(text: str, per_chunk: int = 512):
+    tokens = tokenize(text)
+    num_tokens = len(tokens)
+
+    if num_tokens <= per_chunk:
+        return [tokens]
+
+    for i in range(0, num_tokens, per_chunk):
+        yield tokens[i:i + per_chunk]
