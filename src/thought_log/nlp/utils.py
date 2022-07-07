@@ -33,20 +33,3 @@ def split_chunks(tokenizer, text: str, per_chunk: int = 512):
 
     for i in range(0, num_tokens, n):
         yield doc[i : i + n].text
-
-    # token_ids = tokenizer.encode(text)
-    # num_tokens = len(token_ids)
-    # n = per_chunk - 2  # leave spaces to add special tokens
-    # if num_tokens <= n:
-    #     yield tokenizer.decode(
-    #         token_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
-    #     )
-
-    # for i in range(0, num_tokens, n):
-    #     yield tokenizer.decode(
-    #         token_ids[i : i + n],
-    #         skip_special_tokens=True,
-    #         clean_up_tokenization_spaces=False,
-    #     )
-
-    # get max length sentence

@@ -5,7 +5,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
 from thought_log.utils import flatten
-from thought_log.nlp.utils import split_chunks, split_paragraphs, tokenize
+from thought_log.nlp.utils import split_chunks
 
 
 class Classifier:
