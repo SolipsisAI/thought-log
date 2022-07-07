@@ -31,19 +31,20 @@ class Classifier:
         # Resize embeddings
         self.pipe.model.resize_token_embeddings(len(self.pipe.tokenizer))
 
-    def classify(
-        self, text, k: int = 1, include_score: bool = False, only_mean: bool = False
-    ):
+    def classify(self, text, k: int = 1, include_score: bool = False):
         results = self.__call__(text=text, k=k)
         df = pd.DataFrame.from_records(results)
         mean = df.groupby("label").mean()
-        if only_mean:
-            return mean
 
-        label = mean.score.idxmax()
-        score = mean.score.max()
+        if k == 1:
+            label = mean.score.idxmax()
+            score = mean.score.max()
+            return {"label": label, "score": score} if include_score else label
 
-        return {"label": label, "score": score} if include_score else label
+        if include_score:
+            return [{"label": r[0], "score": r[1]} for r in mean.iterrows()]
+
+        return [r[0] for r in mean.iterrows()]
 
     def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
         chunks = self.preprocess(text)
