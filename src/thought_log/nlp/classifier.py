@@ -1,10 +1,10 @@
 from typing import Dict, List, Union
-from thought_log.nlp.utils import split_chunks
 
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
-from thought_log.utils import DEBUG
+from thought_log.utils import flatten
+from thought_log.nlp.utils import split_chunks
 
 
 class Classifier:
@@ -28,7 +28,7 @@ class Classifier:
         self.label2id = self.pipe.model.config.label2id
         self.id2label = self.pipe.model.config.id2label
 
-    def classify(
+    def __call__(
         self, text, k: int = 1, include_score=False
     ) -> Union[List[Dict], List[str]]:
         chunks = list(
@@ -38,4 +38,5 @@ class Classifier:
                 num_special=len(self.pipe.tokenizer.special_tokens_map),
             )
         )
-        return self.pipe(chunks, top_k=k)
+        results = self.pipe(chunks, top_k=k)
+        return flatten(results)
