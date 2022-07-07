@@ -29,14 +29,21 @@ class Classifier:
         self.label2id = self.pipe.model.config.label2id
         self.id2label = self.pipe.model.config.id2label
 
-    def classify(self, text, k: int = 1) -> Union[List[str], str]:
+    def classify(
+        self, text, k: int = 1, include_score: bool = False, only_mean: bool = False
+    ):
         results = self.__call__(text=text, k=k)
         df = pd.DataFrame.from_records(results)
-        return df.groupby("label").mean()
+        mean = df.groupby("label").mean()
+        if only_mean:
+            return mean
 
-    def __call__(
-        self, text, *, k: int = 1, include_score=False
-    ) -> Union[List[Dict], List[str]]:
+        label = mean.score.idxmax()
+        score = mean.score.max()
+
+        return {"label": label, "score": score} if include_score else label
+
+    def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
         chunks = list(
             split_chunks(
                 text,
