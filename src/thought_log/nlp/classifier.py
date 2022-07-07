@@ -28,6 +28,8 @@ class Classifier:
         # For reference
         self.label2id = self.pipe.model.config.label2id
         self.id2label = self.pipe.model.config.id2label
+        # Resize embeddings
+        self.pipe.model.resize_token_embeddings(len(self.pipe.tokenizer))
 
     def classify(
         self, text, k: int = 1, include_score: bool = False, only_mean: bool = False
@@ -46,9 +48,9 @@ class Classifier:
     def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
         chunks = list(
             split_chunks(
-                text,
+                tokenizer=self.pipe.tokenizer,
+                text=text,
                 per_chunk=self.max_position_embeddings,
-                num_special=len(self.pipe.tokenizer.special_tokens_map),
             )
         )
         results = self.pipe(chunks, top_k=k)
