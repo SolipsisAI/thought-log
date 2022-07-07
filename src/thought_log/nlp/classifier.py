@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+import pandas as pd
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
@@ -28,8 +29,13 @@ class Classifier:
         self.label2id = self.pipe.model.config.label2id
         self.id2label = self.pipe.model.config.id2label
 
+    def classify(self, text, k: int = 1) -> Union[List[str], str]:
+        results = self.__call__(text=text, k=k)
+        df = pd.DataFrame.from_records(results)
+        return df.groupby("label").mean()
+
     def __call__(
-        self, text, k: int = 1, include_score=False
+        self, text, *, k: int = 1, include_score=False
     ) -> Union[List[Dict], List[str]]:
         chunks = list(
             split_chunks(

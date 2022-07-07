@@ -28,7 +28,7 @@ def split_chunks(text: str, per_chunk: int = 512, num_special: int = 7):
     n = per_chunk - (num_special * num_special)  # leave spaces to add special tokens
 
     if num_tokens <= n:
-        yield [tokens.text]
+        yield tokens.text
 
     for i in range(0, num_tokens, n):
         yield tokens[i : i + n].text
