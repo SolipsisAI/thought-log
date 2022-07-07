@@ -54,19 +54,19 @@ def classify_entries(
             ):
                 continue
 
-            entry["analysis"] = {}
-
             if needs_emotion or force:
                 emotion = emotion_classifier.classify(entry["text"])
-                entry["analysis"]["emotion"] = emotion
+                analysis["emotion"] = emotion
 
             if needs_sentiment or force:
                 sentiment = sentiment_classifier.classify(entry["text"])
-                entry["analysis"]["sentiment"] = sentiment
+                analysis["sentiment"] = sentiment
 
             if needs_context or force:
-                context = context_classifier.classify(entry["text"])
-                entry["analysis"]["context"] = context
+                context = context_classifier.classify(entry["text"], k=2)
+                analysis["context"] = context
+
+            entry["analysis"] = analysis
 
             write_json(entry, filepath)
 

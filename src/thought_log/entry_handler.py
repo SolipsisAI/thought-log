@@ -31,15 +31,19 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
             emotion = analysis.get("emotion")
             display_emotion = f"mood: {emotion}\n" if emotion else ""
 
-            # Get emotion
+            # Get sentiment
             sentiment = analysis.get("sentiment")
             display_sentiment = f"sentiment: {sentiment}\n" if sentiment else ""
+
+            # Get context
+            context = analysis.get("context")
+            display_context = f"context: {context}\n" if context else ""
 
             # Get text
             text = entry["text"]
 
             # Format display
-            display = f"[{datetime_str}]\n\n{display_emotion}{display_sentiment}\n\n{display_text(text)}\n\n{hline()}\n\n"
+            display = f"[{datetime_str}]\n\n{display_emotion}{display_sentiment}{display_context}\n\n{display_text(text)}\n\n{hline()}\n\n"
             display = f"ID: {zkid}\n{display}" if show_id else display
             yield display
 
