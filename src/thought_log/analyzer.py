@@ -4,6 +4,7 @@ from tqdm.auto import tqdm
 from thought_log.config import (
     EMOTION_CLASSIFIER_NAME,
     SENTIMENT_CLASSIFIER_NAME,
+    CLASSIFIER_NAME,
     STORAGE_DIR,
 )
 from thought_log.nlp.utils import split_paragraphs, tokenize
@@ -27,6 +28,10 @@ def classify_entries(
         model=SENTIMENT_CLASSIFIER_NAME,
         tokenizer=SENTIMENT_CLASSIFIER_NAME,
     )
+    context_classifier = Classifier(
+        model=CLASSIFIER_NAME,
+        tokenizer=CLASSIFIER_NAME,
+    )
 
     zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
@@ -39,19 +44,29 @@ def classify_entries(
             analysis = entry.get("analysis", {})
             needs_emotion = "emotion" not in analysis
             needs_sentiment = "sentiment" not in analysis
+            needs_context = "context" not in analysis
 
-            if not needs_emotion and not needs_sentiment and not force:
+            if (
+                not needs_emotion
+                and not needs_sentiment
+                and not needs_context
+                and not force
+            ):
                 continue
 
             entry["analysis"] = {}
 
             if needs_emotion or force:
                 emotion = emotion_classifier.classify(entry["text"])
-                entry["analysis"] = emotion
+                entry["analysis"]["emotion"] = emotion
 
             if needs_sentiment or force:
                 sentiment = sentiment_classifier.classify(entry["text"])
-                entry["analysis"] = sentiment
+                entry["analysis"]["sentiment"] = sentiment
+
+            if needs_context or force:
+                context = context_classifier.classify(entry["text"])
+                entry["analysis"]["context"] = context
 
             write_json(entry, filepath)
 
