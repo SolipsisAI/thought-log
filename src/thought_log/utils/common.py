@@ -158,7 +158,7 @@ def sanitize_text(text):
     return text.replace("\\", "")
 
 
-def flatten(original_list, key: str = "label"):
+def flatten(original_list):
     # https://appdividend.com/2022/06/17/how-to-flatten-list-in-python/
     return [element for sublist in original_list for element in sublist]
 
