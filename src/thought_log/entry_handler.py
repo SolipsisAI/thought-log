@@ -10,7 +10,7 @@ from thought_log.utils import (
 
 SUPPORTED_EXTS = ["markdown", "md", "txt"]
 
-ENTRY_ATTRS = ["uuid", "date", "text", "analysis"]
+ENTRY_ATTRS = ["date", "text", "analysis"]
 
 ENTRY_TEMPLATE = """
 [{date}] {uuid}
@@ -59,6 +59,10 @@ def show_entry(entry, additional_attrs: List[str]):
     attrs = list(set(ENTRY_ATTRS).union(additional_attrs))
 
     values = {attr: entry.get(attr) for attr in attrs}
+
+    if "uuid" not in additional_attrs:
+        values["uuid"] = ""
+
     values["text"] = display_text(entry["text"])
     values["analysis"] = format_analysis(values["analysis"])
     values["hline"] = hline()
@@ -67,4 +71,4 @@ def show_entry(entry, additional_attrs: List[str]):
 
 
 def format_analysis(analysis):
-    return ANALYSIS_TEMPLATE.format(**analysis)
+    return ANALYSIS_TEMPLATE.format(**analysis) if analysis else ""
