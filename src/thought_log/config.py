@@ -8,6 +8,8 @@ from thought_log.utils import load_config
 load_dotenv()
 config = load_config()
 
+DEBUG = os.getenv("DEBUG", False)
+
 # Environment variables take precedence to allow for runtime overrides
 STORAGE_DIR_NAME = os.getenv("TL_STORAGE_DIR") or config.get("storage_dir", None)
 STORAGE_DIR = Path(STORAGE_DIR_NAME) if STORAGE_DIR_NAME else None

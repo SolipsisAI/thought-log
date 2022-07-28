@@ -5,7 +5,7 @@ from typing import Dict, Union
 import frontmatter
 from tqdm.auto import tqdm
 
-from thought_log.config import STORAGE_DIR
+from thought_log.config import STORAGE_DIR, DEBUG
 from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
 from thought_log.utils.common import find_datetime, make_datetime, sanitize_text
 from thought_log.utils.io import (
@@ -30,7 +30,8 @@ def import_from_file(filename: Union[str, Path]):
     _hash = generate_hash_from_file(filename)
 
     if already_imported(_hash, None):
-        print(f"{filename} already imported. filehash: {_hash}")
+        if DEBUG:
+            print(f"{filename} already imported. filehash: {_hash}")
         return
 
     data = read_file(filename)
@@ -68,7 +69,8 @@ def import_from_directory(dirpath: Union[str, Path]):
     for filename in tqdm(filenames):
         result = import_from_file(filename)
         if not result:
-            print(f"Skipped: {filename}")
+            if DEBUG:
+                print(f"Skipped: {filename}")
             skipped += 1
 
     print(f"Skipped {skipped} files")
