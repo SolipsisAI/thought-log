@@ -7,6 +7,7 @@ from thought_log.utils import unset_config
 
 @click.group()
 def cli():
+    """Groups commands"""
     pass
 
 

@@ -6,6 +6,8 @@ import frontmatter
 
 from thought_log.importer import filesystem
 
+TEXT = "Hello, world."
+
 
 def read_data(name):
     filepath = Path(__file__).parent.parent.joinpath("fixtures", name)
@@ -23,7 +25,7 @@ def test_prepare_data_from_frontmatter_post():
         "_hash": "fakehash",
         "metadata": {"date": date},
         "date": date,
-        "text": "Hello, world.",
+        "text": TEXT,
     }
 
 
@@ -42,7 +44,7 @@ def test_prepare_data_from_dict():
         "_hash": "fakehash",
         "metadata": data,
         "date": date,
-        "text": "Hello, world.",
+        "text": TEXT,
     }
 
 
@@ -56,7 +58,7 @@ def test_prepare_data_from_string():
         "_hash": "fakehash",
         "metadata": {},
         "date": date,
-        "text": "DATE: 1969-01-01\n\nHello, world.",
+        "text": f"DATE: 1969-01-01\n\n{TEXT}",
     }
 
 
@@ -65,7 +67,3 @@ def test_import_from_file():
     post = filesystem.read_file("test.txt")
     expected_post = frontmatter.loads(read_data("entry.md"))
     assert post.content == expected_post.content
-
-
-def test_import_from_directory():
-    pass
