@@ -13,28 +13,6 @@ from thought_log.utils import (
 )
 
 
-def analyze_entries(
-    reverse: bool = True,
-    num_entries: int = -1,
-    update: str = None,
-):
-    classifiers = get_classifiers()
-
-    zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
-
-    skipped = 0
-
-    for zkid in tqdm(zkids):
-        entries = load_entries(zkid)
-
-        for entry, filepath in entries:
-            entry["analysis"] = analyze_entry(entry, classifiers, update)
-
-            write_json(entry, filepath)
-
-    print(f"Skipped {skipped}")
-
-
 def get_classifiers():
     from thought_log.nlp.classifier import Classifier
 
@@ -55,6 +33,28 @@ def get_classifiers():
         "sentiment": sentiment_classifier,
         "context": context_classifier,
     }
+
+
+def analyze_entries(
+    reverse: bool = True,
+    num_entries: int = -1,
+    update: str = None,
+):
+    classifiers = get_classifiers()
+
+    zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
+
+    skipped = 0
+
+    for zkid in tqdm(zkids):
+        entries = load_entries(zkid)
+
+        for entry, filepath in entries:
+            entry["analysis"] = analyze_entry(entry, classifiers, update)
+
+            write_json(entry, filepath)
+
+    print(f"Skipped {skipped}")
 
 
 def analyze_entry(entry, classifiers, update):
