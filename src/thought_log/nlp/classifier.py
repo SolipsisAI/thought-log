@@ -1,9 +1,11 @@
 from typing import Dict, List, Union
 
+import pandas as pd
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
-from thought_log.utils import DEBUG
+from thought_log.utils import flatten
+from thought_log.nlp.utils import split_chunks
 
 
 class Classifier:
@@ -26,23 +28,28 @@ class Classifier:
         # For reference
         self.label2id = self.pipe.model.config.label2id
         self.id2label = self.pipe.model.config.id2label
+        # Resize embeddings
+        self.pipe.model.resize_token_embeddings(len(self.pipe.tokenizer))
 
-    def classify(
-        self, text, k: int = 1, include_score=False
-    ) -> Union[List[Dict], List[str]]:
-        results = self.pipe(text)
+    def classify(self, text, k: int = 1, include_score: bool = False):
+        results = self.__call__(text=text, k=k)
+        df = pd.DataFrame.from_records(results)
+        mean = df.groupby("label").mean()
 
-        if DEBUG:
-            print(results)
+        if k == 1:
+            label = mean.score.idxmax()
+            score = mean.score.max()
+            return {"label": label, "score": score} if include_score else label
 
-        if not results:
-            return
+        if include_score:
+            return [{"label": r[0], "score": r[1]} for r in mean.iterrows()]
 
-        if k is None:
-            return results
+        return [r[0] for r in mean.iterrows()]
 
-        # Sort by score, in descending order
-        results.sort(key=lambda item: item.get("score"), reverse=True)
+    def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
+        chunks = self.preprocess(text)
+        results = self.pipe(chunks, top_k=k, padding=True, truncation=True)
+        return flatten(results)
 
-        # Return the top k results
-        return [r if include_score else r["label"] for r in results[:k]]
+    def preprocess(self, text):
+        return list(split_chunks(self.pipe.tokenizer, text))
