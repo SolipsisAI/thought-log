@@ -19,6 +19,24 @@ def classify_entries(
     num_entries: int = -1,
     update: str = None,
 ):
+    classifiers = get_classifiers()
+
+    zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
+
+    skipped = 0
+
+    for zkid in tqdm(zkids):
+        entries = load_entries(zkid)
+
+        for entry, filepath in entries:
+            entry["analysis"] = analyze_entry(entry, classifiers, update)
+
+            write_json(entry, filepath)
+
+    print(f"Skipped {skipped}")
+
+
+def get_classifiers():
     from thought_log.nlp.classifier import Classifier
 
     emotion_classifier = Classifier(
@@ -33,36 +51,30 @@ def classify_entries(
         tokenizer=CLASSIFIER_NAME,
     )
 
-    zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
+    return {
+        "emotion": emotion_classifier,
+        "sentiment": sentiment_classifier,
+        "context": context_classifier,
+    }
 
-    skipped = 0
 
-    for zkid in tqdm(zkids):
-        entries = load_entries(zkid)
+def analyze_entry(entry, classifiers, update):
+    analysis = entry.get("analysis", {})
 
-        for entry, filepath in entries:
-            analysis = entry.get("analysis", {})
-            needs_emotion = "emotion" not in analysis or update == "emotion"
-            needs_sentiment = "sentiment" not in analysis or update == "sentiment"
-            needs_context = "context" not in analysis or update == "context"
+    needs_emotion = "emotion" not in analysis or update == "emotion"
+    needs_sentiment = "sentiment" not in analysis or update == "sentiment"
+    needs_context = "context" not in analysis or update == "context"
 
-            if not needs_emotion and not needs_sentiment and not needs_context:
-                continue
+    if not needs_emotion and not needs_sentiment and not needs_context:
+        return analysis
 
-            if needs_emotion:
-                emotion = emotion_classifier.classify(entry["text"])
-                analysis["emotion"] = emotion
+    if needs_emotion:
+        analysis["emotion"] = classifiers["emotion"].classify(entry["text"])
 
-            if needs_sentiment:
-                sentiment = sentiment_classifier.classify(entry["text"])
-                analysis["sentiment"] = sentiment
+    if needs_sentiment:
+        analysis["sentiment"] = classifiers["sentiment"].classify(entry["text"])
 
-            if needs_context:
-                context = context_classifier.classify(entry["text"], k=2)
-                analysis["context"] = context
+    if needs_context:
+        analysis["context"] = classifiers["context"].classify(entry["text"], k=2)
 
-            entry["analysis"] = analysis
-
-            write_json(entry, filepath)
-
-    print(f"Skipped {skipped}")
+    return analysis

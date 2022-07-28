@@ -7,9 +7,11 @@ import click
 from .io import read_json
 from .paths import config_path
 
+CONFIG_FILENAME = "config.json"
+
 
 def load_config():
-    config_filepath = config_path().joinpath("config.json")
+    config_filepath = config_path().joinpath(CONFIG_FILENAME)
 
     if not config_path().exists():
         config_path().mkdir(parents=True)
@@ -46,7 +48,7 @@ def unset_config(key):
 
 
 def update_config(data: Dict) -> Dict:
-    config_filepath = config_path().joinpath("config.json")
+    config_filepath = config_path().joinpath(CONFIG_FILENAME)
 
     if config_filepath.exists():
         config_data = read_json(config_filepath)
@@ -60,7 +62,7 @@ def update_config(data: Dict) -> Dict:
 
 
 def save_config(config_data):
-    config_filepath = config_path().joinpath("config.json")
+    config_filepath = config_path().joinpath(CONFIG_FILENAME)
 
     with open(config_filepath, "w+") as fp:
         json.dump(config_data, fp, indent=4)
