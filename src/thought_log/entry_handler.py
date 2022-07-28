@@ -14,8 +14,11 @@ ENTRY_ATTRS = ["date", "text"]
 
 ENTRY_TEMPLATE = """
 {uuid}
-{date}
+[{date}]
+
 {text}
+
+{hline}
 """
 
 
@@ -50,5 +53,9 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
 def show_entry(entry, additional_attrs: List[str]):
     attrs = [*ENTRY_ATTRS, *additional_attrs]
+
     values = {attr: entry.get(attr) for attr in attrs}
+    values["text"] = display_text(entry["text"])
+    values["hline"] = hline()
+
     return ENTRY_TEMPLATE.format(**values)
