@@ -1,3 +1,4 @@
+from typing import Dict
 from thought_log.entry_handler import load_entries
 from tqdm.auto import tqdm
 
@@ -13,7 +14,7 @@ from thought_log.utils import (
 )
 
 
-def get_classifiers():
+def get_classifiers() -> Dict:
     from thought_log.nlp.classifier import Classifier
 
     emotion_classifier = Classifier(
@@ -57,7 +58,7 @@ def analyze_entries(
     print(f"Skipped {skipped}")
 
 
-def analyze_entry(entry, classifiers, update):
+def analyze_entry(entry: Dict, classifiers: Dict, update: str = None) -> Dict:
     analysis = entry.get("analysis", {})
 
     needs_emotion = "emotion" not in analysis or update == "emotion"

@@ -1,6 +1,6 @@
-from typing import Union
+from typing import List, Union
 
-from thought_log.config import STORAGE_DIR
+from thought_log.config import DEBUG, STORAGE_DIR
 from thought_log.utils import (
     display_text,
     hline,
@@ -9,6 +9,23 @@ from thought_log.utils import (
 )
 
 SUPPORTED_EXTS = ["markdown", "md", "txt"]
+
+ENTRY_ATTRS = ["date", "text"]
+
+ENTRY_TEMPLATE = """
+{uuid}
+{date}
+{text}
+"""
+
+
+def load_entries(zkid: Union[str, int]):
+    entry_filepaths = STORAGE_DIR.glob(f"{zkid}.*.*.json")
+    return list(map(load_entry, entry_filepaths))
+
+
+def load_entry(filepath):
+    return read_json(filepath), filepath
 
 
 def show_entries(reverse: bool, num_entries: int, show_id: bool):
@@ -20,40 +37,18 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
     zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
+    additional_attrs = []
+    if show_id:
+        additional_attrs.append("uuid")
+
     for zkid in zkids:
         entries = load_entries(zkid)
 
         for entry, _ in entries:
-            datetime_str = entry["date"]
-            analysis = entry.get("analysis", {})
-
-            # Get emotion
-            emotion = analysis.get("emotion")
-            display_emotion = f"mood: {emotion}\n" if emotion else ""
-
-            # Get sentiment
-            sentiment = analysis.get("sentiment")
-            display_sentiment = f"sentiment: {sentiment}\n" if sentiment else ""
-
-            # Get context
-            context = analysis.get("context")
-            display_context = f"context: {context}\n" if context else ""
-
-            # Get text
-            text = entry["text"]
-
-            # Format display
-            display = f"[{datetime_str}]\n\n{display_emotion}{display_sentiment}{display_context}\n\n{display_text(text)}\n\n{hline()}\n\n"
-            uuid = entry["uuid"]
-            _hash = entry["_hash"]
-            display = f"ID: {zkid}.{uuid}.{_hash}\n{display}" if show_id else display
-            yield display
+            yield show_entry(entry, additional_attrs)
 
 
-def load_entries(zkid: Union[str, int]):
-    entry_filepaths = STORAGE_DIR.glob(f"{zkid}.*.*.json")
-    return list(map(load_entry, entry_filepaths))
-
-
-def load_entry(filepath):
-    return read_json(filepath), filepath
+def show_entry(entry, additional_attrs: List[str]):
+    attrs = [*ENTRY_ATTRS, *additional_attrs]
+    values = {attr: entry.get(attr) for attr in attrs}
+    return ENTRY_TEMPLATE.format(**values)
