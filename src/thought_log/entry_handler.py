@@ -10,15 +10,19 @@ from thought_log.utils import (
 
 SUPPORTED_EXTS = ["markdown", "md", "txt"]
 
-ENTRY_ATTRS = ["date", "text"]
+ENTRY_ATTRS = ["uuid", "date", "text", "analysis"]
 
 ENTRY_TEMPLATE = """
-{uuid}
-[{date}]
-
+[{date}] {uuid}
+{analysis}
 {text}
-
 {hline}
+"""
+
+ANALYSIS_TEMPLATE = """
+MOOD: {emotion}
+SENTIMENT: {sentiment}
+CONTEXT: {context}
 """
 
 
@@ -52,10 +56,15 @@ def show_entries(reverse: bool, num_entries: int, show_id: bool):
 
 
 def show_entry(entry, additional_attrs: List[str]):
-    attrs = [*ENTRY_ATTRS, *additional_attrs]
+    attrs = list(set(ENTRY_ATTRS).union(additional_attrs))
 
     values = {attr: entry.get(attr) for attr in attrs}
     values["text"] = display_text(entry["text"])
+    values["analysis"] = format_analysis(values["analysis"])
     values["hline"] = hline()
 
     return ENTRY_TEMPLATE.format(**values)
+
+
+def format_analysis(analysis):
+    return ANALYSIS_TEMPLATE.format(**analysis)
