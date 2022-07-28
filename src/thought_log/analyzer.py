@@ -7,14 +7,13 @@ from thought_log.config import (
     CLASSIFIER_NAME,
     STORAGE_DIR,
 )
-from thought_log.nlp.utils import split_paragraphs, tokenize
 from thought_log.utils import (
     list_entries,
     write_json,
 )
 
 
-def classify_entries(
+def analyze_entries(
     reverse: bool = True,
     num_entries: int = -1,
     update: str = None,
