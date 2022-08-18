@@ -24,7 +24,7 @@ thought-log download
 
 ```shell
 # Set the storage directory for the entries
-thought-log config -k storage_dir -v ~/Documents/.thought-log
+thought-log config set -k storage_dir -v ~/Documents/.thought-log
 ```
 
 # Usage
