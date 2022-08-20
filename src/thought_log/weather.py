@@ -1,4 +1,3 @@
-from email import message
 from typing import Tuple
 import geocoder
 from pyowm import OWM
