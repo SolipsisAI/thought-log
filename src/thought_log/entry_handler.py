@@ -1,5 +1,6 @@
 from typing import List, Union
 
+from thought_log.importer.filesystem import import_data, prepare_data
 from thought_log.config import DEBUG, STORAGE_DIR
 from thought_log.utils import (
     display_text,
@@ -7,6 +8,7 @@ from thought_log.utils import (
     list_entries,
     read_json,
 )
+from thought_log.utils.io import generate_hash_from_string
 
 SUPPORTED_EXTS = ["markdown", "md", "txt"]
 
@@ -72,3 +74,8 @@ def show_entry(entry, additional_attrs: List[str]):
 
 def format_analysis(analysis):
     return ANALYSIS_TEMPLATE.format(**analysis) if analysis else ""
+
+
+def write_entry(text):
+    data = prepare_data({"text": text}, _hash=generate_hash_from_string(text))
+    return import_data(data)
