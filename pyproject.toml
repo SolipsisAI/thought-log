@@ -25,6 +25,7 @@ dependencies = [
     "python-dotenv>=0.20.0",
     "pandas>=1.4.3",
     "geopy>=2.2.0",
+    "geocoder>=1.38.1",
 ]
 requires-python = ">=3.9"
 license = {text = "MIT"}
