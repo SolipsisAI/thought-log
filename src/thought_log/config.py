@@ -27,4 +27,6 @@ OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY") or config.get(
 DEFAULT_LOCATION = os.getenv("DEFAULT_LOCATION") or config.get(
     "default_location"
 )  # example: "New York, US"
-INCLUDE_WEATHER = bool(os.getenv("INCLUDE_WEATHER") or config.get("include_weather", False))
+INCLUDE_WEATHER = bool(
+    os.getenv("INCLUDE_WEATHER") or config.get("include_weather", False)
+)
