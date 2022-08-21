@@ -248,3 +248,11 @@ def find_time(input_string):
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+
+def kelvin_to_celsius(k):
+    return k - 273.15
+
+
+def kelvin_to_fahrenheit(k):
+    return kelvin_to_celsius(k) * 9 / 5 + 32

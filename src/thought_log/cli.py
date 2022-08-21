@@ -1,7 +1,9 @@
 from pathlib import Path
 
 import click
+from thought_log.analyzer import DEFAULT_CLASSIFIERS
 
+from thought_log.config import INCLUDE_WEATHER
 from thought_log.utils import unset_config
 
 
@@ -35,21 +37,30 @@ def show(oldest, num_entries, show_id):
 
 
 @cli.command()
-@click.option("--update", "-u", type=click.Choice(["emotion", "context", "sentiment"]))
+@click.option(
+    "--update",
+    "-u",
+    type=click.Choice(["emotion", "context", "sentiment"]),
+    default=None,
+)
 def analyze(update):
     """Assign emotion classifications"""
     from thought_log.analyzer import analyze_entries
 
-    analyze_entries(update=update)
+    if not update:
+        update = DEFAULT_CLASSIFIERS
+
+    analyze_entries(classifier_names=update)
 
 
 @cli.command()
 @click.argument("text")
-def add(text):
+@click.option("--weather/--no-weather", default=INCLUDE_WEATHER)
+def add(text, weather):
     """Add entry from stdin"""
     from thought_log.entry_handler import write_entry
 
-    write_entry(text)
+    write_entry(text, has_weather=weather)
 
 
 @cli.command(name="import")

@@ -47,13 +47,15 @@ def import_from_file(filename: Union[str, Path]):
 
 
 def import_data(data, filename: str = None):
-    # If no date is found, try getting it from the name
-    if not data.get("date") and filename:
-        date = make_datetime(str(filename)) or datetime.now()
-        data["date"] = date
-        data["id"] = zettelkasten_id(date)
+    date = data.pop("date", None)
 
-    zkid = data["id"]
+    # If no date is found, try getting it from the name
+    if not date:
+        date = make_datetime(str(filename)) if filename else datetime.now()
+
+    data["date"] = date
+    zkid = zettelkasten_id(date)
+    data["id"] = zkid
     _hash = data["_hash"]
     uuid = data["uuid"]
 
