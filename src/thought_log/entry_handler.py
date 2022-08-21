@@ -9,6 +9,7 @@ from thought_log.utils import (
     read_json,
 )
 from thought_log.utils.io import generate_hash_from_string
+from thought_log.weather import get_weather_metadata
 
 SUPPORTED_EXTS = ["markdown", "md", "txt"]
 
@@ -77,5 +78,8 @@ def format_analysis(analysis):
 
 
 def write_entry(text):
-    data = prepare_data({"text": text}, _hash=generate_hash_from_string(text))
+    metadata = get_weather_metadata()
+    data = prepare_data(
+        {"text": text}, _hash=generate_hash_from_string(text), metadata=metadata
+    )
     return import_data(data)

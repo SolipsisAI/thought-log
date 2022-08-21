@@ -5,6 +5,22 @@ from pyowm import OWM
 from .config import OPENWEATHER_API_KEY
 
 
+def get_weather_metadata():
+    try:
+        coords = get_location()
+        weather = get_weather(coords)
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return None
+    else:
+        metadata = weather.to_dict()
+        metadata["coords"] = {
+            "lat": coords[0],
+            "lon": coords[1],
+        }
+        return metadata
+
+
 def get_weather(coords: Tuple[float] = None):
     if not coords:
         coords = get_location()
