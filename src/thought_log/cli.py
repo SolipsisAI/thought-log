@@ -45,11 +45,12 @@ def analyze(update):
 
 @cli.command()
 @click.argument("text")
-def add(text):
+@click.option("--weather/--no-weather", default=True)
+def add(text, weather):
     """Add entry from stdin"""
     from thought_log.entry_handler import write_entry
 
-    write_entry(text)
+    write_entry(text, has_weather=weather)
 
 
 @cli.command(name="import")
