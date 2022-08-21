@@ -2,6 +2,7 @@ from pathlib import Path
 
 import click
 
+from thought_log.config import INCLUDE_WEATHER
 from thought_log.utils import unset_config
 
 
@@ -45,7 +46,7 @@ def analyze(update):
 
 @cli.command()
 @click.argument("text")
-@click.option("--weather/--no-weather", default=True)
+@click.option("--weather/--no-weather", default=INCLUDE_WEATHER)
 def add(text, weather):
     """Add entry from stdin"""
     from thought_log.entry_handler import write_entry
