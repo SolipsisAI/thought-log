@@ -78,7 +78,7 @@ def format_analysis(analysis):
 
 
 def write_entry(text, has_weather: bool = True):
-    metadata = get_weather_metadata() if has_weather else None
+    metadata = {"weather": get_weather_metadata()} if has_weather else None
     data = prepare_data(
         {"text": text}, _hash=generate_hash_from_string(text), metadata=metadata
     )
