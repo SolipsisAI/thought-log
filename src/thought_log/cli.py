@@ -41,7 +41,7 @@ def analyze(update):
     """Assign emotion classifications"""
     from thought_log.analyzer import analyze_entries
 
-    analyze_entries(update=update)
+    analyze_entries(classifier_names=[update])
 
 
 @cli.command()

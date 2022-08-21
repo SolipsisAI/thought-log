@@ -74,7 +74,10 @@ def show_entry(entry, additional_attrs: List[str]):
 
 
 def format_analysis(analysis):
-    return ANALYSIS_TEMPLATE.format(**analysis) if analysis else ""
+    formatted = ""
+    for k, v in analysis.items():
+        formatted += f"{k.upper()}: {v}\n"
+    return formatted
 
 
 def write_entry(text, has_weather: bool = True):

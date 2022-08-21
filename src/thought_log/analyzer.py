@@ -1,11 +1,9 @@
-from typing import Dict
+from typing import Dict, List
 from thought_log.entry_handler import load_entries
 from tqdm.auto import tqdm
 
 from thought_log.config import (
-    EMOTION_CLASSIFIER_NAME,
-    SENTIMENT_CLASSIFIER_NAME,
-    CLASSIFIER_NAME,
+    CLASSIFIER_NAMES,
     STORAGE_DIR,
 )
 from thought_log.utils import (
@@ -14,34 +12,33 @@ from thought_log.utils import (
 )
 
 
-def get_classifiers() -> Dict:
+DEFAULT_CLASSIFIERS = ["emotion", "sentiment", "context"]
+
+
+def get_classifiers(classifier_names: List[str] = None) -> Dict:
     from thought_log.nlp.classifier import Classifier
 
-    emotion_classifier = Classifier(
-        model=EMOTION_CLASSIFIER_NAME, tokenizer=EMOTION_CLASSIFIER_NAME
-    )
-    sentiment_classifier = Classifier(
-        model=SENTIMENT_CLASSIFIER_NAME,
-        tokenizer=SENTIMENT_CLASSIFIER_NAME,
-    )
-    context_classifier = Classifier(
-        model=CLASSIFIER_NAME,
-        tokenizer=CLASSIFIER_NAME,
-    )
+    if not classifier_names:
+        classifier_names = DEFAULT_CLASSIFIERS
 
-    return {
-        "emotion": emotion_classifier,
-        "sentiment": sentiment_classifier,
-        "context": context_classifier,
-    }
+    classifiers = {}
+
+    for name in classifier_names:
+        classifier_path = CLASSIFIER_NAMES[name]
+        classifiers[name] = Classifier(model=classifier_path, tokenizer=classifier_path)
+
+    return classifiers
 
 
 def analyze_entries(
     reverse: bool = True,
     num_entries: int = -1,
-    update: str = None,
+    classifier_names: List[str] = None,
 ):
-    classifiers = get_classifiers()
+    if not classifier_names:
+        classifier_names = DEFAULT_CLASSIFIERS
+
+    classifiers = get_classifiers(classifier_names)
 
     zkids = list_entries(STORAGE_DIR, reverse=reverse, num_entries=num_entries)
 
@@ -51,30 +48,30 @@ def analyze_entries(
         entries = load_entries(zkid)
 
         for entry, filepath in entries:
-            entry["analysis"] = analyze_entry(entry, classifiers, update)
+            entry["analysis"] = analyze_entry(
+                entry, classifier_names=classifier_names, classifiers=classifiers
+            )
 
             write_json(entry, filepath)
 
     print(f"Skipped {skipped}")
 
 
-def analyze_entry(entry: Dict, classifiers: Dict, update: str = None) -> Dict:
+def analyze_entry(
+    entry: Dict,
+    classifier_names: List[str] = None,
+    classifiers: Dict = None,
+) -> Dict:
+    if not classifier_names:
+        classifier_names = DEFAULT_CLASSIFIERS
+
+    if not classifiers:
+        classifiers = get_classifiers(classifier_names)
+
     analysis = entry.get("analysis", {})
 
-    needs_emotion = "emotion" not in analysis or update == "emotion"
-    needs_sentiment = "sentiment" not in analysis or update == "sentiment"
-    needs_context = "context" not in analysis or update == "context"
-
-    if not needs_emotion and not needs_sentiment and not needs_context:
-        return analysis
-
-    if needs_emotion:
-        analysis["emotion"] = classifiers["emotion"].classify(entry["text"])
-
-    if needs_sentiment:
-        analysis["sentiment"] = classifiers["sentiment"].classify(entry["text"])
-
-    if needs_context:
-        analysis["context"] = classifiers["context"].classify(entry["text"], k=2)
+    for name in classifier_names:
+        if name not in analysis:
+            analysis[name] = classifiers[name].classify(entry["text"])
 
     return analysis
