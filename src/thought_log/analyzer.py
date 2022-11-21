@@ -82,6 +82,6 @@ def analyze_text(text: str):
     classifiers = get_classifiers()
 
     for name, classifier in classifiers.items():
-        analysis[name] = classifier(text)
+        analysis[name] = classifier.classify(text)
 
     return analysis
