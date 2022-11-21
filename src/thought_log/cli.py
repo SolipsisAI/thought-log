@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import click
-from thought_log.analyzer import DEFAULT_CLASSIFIERS
 
+from thought_log.analyzer import DEFAULT_CLASSIFIERS
+from thought_log.api import serve
 from thought_log.config import INCLUDE_WEATHER
 from thought_log.utils import unset_config
 
@@ -142,3 +143,11 @@ def interact(
     interact(
         model_name, tokenizer_name, config_name, classifier_name, pipeline, max_length
     )
+
+
+@cli.command()
+@click.option("--host", "-H", default="localhost")
+@click.option("--port", "-P", default=8080)
+def api(host, port):
+    """Serve API"""
+    serve(host, port)
