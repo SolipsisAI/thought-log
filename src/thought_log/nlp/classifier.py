@@ -43,7 +43,7 @@ class Classifier:
 
         result = [{"label": r[0], "score": r[1].score} for r in mean.iterrows()]
         result = sort_list(result, "score", reverse=True)
-        
+
         if not include_score:
             result = [r["label"] for r in result]
 

@@ -260,4 +260,3 @@ def kelvin_to_fahrenheit(k):
 
 def sort_list(list_to_sort: List[Dict], key: str, reverse: bool = False) -> List:
     return sorted(list_to_sort, key=lambda d: d[key], reverse=reverse)
- 

@@ -82,9 +82,7 @@ def analyze_text(text: str, num_labels: int = 1, include_score: bool = False):
     classifiers = get_classifiers()
 
     for name, classifier in classifiers.items():
-        result = classifier.classify(
-            text, k=num_labels, include_score=include_score
-        )
+        result = classifier.classify(text, k=num_labels, include_score=include_score)
         analysis[name] = result[:1] if name == "sentiment" else result
 
     return analysis
