@@ -4,7 +4,7 @@ import pandas as pd
 from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
-from thought_log.utils import flatten
+from thought_log.utils import flatten, sort_list
 from thought_log.nlp.utils import split_chunks
 
 
@@ -41,12 +41,13 @@ class Classifier:
             score = mean.score.max()
             return {"label": label, "score": score} if include_score else label
 
-        if include_score:
-            result = [{"label": r[0], "score": r[1].score} for r in mean.iterrows()]
-            return result[:k] if k > 1 else result
+        result = [{"label": r[0], "score": r[1].score} for r in mean.iterrows()]
+        result = sort_list(result, "score", reverse=True)
+        
+        if not include_score:
+            result = [r["label"] for r in result]
 
-        result = [r[0] for r in mean.iterrows()]
-        return result[:k] if k > 1 else result
+        return result[:k]
 
     def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
         chunks = self.preprocess(text)

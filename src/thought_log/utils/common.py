@@ -6,7 +6,7 @@ import textwrap
 from collections import Counter
 from datetime import date, datetime, time
 from pathlib import Path
-from typing import Union
+from typing import Dict, List, Union
 
 import requests
 from huggingface_hub import snapshot_download
@@ -256,3 +256,8 @@ def kelvin_to_celsius(k):
 
 def kelvin_to_fahrenheit(k):
     return kelvin_to_celsius(k) * 9 / 5 + 32
+
+
+def sort_list(list_to_sort: List[Dict], key: str, reverse: bool = False) -> List:
+    return sorted(list_to_sort, key=lambda d: d[key], reverse=reverse)
+ 
