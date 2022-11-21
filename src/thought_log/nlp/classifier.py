@@ -42,9 +42,12 @@ class Classifier:
             return {"label": label, "score": score} if include_score else label
 
         if include_score:
-            return [{"label": r[0], "score": r[1]} for r in mean.iterrows()]
+            result = [{"label": r[0], "score": r[1]} for r in mean.iterrows()]
+            return result[:k] if k > 1 else result
 
-        return [r[0] for r in mean.iterrows()]
+        result = [r[0] for r in mean.iterrows()]
+        print("k", k)
+        return result[:k] if k > 1 else result
 
     def __call__(self, text, *, k: int = 1) -> Union[List[Dict], List[str]]:
         chunks = self.preprocess(text)

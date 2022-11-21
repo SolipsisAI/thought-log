@@ -12,8 +12,8 @@ def hello():
 def analyze():
     data = request.json
     text = data["text"]
-    num_labels = data.get("num_labels", 1)
-    include_score = data.get("include_score", False)
+    num_labels = int(data.get("num_labels", 1))
+    include_score = bool(data.get("include_score", False))
     analysis = analyze_text(text, num_labels, include_score)
     return analysis
 
