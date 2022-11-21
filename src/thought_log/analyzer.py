@@ -75,3 +75,13 @@ def analyze_entry(
             analysis[name] = classifiers[name].classify(entry["text"])
 
     return analysis
+
+
+def analyze_text(text: str):
+    analysis = {}
+    classifiers = get_classifiers()
+
+    for name, classifier in classifiers.items():
+        analysis[name] = classifier(text)
+
+    return analysis
