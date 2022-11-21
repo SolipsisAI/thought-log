@@ -27,6 +27,16 @@ thought-log download
 thought-log config set -k storage_dir -v ~/Documents/.thought-log
 ```
 
+You may also use a `.env` file within this repo.
+
+```env
+TL_STORAGE_DIR=/home/jovyan/work/journal
+TL_MODEL_NAME=/home/jovyan/work/models/ERICA-update__exported
+TL_CLASSIFIER_NAME=/home/jovyan/work/models/distilroberta-finetuned__exported
+TL_EMOTION_CLASSIFIER_NAME=j-hartmann/emotion-english-distilroberta-base
+TL_SENTIMENT_CLASSIFIER_NAME=distilbert-base-uncased-finetuned-sst-2-english
+```
+
 # Usage
 
 ```shell
