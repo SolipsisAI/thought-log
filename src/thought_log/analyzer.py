@@ -77,12 +77,13 @@ def analyze_entry(
     return analysis
 
 
-def analyze_text(text: str, averaged: bool = False):
+def analyze_text(text: str, num_labels: int = 1, include_score: bool = False):
     analysis = {}
     classifiers = get_classifiers()
 
     for name, classifier in classifiers.items():
-        classify = classifier if averaged else classifier.classify
-        analysis[name] = classify(text)
+        analysis[name] = classifier.classify(
+            text, k=num_labels, include_score=include_score
+        )
 
     return analysis

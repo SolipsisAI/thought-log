@@ -12,10 +12,11 @@ def hello():
 def analyze():
     data = request.json
     text = data["text"]
-    averaged = data.get("averaged", False)
-    analysis = analyze_text(text, averaged)
+    num_labels = data.get("num_labels", 1)
+    include_score = data.get("include_score", False)
+    analysis = analyze_text(text, num_labels, include_score)
     return analysis
 
 
-def serve(host='localhost', port=8080, debug=True):
+def serve(host="localhost", port=8080, debug=True):
     run(host=host, port=port, debug=debug)
