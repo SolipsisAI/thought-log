@@ -12,7 +12,8 @@ def hello():
 def analyze():
     data = request.json
     text = data["text"]
-    analysis = analyze_text(text)
+    averaged = data.get("averaged", False)
+    analysis = analyze_text(text, averaged)
     return analysis
 
 

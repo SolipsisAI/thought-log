@@ -77,11 +77,12 @@ def analyze_entry(
     return analysis
 
 
-def analyze_text(text: str):
+def analyze_text(text: str, averaged: bool = False):
     analysis = {}
     classifiers = get_classifiers()
 
     for name, classifier in classifiers.items():
-        analysis[name] = classifier.classify(text)
+        classify = classifier if averaged else classifier.classify
+        analysis[name] = classify(text)
 
     return analysis
