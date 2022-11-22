@@ -3,6 +3,8 @@ from typing import Union
 import en_core_web_sm
 from spacy.tokens import Doc
 
+DEVICES_MAPPING = {"cuda": 0, "cpu": -1}
+
 
 def tokenize(text: str) -> Doc:
     nlp = en_core_web_sm.load()
@@ -33,3 +35,17 @@ def split_chunks(tokenizer, text: str, per_chunk: int = 512):
 
     for i in range(0, num_tokens, n):
         yield doc[i : i + n].text
+
+
+def get_device(name: str = None) -> int:
+    import torch
+
+    try:
+        cuda_available = torch.cuda.is_available()
+
+        if name is None:
+            return 0 if cuda_available else -1
+    except AssertionError:
+        return -1
+    else:
+        return DEVICES_MAPPING.get(name, -1)

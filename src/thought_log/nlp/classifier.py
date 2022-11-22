@@ -5,7 +5,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer, pipeline
 
 from thought_log.config import CLASSIFIER_NAME
 from thought_log.utils import flatten, sort_list
-from thought_log.nlp.utils import split_chunks
+from thought_log.nlp.utils import split_chunks, get_device
 
 
 class Classifier:
@@ -13,13 +13,13 @@ class Classifier:
         self,
         model: Union[str, PreTrainedModel] = CLASSIFIER_NAME,
         tokenizer: Union[str, PreTrainedTokenizer] = CLASSIFIER_NAME,
-        device: str = "cpu",
+        device: str = None,
     ) -> None:
         self.pipe = pipeline(
             "text-classification",
             model=model,
             tokenizer=tokenizer,
-            device=0 if device == "cuda" else -1,
+            device=get_device(device),
         )
         # This is deprecated, but the recommended param top_k=1 is not working
         self.pipe.model.config.return_all_scores = True
