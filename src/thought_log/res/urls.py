@@ -1,7 +1,7 @@
 MODELS = {
     "core": {
         "source": "solipsis",
-        "url": "https://solipsisai.us-east-1.linodeobjects.com/models/ERICA-update.tar.gz",
+        "url": "https://solipsisai.us-east-1.linodeobjects.com/models/ERICA-updated.tar.gz",
     },
     "classifier": {
         "source": "solipsis",
