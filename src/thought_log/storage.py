@@ -159,20 +159,17 @@ class Storage:
         if autoincrement:
             find_obj.update(
                 {
-                    "_id": autoincrement,
-                    "sequence_value": self.get_next_sequence(collection_name),
+                    autoincrement: self.get_next_sequence(
+                        collection_name, autoincrement
+                    ),
                 }
             )
 
-        import pdb
-
-        pdb.set_trace()
-
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
 
-    def get_next_sequence(self, collection_name):
+    def get_next_sequence(self, collection_name, autoincrement):
         last_obj = self.last(collection_name) or {}
-        sequence_value = last_obj.get("sequence_value", 0)
+        sequence_value = last_obj.get(autoincrement, 0)
 
         if last_obj:
             sequence_value += 1
