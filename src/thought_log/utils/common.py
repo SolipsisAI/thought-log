@@ -30,7 +30,7 @@ def preprocess_text(text, classifier=None):
     prefix = ""
     if classifier:
         text = text.strip()
-        context_label = classifier.classify(text, k=1)[0]
+        context_label = classifier.classify(text, k=1)
 
         if DEBUG:
             print(context_label)
