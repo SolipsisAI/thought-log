@@ -39,7 +39,7 @@ INCLUDE_WEATHER = bool(
 )
 
 # MongoDB
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "chat_history")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "thought_log")
 MONGO_ROOT_USERNAME = os.getenv("MONGO_ROOT_USERNAME")
 MONGO_ROOT_PASSWORD = os.getenv("MONGO_ROOT_PASSWORD")
 MONGO_HOST = os.getenv("MONGO_HOST")

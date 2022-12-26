@@ -64,7 +64,12 @@ class BaseDocument:
         else:
             obj = convert(obj)
 
-        storage.upsert(cls.COLLECTION_NAME, obj, identifier_keys=identifier_keys)
+        storage.upsert(
+            cls.COLLECTION_NAME,
+            obj,
+            identifier_keys=identifier_keys,
+            autoincrement=cls.AUTOINCREMENT,
+        )
 
     @classmethod
     def last(cls):
@@ -121,31 +126,76 @@ class Storage:
         return self._db
 
     def upsert(
-        self, collection_name: str, obj: StorageObj, identifier_keys: List[str] = None
+        self,
+        collection_name: str,
+        obj: StorageObj,
+        identifier_keys: List[str] = None,
+        autoincrement: str = None,
     ):
         if not obj:
             return
 
         if isinstance(obj, Dict):
-            self.upsert_one(collection_name, obj, identifier_keys)
+            self.upsert_one(
+                collection_name, obj, identifier_keys, autoincrement=autoincrement
+            )
         elif isinstance(obj, List):
-            self.upsert_many(collection_name, obj, identifier_keys)
+            self.upsert_many(
+                collection_name, obj, identifier_keys, autoincrement=autoincrement
+            )
 
     def upsert_one(
-        self, collection_name: str, obj: StorageObj, identifier_keys: str = None,
+        self,
+        collection_name: str,
+        obj: StorageObj,
+        identifier_keys: str = None,
+        autoincrement: str = None,
     ):
         find_obj = obj
 
         if identifier_keys:
             find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
 
+        if autoincrement:
+            find_obj.update(
+                {
+                    "_id": autoincrement,
+                    "sequence_value": self.get_next_sequence(collection_name),
+                }
+            )
+
+        import pdb
+
+        pdb.set_trace()
+
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
 
+    def get_next_sequence(self, collection_name):
+        last_obj = self.last(collection_name) or {}
+        sequence_value = last_obj.get("sequence_value", 0)
+
+        if last_obj:
+            sequence_value += 1
+
+        return sequence_value
+
     def upsert_many(
-        self, collection_name: str, obj: DictList, identifier_key: str = None,
+        self,
+        collection_name: str,
+        obj: DictList,
+        identifier_key: str = None,
+        autoincrement: str = None,
     ):
         for item in obj:
-            self.upsert_one(collection_name, item, identifier_key)
+            self.upsert_one(
+                collection_name, item, identifier_key, autoincrement=autoincrement
+            )
+
+    def last(self, collection_name: str):
+        results = storage.query(
+            collection_name=collection_name, sort="$natural", order="DESC", limit=1
+        )
+        return results[0] if results else None
 
     def query(
         self,

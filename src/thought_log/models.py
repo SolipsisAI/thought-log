@@ -13,8 +13,8 @@ class Note(BaseDocument):
         "timestamp",
         "edited_timestamp",
     ]
+    AUTOINCREMENT = "id"
 
-    def __init__(
-        self, data, base_fields: List[str], add_fields: List[str] = None
-    ) -> None:
-        super().__init__(data, base_fields, add_fields)
+    def __init__(self, data, add_fields: List[str] = None):
+        super().__init__(data=data, base_fields=self.FIELDNAMES, add_fields=add_fields)
+        self.from_dict(self.data)
