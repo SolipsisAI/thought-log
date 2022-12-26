@@ -14,6 +14,7 @@ class Note(BaseDocument):
         "edited_timestamp",
     ]
     AUTOINCREMENT = "id"
+    IDENTIFIER_KEYS = ["id"]
 
     def __init__(self, data, add_fields: List[str] = None):
         super().__init__(data=data, base_fields=self.FIELDNAMES, add_fields=add_fields)

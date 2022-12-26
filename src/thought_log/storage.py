@@ -53,7 +53,7 @@ class BaseDocument:
         return cls(storage.db[cls.COLLECTION_NAME].find_one(*args, **kwargs))
 
     @classmethod
-    def upsert(cls, obj, identifier_keys: List[str] = None):
+    def upsert(cls, obj):
         def convert(o):
             if not isinstance(o, cls):
                 o = cls(o)
@@ -67,7 +67,7 @@ class BaseDocument:
         storage.upsert(
             cls.COLLECTION_NAME,
             obj,
-            identifier_keys=identifier_keys,
+            identifier_keys=cls.IDENTIFIER_KEYS,
             autoincrement=cls.AUTOINCREMENT,
         )
 
@@ -153,10 +153,8 @@ class Storage:
     ):
         find_obj = obj
 
-        if identifier_keys:
-            find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
-
-        if autoincrement:
+        if autoincrement and autoincrement not in obj:
+            # Only get next sequence if storage obj doesn't have the autoincremented value
             find_obj.update(
                 {
                     autoincrement: self.get_next_sequence(
@@ -164,6 +162,8 @@ class Storage:
                     ),
                 }
             )
+        elif identifier_keys:
+            find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
 
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
 
