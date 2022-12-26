@@ -40,7 +40,10 @@ class Storage:
             self.upsert_many(collection_name, obj, identifier_keys)
 
     def upsert_one(
-        self, collection_name: str, obj: StorageObj, identifier_keys: str = None,
+        self,
+        collection_name: str,
+        obj: StorageObj,
+        identifier_keys: str = None,
     ):
         find_obj = obj
 
@@ -50,7 +53,10 @@ class Storage:
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
 
     def upsert_many(
-        self, collection_name: str, obj: DictList, identifier_key: str = None,
+        self,
+        collection_name: str,
+        obj: DictList,
+        identifier_key: str = None,
     ):
         for item in obj:
             self.upsert_one(collection_name, item, identifier_key)
