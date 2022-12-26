@@ -152,8 +152,9 @@ class Storage:
         autoincrement: str = None,
     ):
         find_obj = obj
+        is_new_obj = bool(autoincrement) and autoincrement not in obj
 
-        if autoincrement and autoincrement not in obj:
+        if is_new_obj:
             # Only get next sequence if storage obj doesn't have the autoincremented value
             find_obj.update(
                 {
