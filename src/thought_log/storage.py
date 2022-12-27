@@ -174,7 +174,7 @@ class Storage:
 
     def get_next_sequence(self, collection_name, autoincrement):
         last_obj = self.last(collection_name) or {}
-        sequence_value = last_obj.get(autoincrement, 0)
+        sequence_value = last_obj.get(autoincrement, 1)
 
         if last_obj:
             sequence_value += 1
