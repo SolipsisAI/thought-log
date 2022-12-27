@@ -27,6 +27,13 @@ def get_notes():
     return json.dumps(list(map(lambda n: n.to_dict(), Note.find())))
 
 
+@route("/notes", method="POST")
+def post_note():
+    request_data = request.json
+    Note.upsert(request_data)
+    return Note.last().to_dict()
+
+
 @route("/notes/<id:int>", method="GET")
 def get_note(id):
     note = Note.find_one({"id": id})

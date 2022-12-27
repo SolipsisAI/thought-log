@@ -81,7 +81,7 @@ class BaseDocument:
         results = storage.query(
             cls.COLLECTION_NAME, sort="$natural", order="DESC", limit=1
         )
-        return results[0] if results else None
+        return cls(results[0]) if results else None
 
     @property
     def data(self):
