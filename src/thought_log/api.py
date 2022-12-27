@@ -40,5 +40,14 @@ def get_note(id):
     return note.to_dict()
 
 
+@route("/notes/<id:int>", method="PATCH")
+def update_note(id):
+    request_data = request.json
+    request_data["id"] = id
+    Note.upsert(request_data)
+    note = Note.find_one({"id": id})
+    return note.to_dict()
+
+
 def serve(host="localhost", port=8080, debug=True):
     run(host=host, port=port, debug=debug)
