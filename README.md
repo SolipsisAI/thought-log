@@ -14,7 +14,7 @@
 ## Start mongo
 
 ```shell
-docker run --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=supersecret -e MONGO_INITDB_DATABASE=stenographer -v data:/data/db mongo
+docker run --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=supersecret -e MONGO_INITDB_DATABASE=thought_log -v data:/data/db mongo
 ```
 
 ## Installation
