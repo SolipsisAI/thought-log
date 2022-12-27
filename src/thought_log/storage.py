@@ -100,7 +100,7 @@ class BaseDocument:
                 setattr(self, k, v)
 
     def to_json(self):
-        return json.dumps(self.__dict__)
+        return json.dumps(self.to_dict())
 
     def to_dict(self):
         return dict(
