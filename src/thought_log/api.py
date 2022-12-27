@@ -27,5 +27,11 @@ def get_notes():
     return json.dumps(list(map(lambda n: n.to_dict(), Note.find())))
 
 
+@route("/notes/<id:int>", method="GET")
+def get_note(id):
+    note = Note.find_one({"id": id})
+    return note.to_dict()
+ 
+
 def serve(host="localhost", port=8080, debug=True):
     run(host=host, port=port, debug=debug)
