@@ -4,6 +4,7 @@ from typing import List, Dict, Union
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
 from thought_log.config import MONGO_URL, MONGO_DB_NAME
+from thought_log.utils import timestamp
 
 
 DictList = List[Dict]
@@ -36,6 +37,9 @@ class BaseDocument:
                     v = getattr(data, k)
                     setattr(data, k, str(v))
         return data
+
+    def save(self):
+        self.upsert(self)
 
     @classmethod
     def find(cls, *args, **kwargs):
