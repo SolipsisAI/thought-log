@@ -24,6 +24,8 @@ class BaseDocument:
     ) -> None:
         self._data = self.sanitize(data)
         self._fields = base_fields + (add_fields or [])
+        self._created_timestamp = None
+        self._edited_timestamp = None
 
     def sanitize(self, data):
         if isinstance(data, Dict):
@@ -167,6 +169,7 @@ class Storage:
                     ),
                 }
             )
+            obj.update({"created_timestamp": timestamp()})
         elif identifier_keys:
             find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
 

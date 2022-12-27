@@ -4,7 +4,14 @@ from thought_log.storage import BaseDocument
 
 class Notebook(BaseDocument):
     COLLECTION_NAME = "notebooks"
-    FIELDNAMES = ["id", "uuid", "title", "description"]
+    FIELDNAMES = [
+        "id",
+        "uuid",
+        "title",
+        "description",
+        "created_timestamp",
+        "edited_timestamp",
+    ]
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]
 
@@ -21,7 +28,7 @@ class Note(BaseDocument):
         "title",
         "text",
         "notebook",
-        "timestamp",
+        "created_timestamp",
         "edited_timestamp",
     ]
     AUTOINCREMENT = "id"
