@@ -135,6 +135,7 @@ class Storage:
         self,
         collection_name: str,
         obj: StorageObj,
+        find_obj: StorageObj = None,
         identifier_keys: List[str] = None,
         autoincrement: str = None,
     ):
@@ -143,21 +144,32 @@ class Storage:
 
         if isinstance(obj, Dict):
             self.upsert_one(
-                collection_name, obj, identifier_keys, autoincrement=autoincrement
+                collection_name,
+                obj,
+                find_obj=find_obj,
+                identifier_keys=identifier_keys,
+                autoincrement=autoincrement,
             )
         elif isinstance(obj, List):
             self.upsert_many(
-                collection_name, obj, identifier_keys, autoincrement=autoincrement
+                collection_name,
+                obj,
+                find_obj=find_obj,
+                identifier_keys=identifier_keys,
+                autoincrement=autoincrement,
             )
 
     def upsert_one(
         self,
         collection_name: str,
         obj: StorageObj,
+        find_obj: StorageObj = None,
         identifier_keys: str = None,
         autoincrement: str = None,
     ):
-        find_obj = obj
+        if not find_obj:
+            find_obj = obj
+
         is_new_obj = bool(autoincrement) and autoincrement not in obj
 
         if is_new_obj:
@@ -170,8 +182,13 @@ class Storage:
                 }
             )
             obj.update({"created_timestamp": timestamp()})
-        elif identifier_keys:
-            find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
+        else:
+            if identifier_keys:
+                find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
+            obj.update({"edited_timestamp": timestamp()})
+            old_obj = self.db[collection_name].find_one(find_obj)
+            old_obj.update(obj)
+            obj = old_obj
 
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
 
@@ -188,12 +205,15 @@ class Storage:
         self,
         collection_name: str,
         obj: DictList,
-        identifier_key: str = None,
+        identifier_keys: List[str] = None,
         autoincrement: str = None,
     ):
         for item in obj:
             self.upsert_one(
-                collection_name, item, identifier_key, autoincrement=autoincrement
+                collection_name,
+                item,
+                identifier_keys=identifier_keys,
+                autoincrement=autoincrement,
             )
 
     def last(self, collection_name: str):
