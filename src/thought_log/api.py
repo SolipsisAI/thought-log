@@ -3,7 +3,10 @@ import json
 from bottle import route, run, post, get, request, response
 
 from thought_log.analyzer import analyze_text
-from thought_log.models import Note
+from thought_log.models import Note, Notebook
+
+
+RESOURCES = {"notes": Note, "notebooks": Notebook}
 
 
 @route("/hello")
@@ -21,32 +24,36 @@ def analyze():
     return analysis
 
 
-@route("/notes", method="GET")
-def get_notes():
+@route("/<name>", method="GET")
+def get_record_list(name):
     response.content_type = "application/json"
-    return json.dumps(list(map(lambda n: n.to_dict(), Note.find())))
+    return json.dumps(list(map(lambda n: n.to_dict(), RESOURCES[name].find())))
 
 
-@route("/notes", method="POST")
-def post_note():
+@route("/<name>", method="POST")
+def post_record(name):
     request_data = request.json
-    Note.upsert(request_data)
-    return Note.last().to_dict()
+    resource = RESOURCES[name]
+    resource.upsert(request_data)
+    return resource.last().to_dict()
 
 
-@route("/notes/<id:int>", method="GET")
-def get_note(id):
-    note = Note.find_one({"id": id})
-    return note.to_dict()
+@route("/<name>/<id:int>", method="GET")
+def get_record(name, id):
+    resource = RESOURCES[name]
+    record = resource.find_one({"id": id})
+    return record.to_dict()
 
 
-@route("/notes/<id:int>", method="PATCH")
-def update_note(id):
+@route("/<name>/<id:int>", method="PATCH")
+def update_note(name, id):
     request_data = request.json
+    # Set id in request_data so we can find it
     request_data["id"] = id
-    Note.upsert(request_data)
-    note = Note.find_one({"id": id})
-    return note.to_dict()
+    resource = RESOURCES[name]
+    resource.upsert(request_data)
+    record = resource.find_one({"id": id})
+    return record.to_dict()
 
 
 def serve(host="localhost", port=8080, debug=True):
