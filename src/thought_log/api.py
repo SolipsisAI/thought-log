@@ -1,17 +1,12 @@
 import json
 
-from bottle import route, run, post, get, request, response
+from bottle import route, run, request, response
 
 from thought_log.analyzer import analyze_text
 from thought_log.models import Note, Notebook
 
 
 RESOURCES = {"notes": Note, "notebooks": Notebook}
-
-
-@route("/hello")
-def hello():
-    return "Hello world"
 
 
 @route("/analyze", method="POST")

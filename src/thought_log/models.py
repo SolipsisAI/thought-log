@@ -9,8 +9,8 @@ class Notebook(BaseDocument):
         "uuid",
         "title",
         "description",
-        "created_timestamp",
-        "edited_timestamp",
+        "created",
+        "edited",
     ]
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]
@@ -28,8 +28,8 @@ class Note(BaseDocument):
         "title",
         "text",
         "notebook",
-        "created_timestamp",
-        "edited_timestamp",
+        "created",
+        "edited",
     ]
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]

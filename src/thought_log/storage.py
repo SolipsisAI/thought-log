@@ -24,8 +24,8 @@ class BaseDocument:
     ) -> None:
         self._data = self.sanitize(data)
         self._fields = base_fields + (add_fields or [])
-        self._created_timestamp = None
-        self._edited_timestamp = None
+        self._created = None
+        self._edited = None
 
     def sanitize(self, data):
         if isinstance(data, Dict):
@@ -181,11 +181,11 @@ class Storage:
                     ),
                 }
             )
-            obj.update({"created_timestamp": timestamp()})
+            obj.update({"created": timestamp()})
         else:
             if identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
-            obj.update({"edited_timestamp": timestamp()})
+            obj.update({"edited": timestamp()})
             old_obj = self.db[collection_name].find_one(find_obj)
             old_obj.update(obj)
             obj = old_obj
@@ -205,6 +205,7 @@ class Storage:
         self,
         collection_name: str,
         obj: DictList,
+        find_obj: StorageObj = None,
         identifier_keys: List[str] = None,
         autoincrement: str = None,
     ):
@@ -212,6 +213,7 @@ class Storage:
             self.upsert_one(
                 collection_name,
                 item,
+                find_obj=find_obj,
                 identifier_keys=identifier_keys,
                 autoincrement=autoincrement,
             )
