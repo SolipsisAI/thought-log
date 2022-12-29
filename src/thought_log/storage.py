@@ -172,10 +172,8 @@ class Storage:
 
         is_new_obj = (
             bool(autoincrement) and autoincrement not in obj
-            or obj.get("id", -1) == -1  # New object
+            or obj.get("id", None) is None
         )
-
-        import pdb; pdb.set_trace()
 
         if is_new_obj:
             # Only get next sequence if storage obj doesn't have the autoincremented value
