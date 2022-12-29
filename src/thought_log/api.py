@@ -52,4 +52,4 @@ def update_note(name, id):
 
 
 def serve(host="localhost", port=8080, debug=True):
-    run(host=host, port=port, debug=debug)
+    run(host=host, port=port, debug=debug, reloader=debug)
