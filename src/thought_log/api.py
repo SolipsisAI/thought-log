@@ -2,6 +2,7 @@ import json
 
 from bottle import route, run, request, response
 
+from thought_log.config import DEBUG
 from thought_log.analyzer import analyze_text
 from thought_log.models import Note, Notebook
 
@@ -51,5 +52,5 @@ def update_note(name, id):
     return record.to_dict()
 
 
-def serve(host="localhost", port=8080, debug=True):
+def serve(host: str = "localhost", port: int = 8080, debug: bool = DEBUG):
     run(host=host, port=port, debug=debug, reloader=debug)

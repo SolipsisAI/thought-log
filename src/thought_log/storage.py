@@ -170,10 +170,9 @@ class Storage:
         if not find_obj:
             find_obj = obj
 
-        is_new_obj = (
-            bool(autoincrement) and autoincrement not in obj
-            or obj.get("id", None) is None
-        )
+        has_autoincrement = bool(autoincrement) and autoincrement not in obj
+        has_id = bool(obj.get("id", None))
+        is_new_obj = has_autoincrement or not has_id
 
         if is_new_obj:
             # Only get next sequence if storage obj doesn't have the autoincremented value
