@@ -2,10 +2,11 @@ import csv
 import datetime
 import hashlib
 import json
+from io import TextIOWrapper
 from json import JSONEncoder
 from mimetypes import guess_type
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Union
 from uuid import uuid4
 
 import frontmatter
@@ -44,20 +45,28 @@ def get_filetype(filename: str) -> str:
     return filetype
 
 
-def read_csv(filename: str) -> List[Dict]:
-    with open(filename) as f:
-        csv_data = csv.DictReader(f)
-        return list(csv_data)
+def read_csv(fp: Union[str, TextIOWrapper, Path]) -> List[Dict]:
+    if isinstance(fp, str) or isinstance(fp, Path):
+        f = open(fp)
+
+    csv_data = csv.DictReader(f)
+    data = list(csv_data)
+
+    f.close()
+    return data
 
 
-def read_json(filename: str, as_type=None) -> Dict:
-    with open(filename, "r") as json_file:
-        data = json.load(json_file)
+def read_json(fp: Union[str, TextIOWrapper, Path], as_type=None) -> Dict:
+    if isinstance(fp, str) or isinstance(fp, Path):
+        f = open(fp, "r")
 
-        if as_type is not None:
-            data = dict([(as_type(k), v) for k, v in data.items()])
+    data = json.load(f)
 
-        return data
+    if as_type is not None:
+        data = dict([(as_type(k), v) for k, v in data.items()])
+
+    f.close()
+    return data
 
 
 def write_json(data: Dict, filename: str, mode: str = "w+"):
@@ -66,10 +75,13 @@ def write_json(data: Dict, filename: str, mode: str = "w+"):
         return data
 
 
-def read_file(filename: str):
-    with open(filename, "r") as f:
-        data = frontmatter.load(f)
-        return data
+def read_file(fp: Union[str, TextIOWrapper, Path]):
+    if isinstance(fp, str) or isinstance(fp, Path):
+        f = open(fp, "r")
+
+    data = frontmatter.load(f)
+    f.close()
+    return data
 
 
 def sanitize_json_string(json_obj):

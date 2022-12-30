@@ -83,7 +83,7 @@ def handle_import(filename_or_directory):
         fs.import_from_json(filepath)
     else:
         print("Importing from file")
-        fs.import_from_file(filepath)
+        fs.import_from_filename(filepath)
 
 
 @cli.command()

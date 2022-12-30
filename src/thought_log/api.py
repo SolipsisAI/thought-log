@@ -5,6 +5,7 @@ from bottle import route, run, request, response
 from thought_log.config import DEBUG
 from thought_log.analyzer import analyze_text
 from thought_log.models import Note, Notebook
+from thought_log.utils import get_filetype, read_csv
 
 
 RESOURCES = {"notes": Note, "notebooks": Notebook}
@@ -43,7 +44,7 @@ def get_record(name, id):
 
 
 @route("/<name>/<id:int>", method="PATCH")
-def update_note(name, id):
+def update_record(name, id):
     request_data = request.json
     # Set id in request_data so we can find it
     request_data["id"] = id
@@ -51,6 +52,17 @@ def update_note(name, id):
     resource.upsert(request_data)
     record = resource.find_one({"id": id})
     return record.to_dict()
+
+
+@route("/<name>/import", method="POST")
+def import_record(name):
+    upload = request.POST["file"]
+    filetype = get_filetype(upload.raw_filename)
+
+    # then read CSV file from
+    read_csv(upload.file)
+
+    return {"filetype": filetype}
 
 
 def serve(host: str = "localhost", port: int = 8080, debug: bool = DEBUG):

@@ -1,4 +1,5 @@
 from datetime import datetime
+from io import TextIOWrapper
 from pathlib import Path
 from typing import Dict, Union
 
@@ -20,30 +21,32 @@ from thought_log.utils.io import (
 SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv", "text/json"]
 
 
-def import_from_file(filename: Union[str, Path]):
+def import_from_file(fp: Union[str, Path, TextIOWrapper]):
     """Import from plaintext or markdown"""
-    filetype = get_filetype(filename)
+    filetype = get_filetype(fp)
 
     if filetype not in SUPPORTED_FILETYPES:
         return
 
-    _hash = generate_hash_from_file(filename)
+    _hash = generate_hash_from_file(fp)
 
     if already_imported(_hash, None):
         if DEBUG:
-            print(f"{filename} already imported. filehash: {_hash}")
+            print(f"{fp} already imported. filehash: {_hash}")
         return
 
-    data = read_file(filename)
+    data = read_file(fp)
     data = prepare_data(data, _hash)
+
     # store the import source
     data["metadata"].update(
         {
-            "tl_source_dir": str(Path(filename).parent.absolute()),
-            "tl_source_file": Path(filename).name,
+            "tl_source_dir": str(Path(fp).parent.absolute()),
+            "tl_source_file": Path(fp).name,
         }
     )
-    return import_data(data, filename)
+
+    return import_data(data, fp)
 
 
 def import_data(data, filename: str = None):
