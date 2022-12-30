@@ -141,7 +141,7 @@ class BaseDocument:
         def filter_data(item):
             return not item[0].startswith(IGNORE_PREFIX)
 
-        result = dict(list(filter(lambda i: filter_data, self.__dict__.items())))
+        result = dict(list(filter(filter_data, self.__dict__.items())))
 
         if embed:
             children = getattr(self, embed)()
