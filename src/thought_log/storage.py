@@ -19,6 +19,10 @@ IGNORE_PREFIX = "_"
 
 
 class BaseDocument:
+    COLLECTION_NAME = None
+    HAS_MANY = None
+    BELONGS_TO = None
+
     def __init__(
         self, data, base_fields: List[str], add_fields: List[str] = None
     ) -> None:
@@ -57,6 +61,21 @@ class BaseDocument:
     def find_one(cls, *args, **kwargs):
         """Returns an instance of the class"""
         return cls(storage.db[cls.COLLECTION_NAME].find_one(*args, **kwargs))
+
+    # setattr
+    def get_children(self):
+        return storage.db[self.COLLECTION_NAME].aggregate(
+            [
+                {
+                    "$lookup": {
+                        "from": self.HAS_MANY,
+                        "localField": f"id",
+                        "foreignField": f"{self.COLLECTION_NAME[:-1]}",
+                        "as": "joinedResult",
+                    }
+                }
+            ]
+        )
 
     @classmethod
     def upsert(cls, obj):
