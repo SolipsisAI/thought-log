@@ -15,7 +15,6 @@ class Note(BaseDocument):
     ]
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]
-    BELONGS_TO = "notebook"
 
     def __init__(self, data, add_fields: List[str] = None):
         super().__init__(data=data, base_fields=self.FIELDNAMES, add_fields=add_fields)
@@ -34,19 +33,14 @@ class Notebook(BaseDocument):
     ]
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]
-    HAS_MANY = "notes"
+    HAS_MANY = Note
 
     def __init__(self, data, add_fields: List[str] = None):
         super().__init__(data=data, base_fields=self.FIELDNAMES, add_fields=add_fields)
         self.from_dict(self.data)
 
     def notes(self):
-        results = list(self.get_children())
-
-        if not results:
-            return []
-
-        return results[0]["joinedResult"]
+        return self.get_children()
 
 
 MODELS = {"notes": Note, "notebooks": Notebook}

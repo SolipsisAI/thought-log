@@ -64,12 +64,12 @@ class BaseDocument:
 
     # setattr
     def get_children(self):
-        return storage.db[self.COLLECTION_NAME].aggregate(
+        cursor = storage.db[self.COLLECTION_NAME].aggregate(
             [
                 {"$match": {"id": self.id}},
                 {
                     "$lookup": {
-                        "from": self.HAS_MANY,
+                        "from": self.HAS_MANY.COLLECTION_NAME,
                         "localField": f"id",
                         "foreignField": f"{self.COLLECTION_NAME[:-1]}",
                         "as": "joinedResult",
@@ -77,6 +77,15 @@ class BaseDocument:
                 },
             ]
         )
+
+        results = list(cursor)
+
+        if not results:
+            return []
+
+        children = results[0]["joinedResult"]
+
+        return list(map(self.HAS_MANY, children))
 
     @classmethod
     def upsert(cls, obj):
@@ -125,17 +134,23 @@ class BaseDocument:
             if k in self.fields:
                 setattr(self, k, v)
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    def to_json(self, embed: str = None):
+        return json.dumps(self.to_dict(embed=embed))
 
-    def to_dict(self):
-        return dict(
+    def to_dict(self, embed: str = None):
+        result = dict(
             list(
                 filter(
                     lambda i: not i[0].startswith(IGNORE_PREFIX), self.__dict__.items()
                 )
             )
         )
+
+        if embed:
+            children = getattr(self, embed)()
+            result[embed] = list(map(lambda c: c.to_dict(), children))
+
+        return result
 
 
 class Storage:

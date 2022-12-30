@@ -39,7 +39,8 @@ def post_record(name):
 def get_record(name, id):
     resource = RESOURCES[name]
     record = resource.find_one({"id": id})
-    return record.to_dict()
+    embed = request.query.get("_embed", None)
+    return record.to_dict(embed=embed)
 
 
 @route("/<name>/<id:int>", method="PATCH")
