@@ -4,11 +4,18 @@
 
 - [ThoughtLog](#thoughtlog)
 - [Setup](#setup)
+  - [Start mongo](#start-mongo)
   - [Installation](#installation)
   - [Configure](#configure)
 - [Usage](#usage)
 
-# Setup 
+# Setup
+
+## Start mongo
+
+```shell
+docker run --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=supersecret -e MONGO_INITDB_DATABASE=thought_log -v data:/data/db mongo
+```
 
 ## Installation
 

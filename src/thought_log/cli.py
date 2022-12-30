@@ -4,7 +4,7 @@ import click
 
 from thought_log.analyzer import DEFAULT_CLASSIFIERS
 from thought_log.api import serve
-from thought_log.config import INCLUDE_WEATHER
+from thought_log.config import INCLUDE_WEATHER, DEBUG
 from thought_log.utils import unset_config
 
 
@@ -148,6 +148,8 @@ def interact(
 @cli.command()
 @click.option("--host", "-H", default="localhost")
 @click.option("--port", "-P", default=8080)
-def api(host, port):
+@click.option("--debug/--no-debug", "-d", default=DEBUG)
+def api(host, port, debug):
     """Serve API"""
-    serve(host, port)
+    print(f"DEBUG: {debug}")
+    serve(host=host, port=port, debug=debug)

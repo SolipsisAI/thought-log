@@ -115,6 +115,13 @@ def snakecase(string):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
+def timestamp(obj: datetime = None):
+    if obj is None:
+        obj = datetime.utcnow()
+
+    return round(obj.timestamp())
+
+
 def make_datetime(obj: Union[str, datetime], fmt: str = None):
     if isinstance(obj, datetime):
         return obj

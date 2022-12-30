@@ -37,3 +37,11 @@ DEFAULT_LOCATION = os.getenv("DEFAULT_LOCATION") or config.get(
 INCLUDE_WEATHER = bool(
     os.getenv("INCLUDE_WEATHER") or config.get("include_weather", False)
 )
+
+# MongoDB
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "thought_log")
+MONGO_ROOT_USERNAME = os.getenv("MONGO_ROOT_USERNAME")
+MONGO_ROOT_PASSWORD = os.getenv("MONGO_ROOT_PASSWORD")
+MONGO_HOST = os.getenv("MONGO_HOST")
+MONGO_CONNECTION_STRING = f"mongodb://{MONGO_ROOT_USERNAME}:{MONGO_ROOT_PASSWORD}@{MONGO_HOST}/{MONGO_DB_NAME}?authSource=admin"
+MONGO_URL = os.getenv("MONGO_URL", MONGO_CONNECTION_STRING)
