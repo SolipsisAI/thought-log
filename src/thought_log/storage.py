@@ -66,9 +66,7 @@ class BaseDocument:
     def get_children(self):
         return storage.db[self.COLLECTION_NAME].aggregate(
             [
-                {
-                    "$match": {"id": self.id}
-                },
+                {"$match": {"id": self.id}},
                 {
                     "$lookup": {
                         "from": self.HAS_MANY,
@@ -76,7 +74,7 @@ class BaseDocument:
                         "foreignField": f"{self.COLLECTION_NAME[:-1]}",
                         "as": "joinedResult",
                     }
-                }
+                },
             ]
         )
 
