@@ -41,7 +41,12 @@ class Notebook(BaseDocument):
         self.from_dict(self.data)
 
     def notes(self):
-        return self.get_children()
+        results = list(self.get_children())
+
+        if not results:
+            return []
+
+        return results[0]["joinedResult"]
 
 
 MODELS = {"notes": Note, "notebooks": Notebook}
