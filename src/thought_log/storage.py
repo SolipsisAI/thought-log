@@ -67,6 +67,9 @@ class BaseDocument:
         return storage.db[self.COLLECTION_NAME].aggregate(
             [
                 {
+                    "$match": {"id": self.id}
+                },
+                {
                     "$lookup": {
                         "from": self.HAS_MANY,
                         "localField": f"id",
