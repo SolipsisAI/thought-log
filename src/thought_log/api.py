@@ -22,9 +22,8 @@ def analyze():
 
 @route("/<name>", method="GET")
 def get_record_list(name):
-    kwargs = request.url_args
     response.content_type = "application/json"
-    return json.dumps(list(map(lambda n: n.to_dict(), RESOURCES[name].find(**kwargs))))
+    return json.dumps(list(map(lambda n: n.to_dict(), RESOURCES[name].find())))
 
 
 @route("/<name>", method="POST")
