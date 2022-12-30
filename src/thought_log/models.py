@@ -12,6 +12,7 @@ class Note(BaseDocument):
         "notebook",
         "created",
         "edited",
+        "file_hash",
     ]
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]

@@ -130,21 +130,18 @@ class BaseDocument:
         if not isinstance(data, Dict):
             return
 
-        for k, v in data.items():
-            if k in self.fields:
-                setattr(self, k, v)
+        for field in self.fields:
+            value = data.get(field, None)
+            setattr(self, field, value)
 
     def to_json(self, embed: str = None):
         return json.dumps(self.to_dict(embed=embed))
 
     def to_dict(self, embed: str = None):
-        result = dict(
-            list(
-                filter(
-                    lambda i: not i[0].startswith(IGNORE_PREFIX), self.__dict__.items()
-                )
-            )
-        )
+        def filter_data(item):
+            return not item[0].startswith(IGNORE_PREFIX)
+
+        result = dict(list(filter(lambda i: filter_data, self.__dict__.items())))
 
         if embed:
             children = getattr(self, embed)()
