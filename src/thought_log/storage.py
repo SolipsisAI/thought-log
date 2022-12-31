@@ -86,9 +86,7 @@ class BaseDocument:
                         "preserveNullAndEmptyArrays": True,
                     }
                 },
-                {
-                    "$sort": {"joinedResult.created": -1}
-                }
+                {"$sort": {"joinedResult.created": -1}},
             ]
         )
 
@@ -215,9 +213,13 @@ class Storage:
             find_obj = obj
 
         has_autoincrement = bool(autoincrement) and autoincrement not in obj
+
         has_id = bool(obj.get("id", None))
         has_uuid = bool(obj.get("uuid", None))
-        is_new_obj = has_autoincrement or not any([has_id, has_uuid])
+        has_file_hash = bool(obj.get("file_hash", None))
+        has_identifiers = any([has_id, has_uuid, has_file_hash])
+
+        is_new_obj = has_autoincrement or not has_identifiers
 
         if is_new_obj:
             # Only get next sequence if storage obj doesn't have the autoincremented value
@@ -230,7 +232,9 @@ class Storage:
             )
             obj.update({"created": obj.get("created", timestamp())})
         else:
-            if has_uuid:
+            if has_file_hash:
+                find_obj = {"file_hash": obj["file_hash"]}
+            elif has_uuid:
                 find_obj = {"uuid": obj["uuid"]}
             elif identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
@@ -245,7 +249,9 @@ class Storage:
                 obj.update({"edited": obj.get("edited", timestamp())})
             else:
                 obj.update(
-                    {"id": self.get_next_sequence(collection_name, autoincrement)}
+                    {
+                        "id": self.get_next_sequence(collection_name, autoincrement),
+                    },
                 )
 
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
