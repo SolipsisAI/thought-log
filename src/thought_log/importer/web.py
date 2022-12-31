@@ -47,6 +47,7 @@ def import_data(fp, filetype=None):
 
 
 def import_csv(data):
+    """Import DayOne CSV"""
     skipped = 0
     success = 0
     total = len(data)
@@ -81,6 +82,7 @@ def import_csv(data):
 
 
 def import_json(data):
+    """Import DayOne JSON"""
     skipped = 0
     success = 0
 
@@ -111,6 +113,7 @@ def import_json(data):
 
 
 def import_zipfile(data):
+    """Import directory of markdown and plain text entries"""
     total = len(data)
     success = 0
 

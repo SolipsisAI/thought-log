@@ -12,6 +12,7 @@ from typing import Dict, List, Union
 from uuid import uuid4
 
 import frontmatter
+from thought_log.enums import SupportedFiletypes
 
 
 class DateTimeEncoder(JSONEncoder):
@@ -78,10 +79,20 @@ def read_zipfile(fp):
 
     zf = zipfile.ZipFile(fp)
 
+    supported_filetypes = [
+        SupportedFiletypes.MARKDOWN.value,
+        SupportedFiletypes.PLAIN.value,
+    ]
+
     with tempfile.TemporaryDirectory() as tempdir:
         zf.extractall(tempdir)
         dirpath = Path(tempdir)
-        filenames = list(filter(lambda p: not p.is_dir(), dirpath.glob("**/*")))
+        filenames = list(
+            filter(
+                lambda p: not p.is_dir() and get_filetype(p) in supported_filetypes,
+                dirpath.glob("**/*"),
+            )
+        )
         data = list(map(read_file, filenames))
 
     return data
