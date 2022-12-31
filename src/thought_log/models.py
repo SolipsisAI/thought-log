@@ -8,7 +8,7 @@ class Note(BaseDocument):
     FIELDNAMES = [
         "id",
         "uuid",
-        "title",
+        "title",  # Cannot be null
         "text",
         "notebook",
         "created",

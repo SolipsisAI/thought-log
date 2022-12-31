@@ -41,28 +41,32 @@ def import_data(fp: Union[str, Path, TextIOWrapper], filetype=None):
 
 
 def import_csv(data):
-    for row in data:
-        _import_item(row)
+    for item in data:
+        if not item.get("text", None):
+            continue
 
+        notebook = item.pop("notebook", 1)  # default notebook
+        uuid = item.pop("uuid", generate_uuid())
+        file_hash = item.pop(
+            "file_hash", generate_hash_from_string(item.get("text", ""))
+        )
 
-def _import_item(item):
-    notebook = item.pop("notebook", 1)  # default notebook
-    uuid = item.pop("uuid", generate_uuid())
-    file_hash = item.pop("file_hash", generate_hash_from_string(item.get("text", "")))
+        item["notebook"] = notebook
+        item["uuid"] = uuid
+        item["file_hash"] = file_hash
+        date = item.pop("date", None)
+        item["created"] = timestamp(make_datetime(date))
 
-    item["notebook"] = notebook
-    item["uuid"] = uuid
-    item["file_hash"] = file_hash
-    date = item.pop("date", None)
-    item["created"] = timestamp(make_datetime(date))
-
-    Note(item).save()
+        Note(item).save()
 
 
 def import_json(data):
     entries = data.get("entries", [])
 
     for entry in entries:
+        if not entry.get("text", None):
+            continue
+
         created_datetime = make_datetime(entry.pop("creationDate"), fmt="isoformat")
         edited_datetime = make_datetime(entry.pop("modifiedDate"), fmt="isoformat")
         entry["created"] = timestamp(created_datetime)
