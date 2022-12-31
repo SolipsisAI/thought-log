@@ -49,6 +49,7 @@ def import_data(fp, filetype=None):
 def import_csv(data):
     skipped = 0
     success = 0
+    total = len(data)
 
     for item in data:
         if not item.get("text", None):
@@ -76,7 +77,7 @@ def import_csv(data):
 
         success += 1
 
-    return {"skipped": skipped, "success": success}
+    return {"skipped": skipped, "success": success, "total": total}
 
 
 def import_json(data):
@@ -84,6 +85,7 @@ def import_json(data):
     success = 0
 
     entries = data.get("entries", [])
+    total = len(entries)
 
     for entry in entries:
         if not entry.get("text", None):
