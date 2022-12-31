@@ -137,6 +137,11 @@ def make_datetime(obj: Union[str, datetime] = None, fmt: str = None):
     return find_datetime(obj)
 
 
+def datestring(obj: Union[str, datetime]):
+    obj = make_datetime(obj)
+    return obj.strftime("%a, %b %d, %Y %I:%M %p")
+
+
 def list_entries(entries_dir, reverse=False, num_entries=-1):
     entry_ids = sorted(
         [int(f.stem.split(".")[0]) for f in Path(entries_dir).glob("*.json")],

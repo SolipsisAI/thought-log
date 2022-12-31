@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, Union
 
 import frontmatter
-from thought_log.utils.common import find_datetime
+from thought_log.utils.common import datestring, find_datetime
 from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR, DEBUG
@@ -98,7 +98,7 @@ def import_json(data):
 
         title = entry.get("title", None)
         if not title:
-            title = created_datetime.strftime("%a, %b %d, %Y %I:%M %p")
+            title = datestring(created_datetime)
         entry["title"] = title
 
         Note(entry).save()
@@ -123,14 +123,17 @@ def import_zipfile(data):
             metadata = entry.metadata
             uuid = metadata.get("uuid", generate_uuid())
             notebook = entry.metadata.get("notebook", 1)
+            title = entry.metadata.get("title", datestring(date))
         else:
             text = entry
             date = find_datetime(text)
             uuid = generate_uuid()
             notebook = 1
+            title = datestring(date)
 
         Note(
             {
+                "title": title,
                 "text": text,
                 "created": timestamp(date),
                 "uuid": uuid,
