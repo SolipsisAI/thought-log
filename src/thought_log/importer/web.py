@@ -8,6 +8,7 @@ from thought_log.utils.common import find_datetime
 from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR, DEBUG
+from thought_log.enums import SupportedFiletypes
 from thought_log.models import Note, Notebook
 from thought_log.utils import (
     generate_uuid,
@@ -21,19 +22,12 @@ from thought_log.utils import (
     timestamp,
 )
 
-SUPPORTED_FILETYPES = [
-    "application/zip",
-    "text/plain",
-    "text/markdown",
-    "text/csv",
-    "application/json",
-]
 
 READERS = {
-    "text/csv": read_csv,
-    "application/json": read_json,
-    "text/plain": read_file,
-    "application/zip": read_zipfile,
+    SupportedFiletypes.CSV.value: read_csv,
+    SupportedFiletypes.JSON.value: read_json,
+    SupportedFiletypes.PLAIN.value: read_file,
+    SupportedFiletypes.ZIP.value: read_zipfile,
 }
 
 
@@ -41,7 +35,7 @@ def import_data(fp, filetype=None):
     if not filetype:
         filetype = get_filetype(fp)
 
-    if filetype not in SUPPORTED_FILETYPES:
+    if filetype not in SupportedFiletypes:
         return
 
     if filetype != "application/zip":
@@ -154,8 +148,8 @@ def import_file(data):
 
 
 IMPORTERS = {
-    "text/csv": import_csv,
-    "application/json": import_json,
-    "text/plain": import_file,
-    "application/zip": import_zipfile,
+    SupportedFiletypes.CSV.value: import_csv,
+    SupportedFiletypes.JSON.value: import_json,
+    SupportedFiletypes.PLAIN.value: import_file,
+    SupportedFiletypes.ZIP.value: import_zipfile,
 }
