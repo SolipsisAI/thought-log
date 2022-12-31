@@ -28,6 +28,8 @@ def generate_hash_from_file(filename: str) -> str:
 
 
 def generate_hash_from_string(text: str) -> str:
+    if text is None:
+        text = ""
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 

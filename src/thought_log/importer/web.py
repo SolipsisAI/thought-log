@@ -19,11 +19,11 @@ from thought_log.utils import (
     timestamp,
 )
 
-SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv", "text/json"]
+SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv", "application/json"]
 
 READERS = {
     "text/csv": read_csv,
-    "text/json": read_json,
+    "application/json": read_json,
     "text/plain": read_file,
 }
 
@@ -40,6 +40,11 @@ def import_data(fp: Union[str, Path, TextIOWrapper], filetype=None):
     IMPORTERS[filetype](data)
 
 
+def import_csv(data):
+    for row in data:
+        _import_item(row)
+
+
 def _import_item(item):
     notebook = item.pop("notebook", 1)  # default notebook
     uuid = item.pop("uuid", generate_uuid())
@@ -54,13 +59,15 @@ def _import_item(item):
     Note(item).save()
 
 
-def import_csv(data):
-    for row in data:
-        _import_item(row)
-
-
 def import_json(data):
-    _import_item(data)
+    entries = data.get("entries", [])
+
+    for entry in entries:
+        created_datetime = make_datetime(entry.pop("creationDate"), fmt="isoformat")
+        edited_datetime = make_datetime(entry.pop("modifiedDate"), fmt="isoformat")
+        entry["created"] = timestamp(created_datetime)
+        entry["edited"] = timestamp(edited_datetime)
+        Note(entry).save()
 
 
 def import_file(data):
@@ -69,6 +76,6 @@ def import_file(data):
 
 IMPORTERS = {
     "text/csv": import_csv,
-    "text/json": import_json,
+    "application/json": import_json,
     "text/plain": import_file,
 }
