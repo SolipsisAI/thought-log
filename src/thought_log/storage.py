@@ -48,6 +48,10 @@ class BaseDocument:
         self.upsert(self)
 
     @classmethod
+    def get(cls, **kwargs):
+        return cls.find_one(kwargs)
+
+    @classmethod
     def find(cls, *args, **kwargs):
         """Returns a list of results"""
         return list(map(cls, cls.find_cursor(*args, **kwargs)))
@@ -60,7 +64,8 @@ class BaseDocument:
     @classmethod
     def find_one(cls, *args, **kwargs):
         """Returns an instance of the class"""
-        return cls(storage.db[cls.COLLECTION_NAME].find_one(*args, **kwargs))
+        result = storage.db[cls.COLLECTION_NAME].find_one(*args, **kwargs)
+        return cls(result) if result else None
 
     # setattr
     def get_children(self):
