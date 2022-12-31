@@ -41,7 +41,8 @@ def get_record(name, id):
     resource = RESOURCES[name]
     record = resource.find_one({"id": id})
     embed = request.query.get("_embed", None)
-    return record.to_dict(embed=embed)
+    limit = request.query.get("_limit", None)
+    return record.to_dict(embed=embed, limit=int(limit) if limit else None)
 
 
 @route("/<name>/<id:int>", method="PATCH")

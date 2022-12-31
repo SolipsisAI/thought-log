@@ -160,17 +160,17 @@ class BaseDocument:
             value = data.get(field, None)
             setattr(self, field, value)
 
-    def to_json(self, embed: str = None):
-        return json.dumps(self.to_dict(embed=embed))
+    def to_json(self, embed: str = None, limit: int = None):
+        return json.dumps(self.to_dict(embed=embed, limit=limit))
 
-    def to_dict(self, embed: str = None):
+    def to_dict(self, embed: str = None, limit: int = None):
         def filter_data(item):
             return not item[0].startswith(IGNORE_PREFIX)
 
         result = dict(list(filter(filter_data, self.__dict__.items())))
 
         if embed:
-            children = getattr(self, embed)()
+            children = getattr(self, embed)(limit=limit)
             result[embed] = list(map(lambda c: c.to_dict(), children))
 
         return result
