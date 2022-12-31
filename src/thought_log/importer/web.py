@@ -107,7 +107,7 @@ def import_json(data):
 
         success += 1
 
-    return {"skipped": skipped, "success": success}
+    return {"skipped": skipped, "success": success, "total": total}
 
 
 def import_zipfile(data):
