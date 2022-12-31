@@ -67,6 +67,7 @@ def import_json(data):
         edited_datetime = make_datetime(entry.pop("modifiedDate"), fmt="isoformat")
         entry["created"] = timestamp(created_datetime)
         entry["edited"] = timestamp(edited_datetime)
+        entry["notebook"] = entry.get("notebook", 1)
         Note(entry).save()
 
 
