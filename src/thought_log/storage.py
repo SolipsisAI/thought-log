@@ -90,7 +90,7 @@ class BaseDocument:
             ]
         )
 
-        results = list(cursor)
+        results = list(map(lambda r: r["joinedResult"], cursor))
 
         if not results:
             return []
