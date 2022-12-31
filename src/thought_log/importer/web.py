@@ -61,6 +61,11 @@ def import_csv(data):
         date = item.pop("date", None)
         item["created"] = timestamp(make_datetime(date))
 
+        title = item.pop("title", None)
+        if not title:
+            title = make_datetime(date).strftime("%a, %b %d, %Y %I:%M %p")
+        item["title"] = title
+
         Note(item).save()
 
         success += 1
@@ -84,6 +89,11 @@ def import_json(data):
         entry["created"] = timestamp(created_datetime)
         entry["edited"] = timestamp(edited_datetime)
         entry["notebook"] = entry.get("notebook", 1)
+
+        title = entry.get("title", None)
+        if not title:
+            title = created_datetime.strftime("%a, %b %d, %Y %I:%M %p")
+        entry["title"] = title
 
         Note(entry).save()
 
