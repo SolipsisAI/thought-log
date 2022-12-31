@@ -28,8 +28,9 @@ READERS = {
 }
 
 
-def import_data(fp: Union[str, Path, TextIOWrapper]):
-    filetype = get_filetype(fp)
+def import_data(fp: Union[str, Path, TextIOWrapper], filetype=None):
+    if not filetype:
+        filetype = get_filetype(fp)
 
     if filetype not in SUPPORTED_FILETYPES:
         return

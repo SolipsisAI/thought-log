@@ -1,9 +1,12 @@
 import json
 
+from io import TextIOWrapper
+
 from bottle import route, run, request, response
 
 from thought_log.config import DEBUG
 from thought_log.analyzer import analyze_text
+from thought_log.importer import web
 from thought_log.models import Note, Notebook
 from thought_log.utils import get_filetype, read_csv
 
@@ -59,10 +62,10 @@ def import_record(name):
     upload = request.POST["file"]
     filetype = get_filetype(upload.raw_filename)
 
-    # then read CSV file from
-    read_csv(upload.file)
+    # Import data
+    web.import_data(TextIOWrapper(upload.file), filetype=filetype)
 
-    return {"filetype": filetype}
+    return {"filetype": filetype, "filename": upload.raw_filename}
 
 
 def serve(host: str = "localhost", port: int = 8080, debug: bool = DEBUG):

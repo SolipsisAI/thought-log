@@ -47,25 +47,25 @@ def get_filetype(filename: str) -> str:
 
 def read_csv(fp: Union[str, TextIOWrapper, Path]) -> List[Dict]:
     if isinstance(fp, str) or isinstance(fp, Path):
-        f = open(fp)
+        fp = open(fp)
 
-    csv_data = csv.DictReader(f)
+    csv_data = csv.DictReader(fp)
     data = list(csv_data)
 
-    f.close()
+    fp.close()
     return data
 
 
 def read_json(fp: Union[str, TextIOWrapper, Path], as_type=None) -> Dict:
     if isinstance(fp, str) or isinstance(fp, Path):
-        f = open(fp, "r")
+        fp = open(fp, "r")
 
-    data = json.load(f)
+    data = json.load(fp)
 
     if as_type is not None:
         data = dict([(as_type(k), v) for k, v in data.items()])
 
-    f.close()
+    fp.close()
     return data
 
 
@@ -77,10 +77,11 @@ def write_json(data: Dict, filename: str, mode: str = "w+"):
 
 def read_file(fp: Union[str, TextIOWrapper, Path]):
     if isinstance(fp, str) or isinstance(fp, Path):
-        f = open(fp, "r")
+        fp = open(fp, "r")
 
-    data = frontmatter.load(f)
-    f.close()
+    data = frontmatter.load(fp)
+
+    fp.close()
     return data
 
 
