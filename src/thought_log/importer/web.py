@@ -16,24 +16,35 @@ from thought_log.utils import (
     read_csv,
     read_json,
     read_file,
+    read_zipfile,
     timestamp,
 )
 
-SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv", "application/json"]
+SUPPORTED_FILETYPES = [
+    "application/zip",
+    "text/plain",
+    "text/markdown",
+    "text/csv",
+    "application/json",
+]
 
 READERS = {
     "text/csv": read_csv,
     "application/json": read_json,
     "text/plain": read_file,
+    "application/zip": read_zipfile,
 }
 
 
-def import_data(fp: Union[str, Path, TextIOWrapper], filetype=None):
+def import_data(fp, filetype=None):
     if not filetype:
         filetype = get_filetype(fp)
 
     if filetype not in SUPPORTED_FILETYPES:
         return
+
+    if filetype != "application/zip":
+        fp = TextIOWrapper(fp)
 
     data = READERS[filetype](fp)
 
@@ -102,6 +113,10 @@ def import_json(data):
     return {"skipped": skipped, "success": success}
 
 
+def import_zipfile(data):
+    return {}
+
+
 def import_file(data):
     return {}
 
@@ -110,4 +125,5 @@ IMPORTERS = {
     "text/csv": import_csv,
     "application/json": import_json,
     "text/plain": import_file,
+    "application/zip": import_zipfile,
 }

@@ -2,6 +2,8 @@ import csv
 import datetime
 import hashlib
 import json
+import zipfile
+import tempfile
 from io import TextIOWrapper
 from json import JSONEncoder
 from mimetypes import guess_type
@@ -68,6 +70,20 @@ def read_json(fp: Union[str, TextIOWrapper, Path], as_type=None) -> Dict:
         data = dict([(as_type(k), v) for k, v in data.items()])
 
     fp.close()
+    return data
+
+
+def read_zipfile(fp):
+    data = []
+
+    zf = zipfile.ZipFile(fp)
+
+    with tempfile.TemporaryDirectory() as tempdir:
+        zf.extractall(tempdir)
+        dirpath = Path(tempdir)
+        filenames = list(filter(lambda p: not p.is_dir(), dirpath.glob("**/*")))
+        data = list(map(read_file, filenames))
+
     return data
 
 

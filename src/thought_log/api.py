@@ -1,14 +1,12 @@
 import json
 
-from io import TextIOWrapper
-
 from bottle import route, run, request, response
 
 from thought_log.config import DEBUG
 from thought_log.analyzer import analyze_text
 from thought_log.importer import web
 from thought_log.models import Note, Notebook
-from thought_log.utils import get_filetype, read_csv
+from thought_log.utils import get_filetype
 
 
 RESOURCES = {"notes": Note, "notebooks": Notebook}
@@ -63,7 +61,7 @@ def import_record(name):
     filetype = get_filetype(upload.raw_filename)
 
     # Import data
-    result = web.import_data(TextIOWrapper(upload.file), filetype=filetype)
+    result = web.import_data(upload.file, filetype=filetype)
 
     return {"filetype": filetype, "filename": upload.raw_filename, "result": result}
 
