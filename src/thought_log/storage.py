@@ -223,10 +223,16 @@ class Storage:
             elif identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
 
-            obj.update({"edited": obj.get("edited", timestamp())})
+            # Check if the item actually exists
             old_obj = self.db[collection_name].find_one(find_obj)
-            old_obj.update(obj)
-            obj = old_obj
+            if old_obj:
+                old_obj.update(obj)
+                obj = old_obj
+                obj.update({"edited": obj.get("edited", timestamp())})
+            else:
+                obj.update(
+                    {"id": self.get_next_sequence(collection_name, autoincrement)}
+                )
 
         self.db[collection_name].replace_one(find_obj, obj, upsert=True)
 
