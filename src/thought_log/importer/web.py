@@ -8,16 +8,16 @@ from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR, DEBUG
 from thought_log.models import Note, Notebook
-from thought_log.utils import get_filetype, read_csv, read_file, zettelkasten_id
-from thought_log.utils.common import find_datetime, make_datetime, sanitize_text
-from thought_log.utils.io import (
+from thought_log.utils import (
     generate_uuid,
-    read_json,
-    write_json,
-    generate_hash_from_file,
     generate_hash_from_string,
+    get_filetype,
+    make_datetime,
+    read_csv,
+    read_json,
+    read_file,
+    timestamp,
 )
-
 
 SUPPORTED_FILETYPES = ["text/plain", "text/markdown", "text/csv", "text/json"]
 
@@ -48,6 +48,8 @@ def _import_item(item):
     item["notebook"] = notebook
     item["uuid"] = uuid
     item["file_hash"] = file_hash
+    date = item.pop("date", None)
+    item["created"] = timestamp(make_datetime(date))
 
     Note(item).save()
 

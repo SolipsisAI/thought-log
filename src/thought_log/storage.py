@@ -215,11 +215,11 @@ class Storage:
                     ),
                 }
             )
-            obj.update({"created": timestamp()})
+            obj.update({"created": obj.get("created", timestamp())})
         else:
             if identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
-            obj.update({"edited": timestamp()})
+            obj.update({"edited": obj.get("edited", timestamp())})
             old_obj = self.db[collection_name].find_one(find_obj)
             old_obj.update(obj)
             obj = old_obj

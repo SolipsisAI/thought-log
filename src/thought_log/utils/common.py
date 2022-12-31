@@ -122,7 +122,10 @@ def timestamp(obj: datetime = None):
     return round(obj.timestamp())
 
 
-def make_datetime(obj: Union[str, datetime], fmt: str = None):
+def make_datetime(obj: Union[str, datetime] = None, fmt: str = None):
+    if not obj:
+        return datetime.now()
+
     if isinstance(obj, datetime):
         return obj
 
