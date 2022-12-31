@@ -226,6 +226,8 @@ class Storage:
             # Check if the item actually exists
             old_obj = self.db[collection_name].find_one(find_obj)
             if old_obj:
+                # So that we don't erase this
+                obj.pop("id")
                 old_obj.update(obj)
                 obj = old_obj
                 obj.update({"edited": obj.get("edited", timestamp())})
