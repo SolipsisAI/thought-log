@@ -63,9 +63,9 @@ def import_record(name):
     filetype = get_filetype(upload.raw_filename)
 
     # Import data
-    web.import_data(TextIOWrapper(upload.file), filetype=filetype)
+    result = web.import_data(TextIOWrapper(upload.file), filetype=filetype)
 
-    return {"filetype": filetype, "filename": upload.raw_filename}
+    return {"filetype": filetype, "filename": upload.raw_filename, "result": result}
 
 
 def serve(host: str = "localhost", port: int = 8080, debug: bool = DEBUG):

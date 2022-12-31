@@ -37,12 +37,16 @@ def import_data(fp: Union[str, Path, TextIOWrapper], filetype=None):
 
     data = READERS[filetype](fp)
 
-    IMPORTERS[filetype](data)
+    return IMPORTERS[filetype](data)
 
 
 def import_csv(data):
+    skipped = 0
+    success = 0
+
     for item in data:
         if not item.get("text", None):
+            skipped += 1
             continue
 
         notebook = item.pop("notebook", 1)  # default notebook
@@ -59,12 +63,20 @@ def import_csv(data):
 
         Note(item).save()
 
+        success += 1
+
+    return {"skipped": skipped, "success": success}
+
 
 def import_json(data):
+    skipped = 0
+    success = 0
+
     entries = data.get("entries", [])
 
     for entry in entries:
         if not entry.get("text", None):
+            skipped += 1
             continue
 
         created_datetime = make_datetime(entry.pop("creationDate"), fmt="isoformat")
@@ -72,11 +84,16 @@ def import_json(data):
         entry["created"] = timestamp(created_datetime)
         entry["edited"] = timestamp(edited_datetime)
         entry["notebook"] = entry.get("notebook", 1)
+
         Note(entry).save()
+
+        success += 1
+
+    return {"skipped": skipped, "success": success}
 
 
 def import_file(data):
-    _import_item(data)
+    return {}
 
 
 IMPORTERS = {
