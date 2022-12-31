@@ -204,7 +204,8 @@ class Storage:
 
         has_autoincrement = bool(autoincrement) and autoincrement not in obj
         has_id = bool(obj.get("id", None))
-        is_new_obj = has_autoincrement or not has_id
+        has_uuid = bool(obj.get("uuid", None))
+        is_new_obj = has_autoincrement or not any([has_id, has_uuid])
 
         if is_new_obj:
             # Only get next sequence if storage obj doesn't have the autoincremented value
@@ -217,8 +218,11 @@ class Storage:
             )
             obj.update({"created": obj.get("created", timestamp())})
         else:
-            if identifier_keys:
+            if has_uuid:
+                find_obj = {"uuid": obj["uuid"]}
+            elif identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
+
             obj.update({"edited": obj.get("edited", timestamp())})
             old_obj = self.db[collection_name].find_one(find_obj)
             old_obj.update(obj)
