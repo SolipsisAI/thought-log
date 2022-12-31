@@ -80,6 +80,15 @@ class BaseDocument:
                         "as": "joinedResult",
                     }
                 },
+                {
+                    "$unwind": {
+                        "path": "$joinedResult",
+                        "preserveNullAndEmptyArrays": True,
+                    }
+                },
+                {
+                    "$sort": {"joinedResult.created": -1}
+                }
             ]
         )
 
@@ -88,9 +97,7 @@ class BaseDocument:
         if not results:
             return []
 
-        children = results[0]["joinedResult"]
-
-        return list(map(self.HAS_MANY, children))
+        return list(map(self.HAS_MANY, results))
 
     @classmethod
     def upsert(cls, obj):
