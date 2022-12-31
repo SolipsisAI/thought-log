@@ -248,7 +248,9 @@ class Storage:
             )
             obj.update({"created": obj.get("created", timestamp())})
         else:
-            if has_uuid:
+            if has_id:
+                find_obj = {"id": obj["id"]}
+            elif has_uuid:
                 find_obj = {"uuid": obj["uuid"]}
             elif has_file_hash:
                 find_obj = {"file_hash": obj["file_hash"]}
