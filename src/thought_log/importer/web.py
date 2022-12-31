@@ -109,41 +109,45 @@ def import_json(data):
 
 
 def import_zipfile(data):
-    skipped = 0
+    total = len(data)
     success = 0
 
-    for entry in data:
-        if not any([bool(entry.content), bool(entry)]):
-            skipped += 1
-            continue
+    entries = sorted(
+        list(filter(lambda e: e is not None, map(process_entry, data))),
+        key=lambda e: e["created"],
+    )
 
-        if isinstance(entry, frontmatter.Post):
-            text = entry.content
-            date = entry.metadata.get("date") or find_datetime(text)
-            metadata = entry.metadata
-            uuid = metadata.get("uuid", generate_uuid())
-            notebook = entry.metadata.get("notebook", 1)
-            title = entry.metadata.get("title", datestring(date))
-        else:
-            text = entry
-            date = find_datetime(text)
-            uuid = generate_uuid()
-            notebook = 1
-            title = datestring(date)
+    for entry in entries:
+        Note(entry).save()
 
-        Note(
-            {
-                "title": title,
-                "text": text,
-                "created": timestamp(date),
-                "uuid": uuid,
-                "notebook": notebook,
-            }
-        ).save()
+    return {"skipped": total - success, "success": success, "total": total}
 
-        success += 1
 
-    return {"skipped": skipped, "success": success}
+def process_entry(entry):
+    if not any([bool(entry.content), bool(entry)]):
+        return None
+
+    if isinstance(entry, frontmatter.Post):
+        text = entry.content
+        date = entry.metadata.get("date") or find_datetime(text)
+        metadata = entry.metadata
+        uuid = metadata.get("uuid", generate_uuid())
+        notebook = entry.metadata.get("notebook", 1)
+        title = entry.metadata.get("title", datestring(date))
+    else:
+        text = entry
+        date = find_datetime(text)
+        uuid = generate_uuid()
+        notebook = 1
+        title = datestring(date)
+
+    return {
+        "title": title,
+        "text": text,
+        "created": timestamp(date),
+        "uuid": uuid,
+        "notebook": notebook,
+    }
 
 
 def import_file(data):
