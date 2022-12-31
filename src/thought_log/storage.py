@@ -5,6 +5,7 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 
 from thought_log.config import MONGO_URL, MONGO_DB_NAME
 from thought_log.utils import timestamp
+from thought_log.utils.io import generate_uuid
 
 
 DictList = List[Dict]
@@ -30,6 +31,7 @@ class BaseDocument:
         self._fields = base_fields + (add_fields or [])
         self._created = None
         self._edited = None
+        self.uuid = data.get("uuid") or generate_uuid()
 
     def sanitize(self, data):
         if isinstance(data, Dict):
@@ -232,10 +234,10 @@ class Storage:
             )
             obj.update({"created": obj.get("created", timestamp())})
         else:
-            if has_file_hash:
-                find_obj = {"file_hash": obj["file_hash"]}
-            elif has_uuid:
+            if has_uuid:
                 find_obj = {"uuid": obj["uuid"]}
+            elif has_file_hash:
+                find_obj = {"file_hash": obj["file_hash"]}
             elif identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
 
