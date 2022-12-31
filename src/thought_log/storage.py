@@ -250,10 +250,10 @@ class Storage:
         else:
             if has_id:
                 find_obj = {"id": obj["id"]}
+            elif has_file_hash and not has_id:
+                find_obj = {"file_hash": obj["file_hash"]}
             elif has_uuid:
                 find_obj = {"uuid": obj["uuid"]}
-            elif has_file_hash:
-                find_obj = {"file_hash": obj["file_hash"]}
             elif identifier_keys:
                 find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
 

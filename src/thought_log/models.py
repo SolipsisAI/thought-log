@@ -23,8 +23,6 @@ class Note(BaseDocument):
         self.from_dict(self.data)
         # Overrides
         self.file_hash = generate_hash_from_string(self.text)
-        self.notebook = self.data.get("notebook", 1)
-        self.title = self.data.get("title", datestring(self.created))
 
 
 class Notebook(BaseDocument):
