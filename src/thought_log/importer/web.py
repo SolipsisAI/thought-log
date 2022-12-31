@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Union
 
 import frontmatter
+from thought_log.utils.common import find_datetime
 from tqdm.auto import tqdm
 
 from thought_log.config import STORAGE_DIR, DEBUG
@@ -114,7 +115,38 @@ def import_json(data):
 
 
 def import_zipfile(data):
-    return {}
+    skipped = 0
+    success = 0
+
+    for entry in data:
+        if not any([bool(entry.content), bool(entry)]):
+            skipped += 1
+            continue
+
+        if isinstance(entry, frontmatter.Post):
+            text = entry.content
+            date = entry.metadata.get("date") or find_datetime(text)
+            metadata = entry.metadata
+            uuid = metadata.get("uuid", generate_uuid())
+            notebook = entry.metadata.get("notebook", 1)
+        else:
+            text = entry
+            date = find_datetime(text)
+            uuid = generate_uuid()
+            notebook = 1
+
+        Note(
+            {
+                "text": text,
+                "created": timestamp(date),
+                "uuid": uuid,
+                "notebook": notebook,
+            }
+        ).save()
+
+        success += 1
+
+    return {"skipped": skipped, "success": success}
 
 
 def import_file(data):
