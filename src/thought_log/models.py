@@ -37,13 +37,14 @@ class Notebook(BaseDocument):
     AUTOINCREMENT = "id"
     IDENTIFIER_KEYS = ["id"]
     HAS_MANY = Note
+    FOREIGN_FIELD = "notebook"
 
     def __init__(self, data, add_fields: List[str] = None):
         super().__init__(data=data, base_fields=self.FIELDNAMES, add_fields=add_fields)
         self.from_dict(self.data)
 
-    def notes(self):
-        return self.get_children()
+    def notes(self, limit: int = None):
+        return self.get_children(limit=limit)
 
 
 MODELS = {"notes": Note, "notebooks": Notebook}

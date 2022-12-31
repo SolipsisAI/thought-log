@@ -23,6 +23,7 @@ class BaseDocument:
     COLLECTION_NAME = None
     HAS_MANY = None
     BELONGS_TO = None
+    FOREIGN_FIELD = None
 
     def __init__(
         self, data, base_fields: List[str], add_fields: List[str] = None
@@ -70,7 +71,7 @@ class BaseDocument:
         return cls(result) if result else None
 
     # setattr
-    def get_children(self):
+    def _get_children(self):
         cursor = storage.db[self.COLLECTION_NAME].aggregate(
             [
                 {"$match": {"id": self.id}},
@@ -98,6 +99,19 @@ class BaseDocument:
             return []
 
         return list(map(self.HAS_MANY, results))
+
+    def get_children(self, limit: int = None):
+        if not self.HAS_MANY:
+            return None
+
+        return storage.query(
+            self.HAS_MANY.COLLECTION_NAME,
+            {self.FOREIGN_FIELD: self.id},
+            sort="created",
+            order="DESC",
+            limit=limit,
+            callback=self.HAS_MANY,
+        )
 
     @classmethod
     def upsert(cls, obj):
@@ -297,7 +311,11 @@ class Storage:
         sort: str = None,
         order: str = "asc",
         limit: int = None,
+        callback=None,
     ):
+        def prepare(item):
+            return callback(item) if callback else item
+
         items = self.db[collection_name].find(params)
 
         if sort:
@@ -306,7 +324,7 @@ class Storage:
         if limit:
             items = items.limit(limit)
 
-        return [item for item in items]
+        return [prepare(item) for item in items]
 
 
 storage = Storage()
