@@ -24,12 +24,13 @@ class BaseDocument:
     HAS_MANY = None
     BELONGS_TO = None
     FOREIGN_FIELD = None
+    BASE_FIELDS = ["id", "uuid"]
 
     def __init__(
         self, data, base_fields: List[str], add_fields: List[str] = None
     ) -> None:
-        self._data = self.sanitize(data)
-        self._fields = base_fields + (add_fields or [])
+        self._data = self.prepare(data)
+        self._fields = self.BASE_FIELDS + base_fields + (add_fields or [])
         self._created = None
         self._edited = None
 
@@ -44,6 +45,14 @@ class BaseDocument:
                 if "_id" in k:
                     v = getattr(data, k)
                     setattr(data, k, str(v))
+        return data
+
+    def prepare(self, data):
+        data = self.sanitize(data)
+        id = data.pop("id", storage.get_next_sequence(self.COLLECTION_NAME, "id"))
+        uuid = data.pop("uuid", generate_uuid())
+        data["id"] = id
+        data["uuid"] = uuid
         return data
 
     def save(self):
