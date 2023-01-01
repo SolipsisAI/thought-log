@@ -47,7 +47,7 @@ class BaseDocument:
 
     def save(self):
         if bool(self.id):
-            return self.update(self, id=id)
+            return self.update(self.data, id=self.id)
         return self.insert(self)
 
     @classmethod
