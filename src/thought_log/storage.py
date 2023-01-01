@@ -29,7 +29,7 @@ class BaseDocument:
     def __init__(
         self, data, base_fields: List[str], add_fields: List[str] = None
     ) -> None:
-        self._data = self.prepare(data)
+        self._data = self.sanitize(data)
         self._fields = self.BASE_FIELDS + base_fields + (add_fields or [])
 
     def sanitize(self, data):
@@ -45,19 +45,10 @@ class BaseDocument:
                     setattr(data, k, str(v))
         return data
 
-    def prepare(self, data):
-        data = self.sanitize(data)
-        id = data.pop("id", storage.get_next_sequence(self.COLLECTION_NAME, "id"))
-        uuid = data.pop("uuid", generate_uuid())
-        created = data.pop("created", None)
-        data["created"] = make_datetime(created).isoformat()
-        data["id"] = id
-        data["uuid"] = uuid
-
-        return data
-
     def save(self):
-        self.upsert(self)
+        if bool(self.id):
+            return self.update(self, id=id)
+        return self.insert(self)
 
     @classmethod
     def get(cls, **kwargs):
@@ -141,15 +132,15 @@ class BaseDocument:
 
     @classmethod
     def update(cls, obj, **filter):
-        obj = cls.convert(obj)
+        obj.update(filter)
 
-        result = storage.update(
+        storage.update(
             cls.COLLECTION_NAME,
             obj,
             filter=filter,
         )
 
-        return cls.get(_id=result.upserted_id)
+        return cls.get(**filter)
 
     @classmethod
     def upsert(cls, obj):
@@ -228,10 +219,20 @@ class Storage:
         return self._db
 
     def insert(self, collection_name: str, obj: StorageObj):
+        obj["id"] = self.get_next_sequence(collection_name, "id")
+
+        created = obj.pop("created", None)
+        obj["created"] = make_datetime(created).isoformat()
+
+        uuid = obj.pop("uuid", generate_uuid())
+        obj["uuid"] = uuid
+
         return self.db[collection_name].insert_one(obj)
 
     def update(self, collection_name: str, obj: StorageObj, filter: Dict):
-        return self.db[collection_name].update_one(filter, obj)
+        edited = obj.pop("created", None)
+        obj["edited"] = make_datetime(edited).isoformat()
+        self.db[collection_name].update_one(filter, {"$set": obj})
 
     def upsert(
         self,
