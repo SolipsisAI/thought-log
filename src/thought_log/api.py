@@ -32,8 +32,17 @@ def get_record_list(name):
 def post_record(name):
     request_data = request.json
     resource = RESOURCES[name]
-    resource.upsert(request_data)
-    return resource.last().to_dict()
+    record = resource.insert(request_data)
+    return record.to_dict()
+
+
+@route("/<name>/<id:int>", method="PATCH")
+def update_record(name, id):
+    # Set id in request_data so we can find it
+    resource = RESOURCES[name]
+    request_data = request.json
+    record = resource.update(request_data, id=id)
+    return record.to_dict()
 
 
 @route("/<name>/<id:int>", method="GET")
@@ -43,17 +52,6 @@ def get_record(name, id):
     embed = request.query.get("_embed", None)
     limit = request.query.get("_limit", None)
     return record.to_dict(embed=embed, limit=int(limit) if limit else None)
-
-
-@route("/<name>/<id:int>", method="PATCH")
-def update_record(name, id):
-    request_data = request.json
-    # Set id in request_data so we can find it
-    request_data["id"] = id
-    resource = RESOURCES[name]
-    resource.upsert(request_data)
-    record = resource.find_one({"id": id})
-    return record.to_dict()
 
 
 @route("/<name>/import", method="POST")

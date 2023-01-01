@@ -32,7 +32,6 @@ class BaseDocument:
         self._fields = base_fields + (add_fields or [])
         self._created = None
         self._edited = None
-        self.uuid = data.get("uuid") or generate_uuid()
 
     def sanitize(self, data):
         if isinstance(data, Dict):
@@ -114,6 +113,35 @@ class BaseDocument:
         )
 
     @classmethod
+    def convert(cls, o):
+        if not isinstance(o, cls):
+            o = cls(o)
+        return o.to_dict()
+
+    @classmethod
+    def insert(cls, obj):
+        obj = cls.convert(obj)
+
+        result = storage.insert(
+            cls.COLLECTION_NAME,
+            obj,
+        )
+
+        return cls.get(_id=result.inserted_id)
+
+    @classmethod
+    def update(cls, obj, **filter):
+        obj = cls.convert(obj)
+
+        result = storage.update(
+            cls.COLLECTION_NAME,
+            obj,
+            filter=filter,
+        )
+
+        return cls.get(_id=result.upserted_id)
+
+    @classmethod
     def upsert(cls, obj):
         def convert(o):
             if not isinstance(o, cls):
@@ -188,6 +216,12 @@ class Storage:
     @property
     def db(self):
         return self._db
+
+    def insert(self, collection_name: str, obj: StorageObj):
+        return self.db[collection_name].insert_one(obj)
+
+    def update(self, collection_name: str, obj: StorageObj, filter: Dict):
+        return self.db[collection_name].update_one(filter, obj)
 
     def upsert(
         self,
