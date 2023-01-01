@@ -222,7 +222,7 @@ class Storage:
         obj["id"] = self.get_next_sequence(collection_name, "id")
 
         created = obj.pop("created", None)
-        obj["created"] = make_datetime(created).isoformat()
+        obj["created"] = timestamp(created)
 
         uuid = obj.pop("uuid", generate_uuid())
         obj["uuid"] = uuid
@@ -230,8 +230,8 @@ class Storage:
         return self.db[collection_name].insert_one(obj)
 
     def update(self, collection_name: str, obj: StorageObj, filter: Dict):
-        edited = obj.pop("created", None)
-        obj["edited"] = make_datetime(edited).isoformat()
+        edited = obj.pop("edited", None)
+        obj["edited"] = timestamp(edited)
         self.db[collection_name].update_one(filter, {"$set": obj})
 
     def upsert(
