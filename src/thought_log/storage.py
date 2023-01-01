@@ -222,11 +222,9 @@ class Storage:
         obj["id"] = self.get_next_sequence(collection_name, "id")
 
         created = obj.pop("created", None)
+        uuid = obj.pop("uuid", None)
         obj["created"] = timestamp(created)
-
-        uuid = obj.pop("uuid", generate_uuid())
-        obj["uuid"] = uuid
-
+        obj["uuid"] = uuid or generate_uuid()
         return self.db[collection_name].insert_one(obj)
 
     def update(self, collection_name: str, obj: StorageObj, filter: Dict):
