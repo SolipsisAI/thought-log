@@ -139,12 +139,14 @@ def process_entry(entry):
         uuid = metadata.get("uuid", generate_uuid())
         notebook = entry.metadata.get("notebook", 1)
         title = entry.metadata.get("title", datestring(date))
+        hash = metadata.get("hash")
     else:
         text = entry
         date = find_datetime(text)
         uuid = generate_uuid()
         notebook = 1
         title = datestring(date)
+        hash = None
 
     return {
         "title": title,
@@ -152,6 +154,7 @@ def process_entry(entry):
         "created": timestamp(date),
         "uuid": uuid,
         "notebook": notebook,
+        "hash": hash,
     }
 
 

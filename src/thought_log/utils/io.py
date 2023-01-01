@@ -108,8 +108,8 @@ def read_file(fp: Union[str, TextIOWrapper, Path]):
     hash = None
 
     if isinstance(fp, str) or isinstance(fp, Path):
+        hash = generate_hash_from_string(Path(fp).name)
         fp = open(fp, "r")
-        #hash = generate_hash_from_string(Path(fp).name)
 
     data = frontmatter.load(fp)
 

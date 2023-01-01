@@ -48,11 +48,13 @@ class BaseDocument:
     def save(self):
         identifiers = {}
 
-        if bool(self.id):
-            identifiers["id"] = self.id
-
-        if bool(self.uuid):
-            identifiers["uuid"] = self.uuid
+        if bool(self.hash):
+            identifiers["hash"] = self.hash
+        else:
+            if bool(self.id):
+                identifiers["id"] = self.id
+            if bool(self.uuid):
+                identifiers["uuid"] = self.uuid
 
         existing = self.get(**identifiers)
 
@@ -150,8 +152,6 @@ class BaseDocument:
             obj,
             filter=filter,
         )
-
-        print(result.upserted_id)
 
         return cls.get(**filter)
 
