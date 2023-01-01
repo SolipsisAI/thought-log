@@ -4,7 +4,7 @@ from typing import List, Dict, Union
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
 from thought_log.config import MONGO_URL, MONGO_DB_NAME
-from thought_log.utils import timestamp
+from thought_log.utils import timestamp, make_datetime
 from thought_log.utils.io import generate_uuid
 
 
@@ -24,15 +24,13 @@ class BaseDocument:
     HAS_MANY = None
     BELONGS_TO = None
     FOREIGN_FIELD = None
-    BASE_FIELDS = ["id", "uuid"]
+    BASE_FIELDS = ["id", "uuid", "created", "edited"]
 
     def __init__(
         self, data, base_fields: List[str], add_fields: List[str] = None
     ) -> None:
         self._data = self.prepare(data)
         self._fields = self.BASE_FIELDS + base_fields + (add_fields or [])
-        self._created = None
-        self._edited = None
 
     def sanitize(self, data):
         if isinstance(data, Dict):
@@ -51,8 +49,11 @@ class BaseDocument:
         data = self.sanitize(data)
         id = data.pop("id", storage.get_next_sequence(self.COLLECTION_NAME, "id"))
         uuid = data.pop("uuid", generate_uuid())
+        created = data.pop("created", None)
+        data["created"] = make_datetime(created).isoformat()
         data["id"] = id
         data["uuid"] = uuid
+
         return data
 
     def save(self):
