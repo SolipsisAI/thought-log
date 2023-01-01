@@ -175,7 +175,7 @@ class BaseDocument:
 
     @data.setter
     def data(self, updatedData):
-        self._data = updatedData
+        self._data = self.sanitize(updatedData)
 
     @property
     def fields(self):
