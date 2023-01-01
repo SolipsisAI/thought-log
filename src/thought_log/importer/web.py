@@ -20,6 +20,7 @@ from thought_log.utils import (
     read_file,
     read_zipfile,
     timestamp,
+    sanitize_json_string,
 )
 
 
@@ -104,6 +105,7 @@ def import_json(data):
         if not title:
             title = datestring(created_datetime)
         entry["title"] = title
+        entry["text"] = sanitize_json_string(entry.get("text", ""))
 
         Note(entry).save()
 
