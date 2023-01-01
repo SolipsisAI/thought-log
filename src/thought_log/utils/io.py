@@ -105,10 +105,16 @@ def write_json(data: Dict, filename: str, mode: str = "w+"):
 
 
 def read_file(fp: Union[str, TextIOWrapper, Path]):
+    hash = None
+
     if isinstance(fp, str) or isinstance(fp, Path):
         fp = open(fp, "r")
+        #hash = generate_hash_from_string(Path(fp).name)
 
     data = frontmatter.load(fp)
+
+    if hash:
+        data.metadata["hash"] = hash
 
     fp.close()
     return data

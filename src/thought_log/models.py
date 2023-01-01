@@ -12,6 +12,7 @@ class Note(BaseDocument):
         "created",
         "edited",
         "file_hash",
+        "hash",
     ]
 
     def __init__(self, data, add_fields: List[str] = None):

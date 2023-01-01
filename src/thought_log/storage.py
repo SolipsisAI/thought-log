@@ -54,10 +54,12 @@ class BaseDocument:
         if bool(self.uuid):
             identifiers["uuid"] = self.uuid
 
-        if identifiers:
-            return self.update(self.data, **identifiers)
+        existing = self.get(**identifiers)
 
-        return self.insert(self)
+        if not existing:
+            return self.insert(self)
+
+        return self.update(self.data, **identifiers)
 
     @classmethod
     def get(cls, **kwargs):
@@ -143,32 +145,15 @@ class BaseDocument:
     def update(cls, obj, **filter):
         obj.update(filter)
 
-        storage.update(
+        result = storage.update(
             cls.COLLECTION_NAME,
             obj,
             filter=filter,
         )
 
+        print(result.upserted_id)
+
         return cls.get(**filter)
-
-    @classmethod
-    def upsert(cls, obj):
-        def convert(o):
-            if not isinstance(o, cls):
-                o = cls(o)
-            return o.to_dict()
-
-        if isinstance(obj, List):
-            obj = list(map(convert, obj))
-        else:
-            obj = convert(obj)
-
-        storage.upsert(
-            cls.COLLECTION_NAME,
-            obj,
-            identifier_keys=cls.IDENTIFIER_KEYS,
-            autoincrement=cls.AUTOINCREMENT,
-        )
 
     @classmethod
     def last(cls):
@@ -239,92 +224,7 @@ class Storage:
     def update(self, collection_name: str, obj: StorageObj, filter: Dict):
         edited = obj.pop("edited", None)
         obj["edited"] = timestamp(edited)
-        self.db[collection_name].update_one(filter, {"$set": obj})
-
-    def upsert(
-        self,
-        collection_name: str,
-        obj: StorageObj,
-        find_obj: StorageObj = None,
-        identifier_keys: List[str] = None,
-        autoincrement: str = None,
-    ):
-        if not obj:
-            return
-
-        if isinstance(obj, Dict):
-            self.upsert_one(
-                collection_name,
-                obj,
-                find_obj=find_obj,
-                identifier_keys=identifier_keys,
-                autoincrement=autoincrement,
-            )
-        elif isinstance(obj, List):
-            self.upsert_many(
-                collection_name,
-                obj,
-                find_obj=find_obj,
-                identifier_keys=identifier_keys,
-                autoincrement=autoincrement,
-            )
-
-    def upsert_one(
-        self,
-        collection_name: str,
-        obj: StorageObj,
-        find_obj: StorageObj = None,
-        identifier_keys: str = None,
-        autoincrement: str = None,
-    ):
-        if not find_obj:
-            find_obj = obj
-
-        has_autoincrement = bool(autoincrement) and autoincrement not in obj
-
-        has_id = bool(obj.get("id", None))
-        has_uuid = bool(obj.get("uuid", None))
-        has_file_hash = bool(obj.get("file_hash", None))
-        has_identifiers = any([has_id, has_uuid, has_file_hash])
-
-        is_new_obj = has_autoincrement or not has_identifiers
-
-        if is_new_obj:
-            # Only get next sequence if storage obj doesn't have the autoincremented value
-            find_obj.update(
-                {
-                    autoincrement: self.get_next_sequence(
-                        collection_name, autoincrement
-                    ),
-                }
-            )
-            obj.update({"created": obj.get("created", timestamp())})
-        else:
-            if has_id:
-                find_obj = {"id": obj["id"]}
-            elif has_file_hash and not has_id:
-                find_obj = {"file_hash": obj["file_hash"]}
-            elif has_uuid:
-                find_obj = {"uuid": obj["uuid"]}
-            elif identifier_keys:
-                find_obj = dict(map(lambda i: (i, obj.get(i)), identifier_keys))
-
-            # Check if the item actually exists
-            old_obj = self.db[collection_name].find_one(find_obj)
-            if old_obj:
-                # So that we don't erase this
-                obj.pop("id")
-                old_obj.update(obj)
-                obj = old_obj
-                obj.update({"edited": obj.get("edited", timestamp())})
-            else:
-                obj.update(
-                    {
-                        "id": self.get_next_sequence(collection_name, autoincrement),
-                    },
-                )
-
-        self.db[collection_name].replace_one(find_obj, obj, upsert=True)
+        return self.db[collection_name].update_one(filter, {"$set": obj})
 
     def get_next_sequence(self, collection_name, autoincrement):
         last_obj = self.last(collection_name) or {}
@@ -334,23 +234,6 @@ class Storage:
             sequence_value += 1
 
         return sequence_value
-
-    def upsert_many(
-        self,
-        collection_name: str,
-        obj: DictList,
-        find_obj: StorageObj = None,
-        identifier_keys: List[str] = None,
-        autoincrement: str = None,
-    ):
-        for item in obj:
-            self.upsert_one(
-                collection_name,
-                item,
-                find_obj=find_obj,
-                identifier_keys=identifier_keys,
-                autoincrement=autoincrement,
-            )
 
     def last(self, collection_name: str):
         results = storage.query(
