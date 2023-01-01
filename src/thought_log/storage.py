@@ -46,8 +46,17 @@ class BaseDocument:
         return data
 
     def save(self):
+        identifiers = {}
+
         if bool(self.id):
-            return self.update(self.data, id=self.id)
+            identifiers["id"] = self.id
+
+        if bool(self.uuid):
+            identifiers["uuid"] = self.uuid
+
+        if identifiers:
+            return self.update(self.data, **identifiers)
+
         return self.insert(self)
 
     @classmethod
