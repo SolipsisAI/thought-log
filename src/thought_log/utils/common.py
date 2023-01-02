@@ -117,7 +117,7 @@ def snakecase(string):
 
 def timestamp(obj: Union[str, datetime, int] = None):
     """Get milliseconds from epoch"""
-    #round((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds() * 1000)
+    # round((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds() * 1000)
     if isinstance(obj, int):
         return obj
 

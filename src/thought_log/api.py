@@ -50,8 +50,15 @@ def get_record(name, id):
     resource = RESOURCES[name]
     record = resource.find_one({"id": id})
     embed = request.query.get("_embed", None)
-    limit = request.query.get("_limit", None)
-    return record.to_dict(embed=embed, limit=int(limit) if limit else None)
+    limit = request.query.get("limit", None)
+    order_by = request.query.get("order_by", None)
+    sort_by = request.query.get("sort_by", None)
+    return record.to_dict(
+        embed=embed,
+        limit=int(limit) if limit else None,
+        order_by=order_by,
+        sort_by=sort_by,
+    )
 
 
 @route("/<name>/import", method="POST")

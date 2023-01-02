@@ -37,8 +37,8 @@ class Notebook(BaseDocument):
         super().__init__(data=data, base_fields=self.FIELDNAMES, add_fields=add_fields)
         self.from_dict(self.data)
 
-    def notes(self, limit: int = None):
-        return self.get_children(limit=limit)
+    def notes(self, limit: int = None, order_by: str = None, sort_by: str = None):
+        return self.get_children(limit=limit, order_by=order_by, sort_by=sort_by)
 
 
 MODELS = {"notes": Note, "notebooks": Notebook}

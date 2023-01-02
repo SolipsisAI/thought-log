@@ -113,15 +113,17 @@ class BaseDocument:
 
         return list(map(self.HAS_MANY, results))
 
-    def get_children(self, limit: int = None):
+    def get_children(
+        self, limit: int = None, order_by: str = None, sort_by: str = None
+    ):
         if not self.HAS_MANY:
             return None
 
         return storage.query(
             self.HAS_MANY.COLLECTION_NAME,
             {self.FOREIGN_FIELD: self.id},
-            sort="created",
-            order="DESC",
+            sort=sort_by,
+            order=order_by,
             limit=limit,
             callback=self.HAS_MANY,
         )
@@ -183,17 +185,33 @@ class BaseDocument:
             value = data.get(field, None)
             setattr(self, field, value)
 
-    def to_json(self, embed: str = None, limit: int = None):
-        return json.dumps(self.to_dict(embed=embed, limit=limit))
+    def to_json(
+        self,
+        embed: str = None,
+        limit: int = None,
+        order_by: str = None,
+        sort_by: str = None,
+    ):
+        return json.dumps(
+            self.to_dict(embed=embed, limit=limit, order_by=order_by, sort_by=sort_by)
+        )
 
-    def to_dict(self, embed: str = None, limit: int = None):
+    def to_dict(
+        self,
+        embed: str = None,
+        limit: int = None,
+        order_by: str = None,
+        sort_by: str = None,
+    ):
         def filter_data(item):
             return not item[0].startswith(IGNORE_PREFIX)
 
         result = dict(list(filter(filter_data, self.__dict__.items())))
 
         if embed:
-            children = getattr(self, embed)(limit=limit)
+            children = getattr(self, embed)(
+                limit=limit, order_by=order_by, sort_by=sort_by
+            )
             result[embed] = list(map(lambda c: c.to_dict(), children))
 
         return result
